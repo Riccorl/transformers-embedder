@@ -1,4 +1,4 @@
-![Upload Python Package](https://github.com/Riccorl/transfomrer-embedder/workflows/Upload%20Python%20Package/badge.svg)
+[![Upload Python Package](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg?branch=main)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # Transformer Embedder
