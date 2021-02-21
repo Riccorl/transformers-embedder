@@ -37,25 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-      - name: setup
-        run: |
-          mkdir pkg
-          touch pkg/transformer-embedder.whl
-          touch pkg/transformer-embedder.whl.asc
-          touch pkg/transformer-embedder.tar.gz
-      - id: action
-        uses: ./.github/..
+      - uses: casperdcl/deploy-pypi@v2
         with:
           password: ${{ secrets.TEST_TOKEN }}
-          check: false
-          upload: false
-          dist_dir: pkg
-          url: https://test.pypi.org
-      - name: test
-        run: |
-          [[ ${{ steps.action.outputs.whl }} == transformer-embedder.whl ]]
-          [[ ${{ steps.action.outputs.whl_asc }} == transformer-embedder.whl.asc ]]
-          [[ ${{ steps.action.outputs.targz }} == transformer-embedder.tar.gz ]]
-          [[ -z "${{ steps.action.outputs.targz_asc }}" ]]
+          pip: wheel -w dist/ --no-deps .
+          # only upload if a tag is pushed (otherwise just build & check)
+          upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
