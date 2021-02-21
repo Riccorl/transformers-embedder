@@ -52,6 +52,7 @@ The `TransformerEmbedder` offer 3 ways to retrieve the word embeddings, defined 
 - `first`: uses only the embedding of the first sub-token of each word
 - `last`: uses only the embedding of the last sub-token of each word
 - `mean`: computes the mean of the embeddings of the sub-tokens of each word
+- `none`: returns the raw output of the transformer model without sub-token pooling
 
 There are also multiple type of outputs you can get using `output_layer` parameter:
 
