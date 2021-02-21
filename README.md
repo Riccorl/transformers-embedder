@@ -155,6 +155,11 @@ tokenizer(batch, padding=True, return_tensor=True)
 
 ```
 
+## To-Do
+
+Future developments
+- [ ] Add an optional word tokenizer, maybe using SpaCy
+
 ## Acknowledgement
 
 Most of the code in the `TransformerEmbedder` class is taken from the [AllenNLP](https://github.com/allenai/allennlp) 
