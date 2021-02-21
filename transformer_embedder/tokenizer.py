@@ -15,7 +15,7 @@ utils.get_logger("transformers")
 
 
 class Tokenizer:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, language: str = "xx_sent_ud_sm"):
         # init huggingface tokenizer
         self.tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
         # get config
@@ -24,7 +24,7 @@ class Tokenizer:
         self.token_type_id = self._get_token_type_id(config)
         # spacy tokenizer, it's useless to load if it's not used. None at first
         self.spacy_tokenizer = None
-        self.language: str = "xx_sent_ud_sm"  # default multilingual model
+        self.language = language  # default multilingual model
 
     def __call__(
         self,
@@ -267,14 +267,6 @@ class Tokenizer:
             spacy_download(self.language)
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         self.spacy_tokenizer = spacy_tagger.tokenizer
-
-    def set_spacy_language(self, language: str):
-        """
-        Set spacy language (default multilingual model)
-        :param language: language of spacy model (a string supported by spacy)
-        :return:
-        """
-        self.language = language
 
     @staticmethod
     def _get_token_type_id(config):
