@@ -32,13 +32,13 @@ name: Upload to pypi
 
 on: [ push, pull_request ]
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.x'
       - name: setup
         run: |
           mkdir pkg
