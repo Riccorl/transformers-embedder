@@ -22,16 +22,16 @@ import transformer_embedder as tre
 model = tre.TransformerEmbedder("bert-base-cased", subtoken_pooling="mean", output_layer="sum")
 tokenizer = tre.Tokenizer("bert-base-cased")
 
-example = "This is a sample sentence".split(" ")
-inputs = tokenizer(example, return_tensor=True)
-"""
-{
-    'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
-    'offsets': tensor([[[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
-    'attention_mask': tensor([[True, True, True, True, True, True, True]]),
-    'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
-}
-"""
+example = "This is a sample sentence"
+inputs = tokenizer(example, split_on_space=True, return_tensor=True)
+
+# {
+#   'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
+#   'offsets': tensor([[[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
+#   'attention_mask': tensor([[True, True, True, True, True, True, True]]),
+#   'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
+#   'sentence_length': 7  # with special tokens included
+# }
 
 outputs = model(**inputs)
 
@@ -76,7 +76,84 @@ class TransformerEmbedder(torch.nn.Module):
 
 ### Tokenizer
 
-TO-DO
+The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformerEmbedder` layer. You
+can pass raw sentences, already tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
+with the inputs for the model. By passing `return_tensor=True` it will return the inputs as `torch.Tensor`. Here some 
+examples
+
+```python
+import transformer_embedder as tre
+
+tokenizer = tre.Tokenizer("bert-base-cased")
+
+text = "This is a sample sentence"
+tokenizer(text, split_on_space=True)
+
+# {
+#  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 102],
+#  'offsets': [(1, 1), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)],
+#  'attention_mask': [True, True, True, True, True, True, True],
+#  'token_type_ids': [0, 0, 0, 0, 0, 0, 0],
+#  'sentence_length': 7
+#  }
+
+text = "This is a sample sentence A"
+text_pair = "This is a sample sentence B"
+tokenizer(text, text_pair, split_on_space=True)
+
+# {
+#  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
+#  'offsets': [(1, 1), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)],
+#  'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
+#  'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+#  'sentence_length': 15
+# }
+
+batch = [
+    ['This', 'is', 'a', 'sample', 'sentence', '1'],
+    ['This', 'is', 'sample', 'sentence', '2'],
+    ['This', 'is', 'a', 'sample', 'sentence', '3'],
+    # ...
+    ['This', 'is', 'a', 'sample', 'sentence', 'n', 'for', 'batch'],
+]
+tokenizer(batch, padding=True, return_tensor=True)
+
+# {'input_ids': tensor([[  101,  1188,  1110,   170,  6876,  5650,   122,   102,     0,     0],
+#          [  101,  1188,  1110,  6876,  5650,   123,   102,     0,     0,     0],
+#          [  101,  1188,  1110,   170,  6876,  5650,   124,   102,     0,     0],
+#          [  101,  1188,  1110,   170,  6876,  5650,   183,  1111, 15817,   102]]),
+#  'offsets': tensor([[[1, 1],
+#           [1, 1],
+#           [2, 2],
+#           [3, 3],
+#           [4, 4],
+#           [5, 5],
+#           [6, 6],
+#           [7, 7],
+#           [0, 0],
+#           [0, 0]],
+#           ....
+#          
+#          [[1, 1],
+#           [1, 1],
+#           [2, 2],
+#           [3, 3],
+#           [4, 4],
+#           [5, 5],
+#           [6, 6],
+#           [7, 7],
+#           [8, 8],
+#           [9, 9]]]),
+#  'attention_mask': tensor([[ True,  True,  True,  True,  True,  True,  True,  True, False, False],
+#          [ True,  True,  True,  True,  True,  True,  True, False, False, False],
+#          [ True,  True,  True,  True,  True,  True,  True,  True, False, False],
+#          [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True]]),
+#  'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+#          [0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+#          [0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+#          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])}
+
+```
 
 ## Acknowledgement
 

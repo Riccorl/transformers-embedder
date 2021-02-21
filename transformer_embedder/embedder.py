@@ -17,13 +17,14 @@ class TransformerEmbedder(torch.nn.Module):
         model_name: str,
         subtoken_pooling: str = "first",
         output_layer: str = "last",
-        fine_tune: bool = False,
+        fine_tune: bool = True,
     ) -> None:
         """
         Transformer embeddings of words from various transformer architectures from Huggingface Trasnformers API.
         :param model_name: name of the transformer model (https://huggingface.co/transformers/pretrained_models.html).
         :param subtoken_pooling: how to get back word embeddings from subtokens. First subtoken (`first`), the last
-        subtoken (`last`), or the mean of all the subtokens of the word (`mean`).
+        subtoken (`last`), or the mean of all the subtokens of the word (`mean`). `none` returns the raw output from the
+        transformer model.
         :param output_layer: what output to get from the transformer model. The last hidden state (`last`), the
         concatenation of the last four hidden layers (`concat`), the sum of the last four hidden layers (`sum`),
         the pooled output (`pooled`).
@@ -96,9 +97,11 @@ class TransformerEmbedder(torch.nn.Module):
             word_embeddings = self.single_subtoken_embeddings(span_embeddings, -1)
         elif self.subtoken_pooling == "mean":
             word_embeddings = self.merge_subtoken_embeddings(span_embeddings, span_mask)
+        elif self.subtoken_pooling == "none":
+            word_embeddings = embeddings
         else:
             raise ValueError(
-                f"{self.subtoken_pooling} pooling mode not valid. Choose between `first`, `last` and `mean`"
+                f"{self.subtoken_pooling} pooling mode not valid. Choose between `first`, `last`, `mean` and `none`"
             )
         return word_embeddings
 

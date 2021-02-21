@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import List, Dict, Union, Tuple, Any
+from typing import List, Dict, Union, Tuple
 
 import torch
 import transformers as tr
@@ -19,18 +19,40 @@ class Tokenizer:
 
     def __call__(
         self,
-        text: Union[List[List[str]], List[str]],
-        text_pair: Union[List[List[str]], List[str]] = None,
+        text: Union[List[List[str]], List[str], str],
+        text_pair: Union[List[List[str]], List[str], str] = None,
         padding: bool = False,
         max_length: int = 0,
+        split_on_space: bool = False,
         return_tensor: bool = False,
         *args,
         **kwargs,
     ):
-        if isinstance(text, str):
+        """
+        Prepare the text in input for the `TransformerEmbedder` module.
+        :param text: Text or batch of text to be encoded.
+        :param text_pair: Text or batch of text to be encoded.
+        :param padding: If True, applies padding to the batch based on the maximum length of the batch.
+        :param max_length: If specified, truncates the input sequence to that value. Otherwise,
+        uses the model max length.
+        :param split_on_space: If True and the input is a string, the input is split on spaces.
+        :param return_tensor: If True, the outputs is converted to `torch.Tensor`
+        :param args:
+        :param kwargs:
+        :return: The input for the model as dictionary with the following keys:
+            "input_ids",
+            "offsets",
+            "attention_mask",
+            "token_type_ids",
+            "sentence_length"
+        """
+        if isinstance(text, str) and not split_on_space:
             raise ValueError(
-                "`text` field is of type str. Pass a tokenized sentence to use this method"
+                "`text` field is of type str. Pass a tokenized sentence or set `split_on_space` to True"
             )
+        if isinstance(text, str) and split_on_space:
+            text = text.split(" ")
+            text_pair = text_pair.split(" ") if text_pair else None
         # get model max length if not specified by user
         if max_length == 0:
             max_length = self.tokenizer.model_max_length
@@ -60,6 +82,14 @@ class Tokenizer:
     ) -> Union[
         Dict[str, torch.Tensor], List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]]
     ]:
+        """
+        Builds the batched input
+        :param text:
+        :param text_pair:
+        :param max_len:
+        :param padding:
+        :return:
+        """
         batch = []
         if not text_pair:
             # In this way we can re-use the already defined methods, regardless the presence of the text pairs
