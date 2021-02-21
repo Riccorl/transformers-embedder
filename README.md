@@ -43,10 +43,7 @@ outputs = model(**inputs)
 
 ## Info
 
-One of the annoyance of using transfomer-based models is that is not trivial to compute word embeddings
-from the sub-token embeddings that they output. With this library it's as easy as using 🤗Transformers API to get word-level
-embeddings from theoretically every transformer model supported by it.
-
+One of the annoyance of using transfomer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this library it's as easy as using 🤗Transformers API to get word-level embeddings from theoretically every transformer model it supports.
 
 ### Model
 
