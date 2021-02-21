@@ -47,13 +47,13 @@ One of the annoyance of using transfomer-based models is that it is not trivial 
 
 ### Model
 
-The `TransformerEmbedder` offer 3 ways to retrieve the word embeddings:
+The `TransformerEmbedder` offer 3 ways to retrieve the word embeddings, defined by `subtoken_pooling` parameter:
 
 - `first`: uses only the embedding of the first sub-token of each word
 - `last`: uses only the embedding of the last sub-token of each word
 - `mean`: computes the mean of the embeddings of the sub-tokens of each word
 
-There are also multiple type of outputs:
+There are also multiple type of outputs you can get using `output_layer` parameter:
 
 - `last`: returns the last hidden state of the transformer model
 - `concat`: returns the concatenation of the last four hidden states of the transformer model
