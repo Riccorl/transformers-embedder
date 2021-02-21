@@ -1,14 +1,16 @@
-import logging
 from typing import Optional, Tuple, Union, Any
 
 import torch
 import transformers as tr
 
-from transformer_embedder.utils import batched_span_select
+from transformer_embedder import utils
 
 """
 Most of the code is taken from [AllenNLP](https://github.com/allenai/allennlp)
 """
+
+logger = utils.get_logger(__name__)
+utils.get_logger("transformers")
 
 
 class TransformerEmbedder(torch.nn.Module):
@@ -40,7 +42,7 @@ class TransformerEmbedder(torch.nn.Module):
                 param.requires_grad = False
         # check configuration
         if self.output_layer == "pooled":
-            logging.info(
+            logger.info(
                 f"output_layer mode is {self.output_layer}, subtoken_pooling parameter is ignored"
             )
 
@@ -88,7 +90,7 @@ class TransformerEmbedder(torch.nn.Module):
         """
         # span_embeddings: (batch_size, num_orig_tokens, max_span_length, embedding_size)
         # span_mask: (batch_size, num_orig_tokens, max_span_length)
-        span_embeddings, span_mask = batched_span_select(embeddings.contiguous(), offsets)
+        span_embeddings, span_mask = utils.batched_span_select(embeddings.contiguous(), offsets)
         span_mask = span_mask.unsqueeze(-1)
         span_embeddings *= span_mask  # zero out paddings
         if self.subtoken_pooling == "first":

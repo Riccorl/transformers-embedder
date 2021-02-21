@@ -1,3 +1,7 @@
+# custom
+/test.ipynb
+/test.py
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm+all,vscode,macos,linux,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm+all,vscode,macos,linux,windows
@@ -310,4 +314,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all,vscode,macos,linux,windows
-/test.ipynb
+

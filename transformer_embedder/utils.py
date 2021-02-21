@@ -1,10 +1,12 @@
+import logging
 from typing import Optional, Tuple, Union, Any
+from spacy.cli.download import download as spacy_download
 
 import torch
 from torch import Tensor
 
 """
-These functions are taken from [AllenNLP](https://github.com/allenai/allennlp/blob/main/allennlp/common/checks.py>)
+Some of these functions are taken from [AllenNLP](https://github.com/allenai/allennlp/blob/main/allennlp/common/checks.py>)
 """
 
 
@@ -181,3 +183,7 @@ def get_device_of(tensor: torch.Tensor) -> int:
         return -1
     else:
         return tensor.get_device()
+
+
+def get_logger(name):
+    return logging.getLogger(name)

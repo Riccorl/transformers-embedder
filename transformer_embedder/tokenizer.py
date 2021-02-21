@@ -2,10 +2,16 @@ import logging
 import math
 from typing import List, Dict, Union, Tuple
 
+import spacy
 import torch
 import transformers as tr
+from spacy.cli.download import download as spacy_download
 
+import utils
 from transformer_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
+
+logger = utils.get_logger(__name__)
+utils.get_logger("transformers")
 
 
 class Tokenizer:
@@ -16,6 +22,9 @@ class Tokenizer:
         config = tr.AutoConfig.from_pretrained(model_name)
         # set the token type id
         self.token_type_id = self._get_token_type_id(config)
+        # spacy tokenizer, it's useless to load if it's not used. None at first
+        self.spacy_tokenizer = None
+        self.language: str = "xx_sent_ud_sm"  # default multilingual model
 
     def __call__(
         self,
@@ -23,7 +32,8 @@ class Tokenizer:
         text_pair: Union[List[List[str]], List[str], str] = None,
         padding: bool = False,
         max_length: int = 0,
-        split_on_space: bool = False,
+        is_split_into_words: bool = False,
+        use_spacy: bool = False,
         return_tensor: bool = False,
         *args,
         **kwargs,
@@ -36,6 +46,7 @@ class Tokenizer:
         :param max_length: If specified, truncates the input sequence to that value. Otherwise,
         uses the model max length.
         :param split_on_space: If True and the input is a string, the input is split on spaces.
+        :param use_spacy: If True, use spacy tokenizer
         :param return_tensor: If True, the outputs is converted to `torch.Tensor`
         :param args:
         :param kwargs:
@@ -46,26 +57,49 @@ class Tokenizer:
             "token_type_ids",
             "sentence_length"
         """
-        if isinstance(text, str) and not split_on_space:
-            raise ValueError(
-                "`text` field is of type str. Pass a tokenized sentence or set `split_on_space` to True"
+        # type checking before everything
+        self._type_checking(text, text_pair)
+        if isinstance(text, str) and not use_spacy:
+            logger.warning(
+                "`text` field is of type str, splitting by spaces. Set `use_spacy` to tokenize using spacy model."
             )
-        if isinstance(text, str) and split_on_space:
-            text = text.split(" ")
-            text_pair = text_pair.split(" ") if text_pair else None
+
+        # check if input is batched or a single sample
+        is_batched = bool(
+            (not is_split_into_words and isinstance(text, (list, tuple)))
+            or (
+                is_split_into_words
+                and isinstance(text, (list, tuple))
+                and text
+                and isinstance(text[0], (list, tuple))
+            )
+        )
+        # is_batched = bool(text and isinstance(text[0], (list, tuple)))
+
+        # if text is str or a list of str and they are not split, then text needs to be tokenized
+        if isinstance(text, str) or (not is_split_into_words and isinstance(text[0], str)):
+            if not is_batched:
+                text = self.pretokenize(text, use_spacy=use_spacy)
+                text_pair = self.pretokenize(text_pair, use_spacy=use_spacy) if text_pair else None
+            else:
+                text = [self.pretokenize(t, use_spacy=use_spacy) for t in text]
+                text_pair = (
+                    [self.pretokenize(t, use_spacy=use_spacy) for t in text_pair]
+                    if text_pair
+                    else None
+                )
+
         # get model max length if not specified by user
         if max_length == 0:
             max_length = self.tokenizer.model_max_length
 
-        # check if input is batched or a single sample
-        is_batched = bool(text and isinstance(text[0], (list, tuple)))
         if not is_batched:
             output = self.build_tokens(text, text_pair, max_length)
         else:
             if not padding and return_tensor:
-                logging.info(
+                logger.info(
                     f"""`padding` is False and return_tensor is True. Cannot make tensors from not padded sequences. 
-                    `padding` is set automatically to True"""
+                    `padding` forced automatically to True"""
                 )
                 padding = True
             output = self.build_tokens_batch(text, text_pair, max_length, padding)
@@ -216,9 +250,75 @@ class Tokenizer:
         }
         return batch
 
+    def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
+        if use_spacy:
+            if not self.spacy_tokenizer:
+                self._load_spacy()
+            text = self.spacy_tokenizer(text)
+            return [t.text for t in text]
+        else:
+            return text.split(" ")
+
+    def _load_spacy(self):
+        try:
+            spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
+        except OSError:
+            logger.info(f"Spacy models '{self.language}' not found.  Downloading and installing.")
+            spacy_download(self.language)
+            spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
+        self.spacy_tokenizer = spacy_tagger.tokenizer
+
+    def set_spacy_language(self, language: str):
+        """
+        Set spacy language (default multilingual model)
+        :param language: language of spacy model (a string supported by spacy)
+        :return:
+        """
+        self.language = language
+
     @staticmethod
     def _get_token_type_id(config):
         if hasattr(config, "type_vocab_size"):
             return 1 if config.type_vocab_size == 2 else 0
         else:
             return 0
+
+    @staticmethod
+    def _type_checking(text, text_pair):
+        assert isinstance(text, str) or (
+            isinstance(text, (list, tuple))
+            and (
+                len(text) == 0
+                or (
+                    isinstance(text[0], str)
+                    or (
+                        isinstance(text[0], (list, tuple))
+                        and (len(text[0]) == 0 or isinstance(text[0][0], str))
+                    )
+                )
+            )
+        ), (
+            "text input must of type `str` (single example), `List[str]` (batch or single pretokenized example) "
+            "or `List[List[str]]` (batch of pretokenized examples)."
+        )
+
+        assert (
+            text_pair is None
+            or isinstance(text_pair, str)
+            or (
+                isinstance(text_pair, (list, tuple))
+                and (
+                    len(text_pair) == 0
+                    or (
+                        isinstance(text_pair[0], str)
+                        or (
+                            isinstance(text_pair[0], (list, tuple))
+                            and (len(text_pair[0]) == 0 or isinstance(text_pair[0][0], str))
+                        )
+                    )
+                )
+            )
+        ), (
+            "text_pair input must of type `str` (single example), `List[str]` (batch or single pretokenized example) "
+            "or `List[List[str]]` (batch of pretokenized examples)."
+        )
