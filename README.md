@@ -157,6 +157,17 @@ batch_pair = [
 tokenizer(batch, batch_pair, padding=True, return_tensor=True)
 ```
 
+### SpaCy Tokenizer
+
+By default, it uses the [multilingual model](https://spacy.io/models/xx#xx_sent_ud_sm) `xx_sent_ud_sm`. You can change
+it with the `language` parameter during the tokenizer initialization. For example, if you prefer an English tokenizer:
+
+```python
+tokenizer = tre.Tokenizer("bert-base-cased", language="en_core_web_sm")
+```
+
+For a complete list of languages and models, you can go [here](https://spacy.io/models).
+
 ## To-Do
 
 Future developments
