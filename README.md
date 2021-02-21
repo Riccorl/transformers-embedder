@@ -47,7 +47,7 @@ One of the annoyance of using transfomer-based models is that it is not trivial 
 
 ### Model
 
-The `TransformerEmbedder` offer 3 ways to retrieve the word embeddings, defined by `subtoken_pooling` parameter:
+The `TransformerEmbedder` offer 4 ways to retrieve the word embeddings, defined by `subtoken_pooling` parameter:
 
 - `first`: uses only the embedding of the first sub-token of each word
 - `last`: uses only the embedding of the last sub-token of each word
@@ -68,14 +68,14 @@ class TransformerEmbedder(torch.nn.Module):
         model_name: str,
         subtoken_pooling: str = "first",
         output_layer: str = "last",
-        fine_tune: bool = False,
+        fine_tune: bool = True,
     )
 ```
 
 ### Tokenizer
 
 The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformerEmbedder` layer. You
-can pass raw sentences, already tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
+can pass raw sentences, pre-tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
 with the inputs for the model. By passing `return_tensor=True` it will return the inputs as `torch.Tensor`.
 
 By default, if you pass text (or batch) as strings, it splits them on spaces
@@ -95,7 +95,7 @@ text = ["This is a sample sentence", "This is another sample sentence"]
 tokenizer(text, use_spacy=True)
 ```
 
-or you can pass an already tokenized sentence (or batch of sentences) by setting `is_split_into_words=True`
+or you can pass an pre-tokenized sentence (or batch of sentences) by setting `is_split_into_words=True`
 
 ```python
 text = ["This", "is", "a", "sample", "sentence"]
