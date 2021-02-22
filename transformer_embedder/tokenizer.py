@@ -321,7 +321,6 @@ class Tokenizer:
 class ModelInputs(UserDict):
     def __init__(self, data: Dict[str, Any]):
         super().__init__(data)
-        self.data = data
 
     def __getattr__(self, item: str):
         try:
