@@ -7,7 +7,7 @@ import torch
 import transformers as tr
 from spacy.cli.download import download as spacy_download
 
-import utils
+from transformer_embedder import utils
 from transformer_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
 
 logger = utils.get_logger(__name__)
