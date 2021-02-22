@@ -46,8 +46,9 @@ class TransformerEmbedder(torch.nn.Module):
                 f"output_layer mode is {self.output_layer}, subtoken_pooling parameter is ignored"
             )
 
-    def get_output_dim(self):
-        return self.transformer_model.get_output_dim()
+    @property
+    def hidden_size(self):
+        return self.transformer_model.config.hidden_size
 
     def forward(
         self,
