@@ -331,6 +331,13 @@ class ModelInputs(UserDict):
     def __getitem__(self, item: str) -> Any:
         return self.data[item]
 
+    def __getstate__(self):
+        return {"data": self.data}
+
+    def __setstate__(self, state):
+        if "data" in state:
+            self.data = state["data"]
+
     def keys(self):
         return self.data.keys()
 
