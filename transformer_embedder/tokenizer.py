@@ -1,14 +1,14 @@
-import logging
 import math
-from typing import List, Dict, Union, Tuple
+from collections import UserDict
+from typing import List, Dict, Union, Tuple, Any
 
 import spacy
 import torch
 import transformers as tr
 from spacy.cli.download import download as spacy_download
 
-from transformer_embedder import utils
 from transformer_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
+from transformer_embedder import utils
 
 logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
@@ -105,6 +105,7 @@ class Tokenizer:
             output = self.build_tokens_batch(text, text_pair, max_length, padding)
         if return_tensors:
             output = self.to_tensor(output)
+        output = ModelInputs(output)
         return output
 
     def build_tokens_batch(
@@ -315,3 +316,50 @@ class Tokenizer:
             "text_pair input must of type `str` (single example), `List[str]` (batch or single pretokenized example) "
             "or `List[List[str]]` (batch of pretokenized examples)."
         )
+
+
+class ModelInputs(UserDict):
+    def __init__(self, data: Dict[str, Any]):
+        super().__init__(data)
+        self.data = data
+
+    def __getattr__(self, item: str):
+        try:
+            return self.data[item]
+        except KeyError:
+            raise AttributeError
+
+    def __getitem__(self, item: str) -> Any:
+        return self.data[item]
+
+    def keys(self):
+        return self.data.keys()
+
+    def values(self):
+        return self.data.values()
+
+    def items(self):
+        return self.data.items()
+
+    def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
+        """
+        Send all values to device by calling :obj:`v.to(device)` (PyTorch only).
+
+        Args:
+            device (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
+
+        Returns:
+            :class:`~transformers.BatchEncoding`: The same instance of :class:`~transformers.BatchEncoding` after
+            modification.
+        """
+
+        # This check catches things like APEX blindly calling "to" on all inputs to a module
+        # Otherwise it passes the casts down and casts the LongTensor containing the token idxs
+        # into a HalfTensor
+        if isinstance(device, str) or isinstance(device, torch.device) or isinstance(device, int):
+            self.data = {k: v.to(device=device) for k, v in self.data.items()}
+        else:
+            logger.warning(
+                f"Attempting to cast to another type, {str(device)}. This is not supported."
+            )
+        return self
