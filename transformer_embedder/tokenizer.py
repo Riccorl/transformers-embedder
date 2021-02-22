@@ -228,7 +228,7 @@ class Tokenizer:
             b["offsets"] += [(0, 0) for _ in range(word_pad_len)]
             b["input_ids"] += [self.tokenizer.pad_token_id] * pad_len
             b["attention_mask"] += [False] * pad_len
-            b["token_type_ids"] += [1] * pad_len
+            b["token_type_ids"] += [self.token_type_id] * pad_len
         return batch
 
     @staticmethod
@@ -243,12 +243,7 @@ class Tokenizer:
             batch = [batch]
         # convert list to dict
         batch = {k: [d[k] for d in batch] for k in batch[0]}
-        # batch = {
-        #     "input_ids": torch.tensor(batch["input_ids"]),
-        #     "offsets": torch.tensor(batch["offsets"]),
-        #     "attention_mask": torch.tensor(batch["attention_mask"]),
-        #     "token_type_ids": torch.tensor(batch["token_type_ids"]),
-        # }
+        # convert to tensor
         batch = {k: torch.tensor(v) for k, v in batch.items()}
         return batch
 

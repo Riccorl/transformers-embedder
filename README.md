@@ -23,7 +23,7 @@ model = tre.TransformerEmbedder("bert-base-cased", subtoken_pooling="mean", outp
 tokenizer = tre.Tokenizer("bert-base-cased")
 
 example = "This is a sample sentence"
-inputs = tokenizer(example, return_tensor=True)
+inputs = tokenizer(example, return_tensors=True)
 
 # {
 #   'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
@@ -76,7 +76,7 @@ class TransformerEmbedder(torch.nn.Module):
 
 The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformerEmbedder` layer. You
 can pass raw sentences, pre-tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
-with the inputs for the model. By passing `return_tensor=True` it will return the inputs as `torch.Tensor`.
+with the inputs for the model. By passing `return_tensors=True` it will return the inputs as `torch.Tensor`.
 
 By default, if you pass text (or batch) as strings, it splits them on spaces
 ```python
@@ -145,7 +145,7 @@ batch = [
     # ...
     ["This", "is", "a", "sample", "sentence", "n", "for", "batch"],
 ]
-tokenizer(batch, padding=True, return_tensor=True)
+tokenizer(batch, padding=True, return_tensors=True)
 
 batch_pair = [
     ["This", "is", "a", "sample", "sentence", "pair", "1"],
@@ -154,7 +154,7 @@ batch_pair = [
     # ...
     ["This", "is", "a", "sample", "sentence", "pair", "n", "for", "batch"],
 ]
-tokenizer(batch, batch_pair, padding=True, return_tensor=True)
+tokenizer(batch, batch_pair, padding=True, return_tensors=True)
 ```
 
 ### SpaCy Tokenizer
