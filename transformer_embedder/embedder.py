@@ -56,6 +56,7 @@ class TransformerEmbedder(torch.nn.Module):
         attention_mask: torch.BoolTensor,
         token_type_ids: Optional[torch.LongTensor] = None,
         *args,
+        **kwargs,
     ) -> Tuple[Union[torch.Tensor, Any], Union[torch.Tensor, Any]]:
         # Shape: [batch_size, num_subtoken, embedding_size].
         transformer_outputs = self.transformer_model(input_ids, attention_mask, token_type_ids)
