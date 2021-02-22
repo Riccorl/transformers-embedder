@@ -34,7 +34,7 @@ class Tokenizer:
         max_length: int = 0,
         is_split_into_words: bool = False,
         use_spacy: bool = False,
-        return_tensor: bool = False,
+        return_tensors: bool = False,
         *args,
         **kwargs,
     ):
@@ -47,7 +47,7 @@ class Tokenizer:
         uses the model max length.
         :param split_on_space: If True and the input is a string, the input is split on spaces.
         :param use_spacy: If True, use spacy tokenizer
-        :param return_tensor: If True, the outputs is converted to `torch.Tensor`
+        :param return_tensors: If True, the outputs is converted to `torch.Tensor`
         :param args:
         :param kwargs:
         :return: The input for the model as dictionary with the following keys:
@@ -96,14 +96,14 @@ class Tokenizer:
         if not is_batched:
             output = self.build_tokens(text, text_pair, max_length)
         else:
-            if not padding and return_tensor:
+            if not padding and return_tensors:
                 logger.info(
                     f"""`padding` is False and return_tensor is True. Cannot make tensors from not padded sequences. 
                     `padding` forced automatically to True"""
                 )
                 padding = True
             output = self.build_tokens_batch(text, text_pair, max_length, padding)
-        if return_tensor:
+        if return_tensors:
             output = self.to_tensor(output)
         return output
 
@@ -242,12 +242,13 @@ class Tokenizer:
             batch = [batch]
         # convert list to dict
         batch = {k: [d[k] for d in batch] for k in batch[0]}
-        batch = {
-            "input_ids": torch.tensor(batch["input_ids"]),
-            "offsets": torch.tensor(batch["offsets"]),
-            "attention_mask": torch.tensor(batch["attention_mask"]),
-            "token_type_ids": torch.tensor(batch["token_type_ids"]),
-        }
+        # batch = {
+        #     "input_ids": torch.tensor(batch["input_ids"]),
+        #     "offsets": torch.tensor(batch["offsets"]),
+        #     "attention_mask": torch.tensor(batch["attention_mask"]),
+        #     "token_type_ids": torch.tensor(batch["token_type_ids"]),
+        # }
+        batch = {k: torch.tensor(v) for k, v in batch.items()}
         return batch
 
     def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
