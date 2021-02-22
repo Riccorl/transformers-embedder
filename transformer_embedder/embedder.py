@@ -48,7 +48,8 @@ class TransformerEmbedder(torch.nn.Module):
 
     @property
     def hidden_size(self):
-        return self.transformer_model.config.hidden_size
+        multiplayer = 4 if self.output_layer == "concat" else 1
+        return self.transformer_model.config.hidden_size * multiplayer
 
     def forward(
         self,
