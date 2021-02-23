@@ -148,7 +148,7 @@ class Tokenizer:
         :return: a dictionary with A and B encoded
         """
         input_ids, token_type_ids, offsets = self._build_tokens(text, max_len=max_len)
-        len_pair = len(text) + 2 if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN) else 1
+        len_pair = len(text) + (2 if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN) else 1)
         if text_pair:
             input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(text_pair, True, max_len)
             # align offsets of sentence b
@@ -156,8 +156,8 @@ class Tokenizer:
             offsets = offsets + offsets_b
             input_ids += input_ids_b
             token_type_ids += token_type_ids_b
-            len_pair += (
-                len(text_pair) + 2 if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) else 1
+            len_pair += len(text_pair) + (
+                2 if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) else 1
             )
 
         word_mask = [True] * len_pair  # for original tokens
