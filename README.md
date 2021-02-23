@@ -1,6 +1,7 @@
 [![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
-[![PyTorch](https://img.shields.io/badge/PyTorch-1.7-blue)](https://pytorch.org/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder?style=plastic)](https://github.com/Riccorl/transformer-embedder/releases)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.7-EE4C2C?style=plastic&logo=pytorch)](https://pytorch.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000?style=plastic)](https://github.com/psf/black)
 
 # Transformer Embedder
 
@@ -174,7 +175,7 @@ For a complete list of languages and models, you can go [here](https://spacy.io/
 Future developments
 - [X] Add an optional word tokenizer, maybe using SpaCy
 
-## Acknowledgement
+## Acknowledgements
 
 Most of the code in the `TransformerEmbedder` class is taken from the [AllenNLP](https://github.com/allenai/allennlp) 
 library. The pretrained models and the core of the tokenizer is from [🤗Transformers](https://huggingface.co/transformers/).
