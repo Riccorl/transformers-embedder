@@ -22,7 +22,7 @@ class Tokenizer:
         config = tr.AutoConfig.from_pretrained(model_name)
         # set the token type id
         self.token_type_id = self._get_token_type_id(config)
-        # spacy tokenizer, it's useless to load if it's not used. None at first
+        # spacy tokenizer, lazy load. None at first
         self.spacy_tokenizer = None
         self.language = language  # default multilingual model
 
@@ -148,7 +148,7 @@ class Tokenizer:
         :return: a dictionary with A and B encoded
         """
         input_ids, token_type_ids, offsets = self._build_tokens(text, max_len=max_len)
-        len_pair = len(text) + 2
+        len_pair = len(text) + 2 if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN) else 1
         if text_pair:
             input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(text_pair, True, max_len)
             # align offsets of sentence b
@@ -156,7 +156,9 @@ class Tokenizer:
             offsets = offsets + offsets_b
             input_ids += input_ids_b
             token_type_ids += token_type_ids_b
-            len_pair += len(text_pair) + 1
+            len_pair += (
+                len(text_pair) + 2 if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) else 1
+            )
 
         word_mask = [True] * len_pair  # for original tokens
         attention_mask = [True] * len(input_ids)
@@ -221,35 +223,17 @@ class Tokenizer:
         """
         # get maximum len inside a batch
         wp_max_batch_len = max(len(x["input_ids"]) for x in batch)
-        # word_max_batch_len = max(x["sentence_length"] for x in batch)
-        word_max_batch_len = max(len(x["word_mask"]) for x in batch)
+        word_max_batch_len = max(x["sentence_length"] for x in batch)
         for b in batch:
             input_ids_len = len(b["input_ids"])
             pad_len = wp_max_batch_len - input_ids_len
-            # word_pad_len = word_max_batch_len - b["sentence_length"]
-            word_pad_len = word_max_batch_len - len(b["word_mask"])
+            word_pad_len = word_max_batch_len - b["sentence_length"]
             # for pad offset must be (0, 0)
             b["offsets"] += [(0, 0) for _ in range(word_pad_len)]
             b["input_ids"] += [self.tokenizer.pad_token_id] * pad_len
             b["attention_mask"] += [False] * pad_len
             b["word_mask"] += [False] * word_pad_len
             b["token_type_ids"] += [self.token_type_id] * pad_len
-        return batch
-
-    @staticmethod
-    def to_tensor(batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
-        """
-        Return a the batch in input as Pytorch tensors
-        :param batch: batch in input
-        :return: the batch as tensor
-        """
-        # single sentence case, generalize
-        if isinstance(batch, dict):
-            batch = [batch]
-        # convert list to dict
-        batch = {k: [d[k] for d in batch] for k in batch[0]}
-        # convert to tensor
-        batch = {k: torch.tensor(v) for k, v in batch.items()}
         return batch
 
     def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
@@ -269,6 +253,22 @@ class Tokenizer:
             spacy_download(self.language)
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         self.spacy_tokenizer = spacy_tagger.tokenizer
+
+    @staticmethod
+    def to_tensor(batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
+        """
+        Return a the batch in input as Pytorch tensors
+        :param batch: batch in input
+        :return: the batch as tensor
+        """
+        # single sentence case, generalize
+        if isinstance(batch, dict):
+            batch = [batch]
+        # convert list to dict
+        batch = {k: [d[k] for d in batch] for k in batch[0]}
+        # convert to tensor
+        batch = {k: torch.tensor(v) for k, v in batch.items()}
+        return batch
 
     @staticmethod
     def _get_token_type_id(config):
