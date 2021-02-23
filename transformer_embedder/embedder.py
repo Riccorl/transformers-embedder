@@ -40,11 +40,6 @@ class TransformerEmbedder(torch.nn.Module):
         if not fine_tune:
             for param in self.transformer_model.parameters():
                 param.requires_grad = False
-        # check configuration
-        if self.output_layer == "pooled":
-            logger.info(
-                f"output_layer mode is {self.output_layer}, subtoken_pooling parameter is ignored"
-            )
 
     @property
     def hidden_size(self):
@@ -59,7 +54,7 @@ class TransformerEmbedder(torch.nn.Module):
         token_type_ids: Optional[torch.LongTensor] = None,
         *args,
         **kwargs,
-    ) -> Tuple[Union[torch.Tensor, Any], Union[torch.Tensor, Any]]:
+    ) -> torch.Tensor:
         # Shape: [batch_size, num_subtoken, embedding_size].
         transformer_outputs = self.transformer_model(input_ids, attention_mask, token_type_ids)
         if self.output_layer == "last":
@@ -77,10 +72,7 @@ class TransformerEmbedder(torch.nn.Module):
                 f"""output_layer parameter not valid, choose between `last`, `concat`, 
                 `sum`, `pooled`. Current value {self.output_layer}"""
             )
-        if self.output_layer != "pooled":
-            word_embeddings = self.get_word_embeddings(embeddings, offsets)
-        else:
-            word_embeddings = embeddings
+        word_embeddings = self.get_word_embeddings(embeddings, offsets)
         return word_embeddings
 
     def get_word_embeddings(self, embeddings: torch.Tensor, offsets: torch.Tensor) -> torch.Tensor:

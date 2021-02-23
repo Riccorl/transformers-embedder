@@ -158,11 +158,13 @@ class Tokenizer:
             token_type_ids += token_type_ids_b
             len_pair += len(text_pair) + 1
 
+        word_mask = [True] * len_pair  # for original tokens
         attention_mask = [True] * len(input_ids)
         return {
             "input_ids": input_ids,
             "offsets": offsets,
             "attention_mask": attention_mask,
+            "word_mask": word_mask,
             "token_type_ids": token_type_ids,
             "sentence_length": len_pair,
         }
@@ -228,6 +230,7 @@ class Tokenizer:
             b["offsets"] += [(0, 0) for _ in range(word_pad_len)]
             b["input_ids"] += [self.tokenizer.pad_token_id] * pad_len
             b["attention_mask"] += [False] * pad_len
+            b["word_mask"] += [False] * word_pad_len
             b["token_type_ids"] += [self.token_type_id] * pad_len
         return batch
 
