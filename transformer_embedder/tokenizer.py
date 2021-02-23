@@ -221,11 +221,13 @@ class Tokenizer:
         """
         # get maximum len inside a batch
         wp_max_batch_len = max(len(x["input_ids"]) for x in batch)
-        word_max_batch_len = max(x["sentence_length"] for x in batch)
+        # word_max_batch_len = max(x["sentence_length"] for x in batch)
+        word_max_batch_len = max(len(x["word_mask"]) for x in batch)
         for b in batch:
             input_ids_len = len(b["input_ids"])
             pad_len = wp_max_batch_len - input_ids_len
-            word_pad_len = word_max_batch_len - b["sentence_length"]
+            # word_pad_len = word_max_batch_len - b["sentence_length"]
+            word_pad_len = word_max_batch_len - len(b["word_mask"])
             # for pad offset must be (0, 0)
             b["offsets"] += [(0, 0) for _ in range(word_pad_len)]
             b["input_ids"] += [self.tokenizer.pad_token_id] * pad_len
