@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional, Tuple, Union, Any
 
 import torch
@@ -129,3 +130,11 @@ class TransformerEmbedder(torch.nn.Module):
         :return: the word embeddings
         """
         return embeddings[:, :, position, :]
+
+    def save_pretrained(self, save_directory: Union[str, Path]):
+        """
+        Save a model and its configuration file to a directory
+        :param save_directory: Directory to which to save.
+        :return:
+        """
+        self.transformer_model.save_pretrained(save_directory)
