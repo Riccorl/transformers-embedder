@@ -255,8 +255,7 @@ class Tokenizer:
                 self._load_spacy()
             text = self.spacy_tokenizer(text)
             return [t.text for t in text]
-        else:
-            return text.split(" ")
+        return text.split(" ")
 
     def _load_spacy(self):
         try:
@@ -289,8 +288,7 @@ class Tokenizer:
     def _get_token_type_id(config):
         if hasattr(config, "type_vocab_size"):
             return 1 if config.type_vocab_size == 2 else 0
-        else:
-            return 0
+        return 0
 
     @staticmethod
     def _type_checking(text, text_pair):
