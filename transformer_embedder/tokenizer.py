@@ -380,11 +380,7 @@ class ModelInputs(UserDict):
         # This check catches things like APEX blindly calling "to" on all inputs to a module
         # Otherwise it passes the casts down and casts the LongTensor containing the token idxs
         # into a HalfTensor
-        if (
-            isinstance(device, str)
-            or isinstance(device, torch.device)
-            or isinstance(device, int)
-        ):
+        if isinstance(device, (str, torch.device, int)):
             self.data = {k: v.to(device=device) for k, v in self.data.items()}
         else:
             logger.warning(
