@@ -292,7 +292,7 @@ class Tokenizer:
 
     @staticmethod
     def _type_checking(text, text_pair):
-        assert isinstance(text, str) or (
+        if not (isinstance(text, str) or (
             isinstance(text, (list, tuple))
             and (
                 len(text) == 0
@@ -304,10 +304,11 @@ class Tokenizer:
                     )
                 )
             )
-        ), """text input must of type `str` (single example), `List[str]` (batch or single
-            pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+        )):
+            raise AssertionError("""text input must of type `str` (single example), `List[str]` (batch or single
+            pretokenized example) or `List[List[str]]` (batch of pretokenized examples).""")
 
-        assert (
+        if not (
             text_pair is None
             or isinstance(text_pair, str)
             or (
@@ -326,8 +327,9 @@ class Tokenizer:
                     )
                 )
             )
-        ), """text_pair input must be `str` (single example), `List[str]` (batch or single 
-            pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+        ):
+            raise AssertionError("""text_pair input must be `str` (single example), `List[str]` (batch or single 
+            pretokenized example) or `List[List[str]]` (batch of pretokenized examples).""")
 
 
 class ModelInputs(UserDict):
