@@ -57,7 +57,9 @@ class TransformerEmbedder(torch.nn.Module):
         **kwargs,
     ) -> torch.Tensor:
         # Shape: [batch_size, num_subtoken, embedding_size].
-        transformer_outputs = self.transformer_model(input_ids, attention_mask, token_type_ids)
+        transformer_outputs = self.transformer_model(
+            input_ids, attention_mask, token_type_ids
+        )
         if self.output_layer == "last":
             embeddings = transformer_outputs.last_hidden_state
         elif self.output_layer == "concat":
@@ -76,7 +78,9 @@ class TransformerEmbedder(torch.nn.Module):
         word_embeddings = self.get_word_embeddings(embeddings, offsets)
         return word_embeddings
 
-    def get_word_embeddings(self, embeddings: torch.Tensor, offsets: torch.Tensor) -> torch.Tensor:
+    def get_word_embeddings(
+        self, embeddings: torch.Tensor, offsets: torch.Tensor
+    ) -> torch.Tensor:
         """
         Retrieve the word embeddings from the subtokens embeddings by either computing the mean of the subtokens
         or taking one (first or last) as word representation.
@@ -86,7 +90,9 @@ class TransformerEmbedder(torch.nn.Module):
         """
         # span_embeddings: (batch_size, num_orig_tokens, max_span_length, embedding_size)
         # span_mask: (batch_size, num_orig_tokens, max_span_length)
-        span_embeddings, span_mask = utils.batched_span_select(embeddings.contiguous(), offsets)
+        span_embeddings, span_mask = utils.batched_span_select(
+            embeddings.contiguous(), offsets
+        )
         span_mask = span_mask.unsqueeze(-1)
         span_embeddings *= span_mask  # zero out paddings
         if self.subtoken_pooling == "first":
@@ -122,7 +128,9 @@ class TransformerEmbedder(torch.nn.Module):
         return word_embeddings
 
     @staticmethod
-    def single_subtoken_embeddings(embeddings: torch.Tensor, position: int) -> torch.Tensor:
+    def single_subtoken_embeddings(
+        embeddings: torch.Tensor, position: int
+    ) -> torch.Tensor:
         """
         Get the first or last subtoken as word representation.
         :param embeddings: subtoken embeddings

@@ -77,10 +77,16 @@ class Tokenizer:
         # is_batched = bool(text and isinstance(text[0], (list, tuple)))
 
         # if text is str or a list of str and they are not split, then text needs to be tokenized
-        if isinstance(text, str) or (not is_split_into_words and isinstance(text[0], str)):
+        if isinstance(text, str) or (
+            not is_split_into_words and isinstance(text[0], str)
+        ):
             if not is_batched:
                 text = self.pretokenize(text, use_spacy=use_spacy)
-                text_pair = self.pretokenize(text_pair, use_spacy=use_spacy) if text_pair else None
+                text_pair = (
+                    self.pretokenize(text_pair, use_spacy=use_spacy)
+                    if text_pair
+                    else None
+                )
             else:
                 text = [self.pretokenize(t, use_spacy=use_spacy) for t in text]
                 text_pair = (
@@ -115,7 +121,8 @@ class Tokenizer:
         max_len: int = math.inf,
         padding: bool = False,
     ) -> Union[
-        Dict[str, torch.Tensor], List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]]
+        Dict[str, torch.Tensor],
+        List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]],
     ]:
         """
         Builds the batched input
@@ -148,11 +155,17 @@ class Tokenizer:
         :return: a dictionary with A and B encoded
         """
         input_ids, token_type_ids, offsets = self._build_tokens(text, max_len=max_len)
-        len_pair = len(text) + (2 if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN) else 1)
+        len_pair = len(text) + (
+            2 if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN) else 1
+        )
         if text_pair:
-            input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(text_pair, True, max_len)
+            input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(
+                text_pair, True, max_len
+            )
             # align offsets of sentence b
-            offsets_b = [(o[0] + len(input_ids), o[1] + len(input_ids)) for o in offsets_b]
+            offsets_b = [
+                (o[0] + len(input_ids), o[1] + len(input_ids)) for o in offsets_b
+            ]
             offsets = offsets + offsets_b
             input_ids += input_ids_b
             token_type_ids += token_type_ids_b
@@ -249,7 +262,9 @@ class Tokenizer:
         try:
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         except OSError:
-            logger.info(f"Spacy models '{self.language}' not found.  Downloading and installing.")
+            logger.info(
+                f"Spacy models '{self.language}' not found.  Downloading and installing."
+            )
             spacy_download(self.language)
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         self.spacy_tokenizer = spacy_tagger.tokenizer
@@ -307,7 +322,10 @@ class Tokenizer:
                         isinstance(text_pair[0], str)
                         or (
                             isinstance(text_pair[0], (list, tuple))
-                            and (len(text_pair[0]) == 0 or isinstance(text_pair[0][0], str))
+                            and (
+                                len(text_pair[0]) == 0
+                                or isinstance(text_pair[0][0], str)
+                            )
                         )
                     )
                 )
@@ -362,7 +380,11 @@ class ModelInputs(UserDict):
         # This check catches things like APEX blindly calling "to" on all inputs to a module
         # Otherwise it passes the casts down and casts the LongTensor containing the token idxs
         # into a HalfTensor
-        if isinstance(device, str) or isinstance(device, torch.device) or isinstance(device, int):
+        if (
+            isinstance(device, str)
+            or isinstance(device, torch.device)
+            or isinstance(device, int)
+        ):
             self.data = {k: v.to(device=device) for k, v in self.data.items()}
         else:
             logger.warning(
