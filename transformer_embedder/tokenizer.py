@@ -18,6 +18,7 @@ class Tokenizer:
     """
     Tokenizer class.
     """
+
     def __init__(self, model_name: str, language: str = "xx_sent_ud_sm"):
         # init huggingface tokenizer
         self.tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
@@ -346,6 +347,7 @@ class ModelInputs(UserDict):
     """
     Model input dictionary wrapper.
     """
+
     def __init__(self, data: Dict[str, Any]):
         super().__init__(data)
 

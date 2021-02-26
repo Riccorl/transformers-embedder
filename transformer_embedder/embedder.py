@@ -17,6 +17,7 @@ class TransformerEmbedder(torch.nn.Module):
     """
     Transformer Embedder class.
     """
+
     def __init__(
         self,
         model_name: str,
