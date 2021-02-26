@@ -1,6 +1,5 @@
 import logging
 from typing import Optional, Tuple, Union, Any
-from spacy.cli.download import download as spacy_download
 
 import torch
 from torch import Tensor
