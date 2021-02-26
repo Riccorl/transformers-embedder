@@ -337,7 +337,7 @@ class Tokenizer:
                 pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
             )
 
-        if not not is_type_correct(text_pair):
+        if not is_type_correct(text_pair):
             raise AssertionError(
                 """text_pair input must be `str` (single example), `List[str]` (batch or single 
                 pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
@@ -367,20 +367,20 @@ class ModelInputs(UserDict):
             self.data = state["data"]
 
     def keys(self):
-        """ D.keys() -> a set-like object providing a view on D's keys """
+        """A set-like object providing a view on D's keys"""
         return self.data.keys()
 
     def values(self):
-        """ D.values() -> an object providing a view on D's values """
+        """An object providing a view on D's values"""
         return self.data.values()
 
     def items(self):
-        """ D.items() -> a set-like object providing a view on D's items """
+        """A set-like object providing a view on D's items"""
         return self.data.items()
 
     def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
         """
-        Send all values to device by calling :obj:`v.to(device)` (PyTorch only).
+        Send all values to device by calling.
         :param device: (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
         :return: :class:`~transformers.BatchEncoding`: The same instance of
         :class:`~transformers.BatchEncoding` after modification.
