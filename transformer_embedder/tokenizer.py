@@ -104,7 +104,7 @@ class Tokenizer:
         else:
             if not padding and return_tensors:
                 logger.info(
-                    f"""`padding` is False and return_tensor is True. Cannot make tensors from not padded sequences. 
+                    """`padding` is False and return_tensor is True. Cannot make tensors from not padded sequences. 
                     `padding` forced automatically to True"""
                 )
                 padding = True
