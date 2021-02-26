@@ -179,8 +179,7 @@ def get_range_vector(size: int, device: int) -> torch.Tensor:
     """
     if device > -1:
         return torch.cuda.LongTensor(size, device=device).fill_(1).cumsum(0) - 1
-    else:
-        return torch.arange(0, size, dtype=torch.long)
+    return torch.arange(0, size, dtype=torch.long)
 
 
 def get_device_of(tensor: torch.Tensor) -> int:
@@ -189,8 +188,7 @@ def get_device_of(tensor: torch.Tensor) -> int:
     """
     if not tensor.is_cuda:
         return -1
-    else:
-        return tensor.get_device()
+    return tensor.get_device()
 
 
 def get_logger(name):
