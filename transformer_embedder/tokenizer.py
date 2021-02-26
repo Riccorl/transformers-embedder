@@ -281,7 +281,7 @@ class Tokenizer:
         # convert list to dict
         batch = {k: [d[k] for d in batch] for k in batch[0]}
         # convert to tensor
-        batch = {k: torch.tensor(v) for k, v in batch.items()}
+        batch = {k: torch.as_tensor(v) for k, v in batch.items()}
         return batch
 
     @staticmethod
@@ -304,10 +304,8 @@ class Tokenizer:
                     )
                 )
             )
-        ), (
-            "text input must of type `str` (single example), `List[str]` (batch or single pretokenized example) "
-            "or `List[List[str]]` (batch of pretokenized examples)."
-        )
+        ), """text input must of type `str` (single example), `List[str]` (batch or single
+            pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
 
         assert (
             text_pair is None
@@ -328,16 +326,11 @@ class Tokenizer:
                     )
                 )
             )
-        ), (
-            "text_pair input must of type `str` (single example), `List[str]` (batch or single pretokenized example) "
-            "or `List[List[str]]` (batch of pretokenized examples)."
-        )
+        ), """text_pair input must be `str` (single example), `List[str]` (batch or single 
+            pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
 
 
 class ModelInputs(UserDict):
-    def __init__(self, data: Dict[str, Any]):
-        super().__init__(data)
-
     def __getattr__(self, item: str):
         try:
             return self.data[item]

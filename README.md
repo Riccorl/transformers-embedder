@@ -5,7 +5,7 @@
 
 # Transformer Embedder
 
-A Word Level Transformer layer based on Pytorch and 🤗Transformers. 
+A Word Level Transformer layer based on Pytorch and 🤗 Transformers. 
 
 ## How to use
 
@@ -178,4 +178,4 @@ Future developments
 ## Acknowledgements
 
 Most of the code in the `TransformerEmbedder` class is taken from the [AllenNLP](https://github.com/allenai/allennlp) 
-library. The pretrained models and the core of the tokenizer is from [🤗Transformers](https://huggingface.co/transformers/).
+library. The pretrained models and the core of the tokenizer is from [🤗 Transformers](https://huggingface.co/transformers/).

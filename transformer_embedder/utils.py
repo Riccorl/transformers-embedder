@@ -4,9 +4,9 @@ from typing import Optional, Tuple, Union, Any
 import torch
 from torch import Tensor
 
-"""
-Some of these functions are taken from [AllenNLP](https://github.com/allenai/allennlp/blob/main/allennlp/common/checks.py>)
-"""
+
+# Some of these functions are taken from
+# [AllenNLP](https://github.com/allenai/allennlp/blob/main/allennlp/common/checks.py>)
 
 
 def batched_span_select(
@@ -64,7 +64,7 @@ def batched_span_select(
     # which happens because some spans near the end of the sequence
     # have a start index + max_batch_span_width > sequence_length, so we add this to the mask here.
     span_mask = (
-        span_mask & (raw_span_indices < target.size(1)) & (0 <= raw_span_indices)
+        span_mask & (raw_span_indices < target.size(1)) & (raw_span_indices >= 0)
     )
     span_indices = raw_span_indices * span_mask
 

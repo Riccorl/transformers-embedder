@@ -1,14 +1,13 @@
 from pathlib import Path
-from typing import Optional, Tuple, Union, Any
+from typing import Optional, Union
 
 import torch
 import transformers as tr
 
 from transformer_embedder import utils
 
-"""
-Most of the code is taken from [AllenNLP](https://github.com/allenai/allennlp)
-"""
+# Most of the code is taken from [AllenNLP](https://github.com/allenai/allennlp)
+
 
 logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
