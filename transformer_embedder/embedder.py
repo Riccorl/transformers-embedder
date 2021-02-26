@@ -14,6 +14,9 @@ utils.get_logger("transformers")
 
 
 class TransformerEmbedder(torch.nn.Module):
+    """
+    Transformer Embedder class.
+    """
     def __init__(
         self,
         model_name: str,
@@ -81,8 +84,8 @@ class TransformerEmbedder(torch.nn.Module):
         self, embeddings: torch.Tensor, offsets: torch.Tensor
     ) -> torch.Tensor:
         """
-        Retrieve the word embeddings from the subtokens embeddings by either computing the mean of the subtokens
-        or taking one (first or last) as word representation.
+        Retrieve the word embeddings from the subtokens embeddings by either computing the
+        mean of the subtokens or taking one (first or last) as word representation.
         :param embeddings: subtokens embeddings
         :param offsets: offsets of the subtokens
         :return: the word embeddings
@@ -140,7 +143,7 @@ class TransformerEmbedder(torch.nn.Module):
 
     def save_pretrained(self, save_directory: Union[str, Path]):
         """
-        Save a model and its configuration file to a directory
+        Save a model and its configuration file to a directory.
         :param save_directory: Directory to which to save.
         :return:
         """

@@ -182,9 +182,7 @@ def get_range_vector(size: int, device: int) -> torch.Tensor:
 
 
 def get_device_of(tensor: torch.Tensor) -> int:
-    """
-    Returns the device of the tensor.
-    """
+    """Returns the device of the tensor."""
     if not tensor.is_cuda:
         return -1
     return tensor.get_device()

@@ -15,6 +15,9 @@ utils.get_logger("transformers")
 
 
 class Tokenizer:
+    """
+    Tokenizer class.
+    """
     def __init__(self, model_name: str, language: str = "xx_sent_ud_sm"):
         # init huggingface tokenizer
         self.tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
@@ -61,7 +64,8 @@ class Tokenizer:
         self._type_checking(text, text_pair)
         if isinstance(text, str) and not use_spacy:
             logger.warning(
-                "`text` field is of type str, splitting by spaces. Set `use_spacy` to tokenize using spacy model."
+                """`text` field is of type `str`, splitting by spaces. 
+                Set `use_spacy` to tokenize using spacy model."""
             )
 
         # check if input is batched or a single sample
@@ -74,7 +78,6 @@ class Tokenizer:
                 and isinstance(text[0], (list, tuple))
             )
         )
-        # is_batched = bool(text and isinstance(text[0], (list, tuple)))
 
         # if text is str or a list of str and they are not split, then text needs to be tokenized
         if isinstance(text, str) or (
@@ -125,7 +128,7 @@ class Tokenizer:
         List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]],
     ]:
         """
-        Builds the batched input
+        Builds the batched input.
         :param text:
         :param text_pair:
         :param max_len:
@@ -148,7 +151,7 @@ class Tokenizer:
         self, text: List[str], text_pair: List[str] = None, max_len: int = math.inf
     ) -> Dict[str, Union[list, int]]:
         """
-        Build transformer pair input
+        Build transformer pair input.
         :param text: sentence A
         :param text_pair: sentence B
         :param max_len: max_len of the sequence
@@ -188,7 +191,7 @@ class Tokenizer:
         self, sentence: List[str], is_b: bool = False, max_len: int = math.inf
     ) -> Tuple[list, list, List[Tuple[int, int]]]:
         """
-        Encode the sentence for BERT
+        Encode the sentence for BERT.
         :param sentence: sentence to encode
         :param is_b: if it's the second sentence pair, skips first CLS token
                 and set token_type_id to 1
@@ -230,7 +233,7 @@ class Tokenizer:
         self, batch: List[Dict[str, Union[list, int]]]
     ) -> List[Dict[str, Union[list, List[bool], List[Tuple[int, int]]]]]:
         """
-        Pad the batch to its maximum length
+        Pad the batch to its maximum length.
         :param batch: the batch to pad
         :return: the padded batch
         """
@@ -271,7 +274,7 @@ class Tokenizer:
     @staticmethod
     def to_tensor(batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
         """
-        Return a the batch in input as Pytorch tensors
+        Return a the batch in input as Pytorch tensors.
         :param batch: batch in input
         :return: the batch as tensor
         """
@@ -309,8 +312,8 @@ class Tokenizer:
             )
         ):
             raise AssertionError(
-                """text input must of type `str` (single example), `List[str]` (batch or single
-            pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+                """text input must of type `str` (single example), `List[str]` (batch or single 
+                pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
             )
 
         if not (
@@ -335,11 +338,17 @@ class Tokenizer:
         ):
             raise AssertionError(
                 """text_pair input must be `str` (single example), `List[str]` (batch or single 
-            pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+                pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
             )
 
 
 class ModelInputs(UserDict):
+    """
+    Model input dictionary wrapper.
+    """
+    def __init__(self, data: Dict[str, Any]):
+        super().__init__(data)
+
     def __getattr__(self, item: str):
         try:
             return self.data[item]
@@ -368,15 +377,10 @@ class ModelInputs(UserDict):
     def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
         """
         Send all values to device by calling :obj:`v.to(device)` (PyTorch only).
-
-        Args:
-            device (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
-
-        Returns:
-            :class:`~transformers.BatchEncoding`: The same instance of :class:`~transformers.BatchEncoding` after
-            modification.
+        :param device: (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
+        :return: :class:`~transformers.BatchEncoding`: The same instance of
+        :class:`~transformers.BatchEncoding` after modification.
         """
-
         # This check catches things like APEX blindly calling "to" on all inputs to a module
         # Otherwise it passes the casts down and casts the LongTensor containing the token idxs
         # into a HalfTensor
