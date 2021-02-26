@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import torch
 import transformers as tr
@@ -14,9 +14,8 @@ utils.get_logger("transformers")
 
 
 class TransformerEmbedder(torch.nn.Module):
-    """
-    Transformer Embedder class.
-    """
+    """Transformer Embedder class."""
+
     def __init__(
         self,
         model_name: str,
@@ -45,7 +44,11 @@ class TransformerEmbedder(torch.nn.Module):
                 param.requires_grad = False
 
     @property
-    def hidden_size(self):
+    def hidden_size(self) -> int:
+        """
+        Returns the hidden size of the transformer
+        :return: hidden size of self.transformer_model
+        """
         multiplayer = 4 if self.output_layer == "concat" else 1
         return self.transformer_model.config.hidden_size * multiplayer
 
