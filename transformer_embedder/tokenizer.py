@@ -63,8 +63,8 @@ class Tokenizer:
         self._type_checking(text, text_pair)
         if isinstance(text, str) and not use_spacy:
             logger.warning(
-                """`text` field is of type `str`, splitting by spaces. 
-                Set `use_spacy` to tokenize using spacy model."""
+                "`text` field is of type `str`, splitting by spaces. "
+                "Set `use_spacy` to tokenize using spacy model."
             )
 
         # check if input is batched or a single sample
@@ -106,8 +106,8 @@ class Tokenizer:
         else:
             if not padding and return_tensors:
                 logger.info(
-                    """`padding` is False and return_tensor is True. Cannot make tensors from not padded sequences. 
-                    `padding` forced automatically to True"""
+                    "`padding` is False and return_tensor is True. Cannot make tensors from "
+                    "not padded sequences. `padding` forced automatically to True"
                 )
                 padding = True
             output = self.build_tokens_batch(text, text_pair, max_length, padding)
@@ -319,17 +319,21 @@ class Tokenizer:
             :param text_to_check: text to check
             :return: True if the type is correct
             """
-            return isinstance(text_to_check, str) or (
-                isinstance(text_to_check, (list, tuple))
-                and (
-                    len(text_to_check) == 0
-                    or (
-                        isinstance(text_to_check[0], str)
+            return (
+                text_to_check is None
+                or isinstance(text_to_check, str)
+                or (
+                    isinstance(text_to_check, (list, tuple))
+                    and (
+                        len(text_to_check) == 0
                         or (
-                            isinstance(text_to_check[0], (list, tuple))
-                            and (
-                                len(text_to_check[0]) == 0
-                                or isinstance(text_to_check[0][0], str)
+                            isinstance(text_to_check[0], str)
+                            or (
+                                isinstance(text_to_check[0], (list, tuple))
+                                and (
+                                    len(text_to_check[0]) == 0
+                                    or isinstance(text_to_check[0][0], str)
+                                )
                             )
                         )
                     )
@@ -338,22 +342,19 @@ class Tokenizer:
 
         if not is_type_correct(text):
             raise AssertionError(
-                """text input must of type `str` (single example), `List[str]` (batch or single 
-                pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+                "text input must of type `str` (single example), `List[str]` (batch or single "
+                "pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."
             )
 
         if not is_type_correct(text_pair):
             raise AssertionError(
-                """text_pair input must be `str` (single example), `List[str]` (batch or single 
-                pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+                "text_pair input must be `str` (single example), `List[str]` (batch or single "
+                "pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."
             )
 
 
 class ModelInputs(UserDict):
     """Model input dictionary wrapper."""
-
-    def __init__(self, data: Dict[str, Any]):
-        super().__init__(data)
 
     def __getattr__(self, item: str):
         try:

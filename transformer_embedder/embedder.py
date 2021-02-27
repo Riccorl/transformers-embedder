@@ -24,14 +24,15 @@ class TransformerEmbedder(torch.nn.Module):
         fine_tune: bool = True,
     ) -> None:
         """
-        Transformer embeddings of words from various transformer architectures from Huggingface Trasnformers API.
-        :param model_name: name of the transformer model (https://huggingface.co/transformers/pretrained_models.html).
-        :param subtoken_pooling: how to get back word embeddings from subtokens. First subtoken (`first`), the last
-        subtoken (`last`), or the mean of all the subtokens of the word (`mean`). `none` returns the raw output from the
-        transformer model.
-        :param output_layer: what output to get from the transformer model. The last hidden state (`last`), the
-        concatenation of the last four hidden layers (`concat`), the sum of the last four hidden layers (`sum`),
-        the pooled output (`pooled`).
+        Embeddings of words from various transformer architectures from Huggingface Trasnformers API.
+        :param model_name: name of the transformer model
+        (https://huggingface.co/transformers/pretrained_models.html).
+        :param subtoken_pooling: how to get back word embeddings from subtokens. First subtoken (`first`),
+        the last subtoken (`last`), or the mean of all the subtokens of the word (`mean`). `none` returns
+        the raw output from the transformer model.
+        :param output_layer: what output to get from the transformer model. The last hidden state (`last`),
+        the concatenation of the last four hidden layers (`concat`), the sum of the last four hidden layers
+         (`sum`), the pooled output (`pooled`).
         :param fine_tune: if True, the transformer model is fine-tuned during training.
         """
         super().__init__()
@@ -87,8 +88,8 @@ class TransformerEmbedder(torch.nn.Module):
             embeddings = transformer_outputs.pooler_output
         else:
             raise ValueError(
-                f"""output_layer parameter not valid, choose between `last`, `concat`, 
-                `sum`, `pooled`. Current value {self.output_layer}"""
+                "output_layer parameter not valid, choose between `last`, `concat`, "
+                f"`sum`, `pooled`. Current value {self.output_layer}"
             )
         word_embeddings = self.get_word_embeddings(embeddings, offsets)
         return word_embeddings
@@ -120,7 +121,8 @@ class TransformerEmbedder(torch.nn.Module):
             word_embeddings = embeddings
         else:
             raise ValueError(
-                f"{self.subtoken_pooling} pooling mode not valid. Choose between `first`, `last`, `mean` and `none`"
+                f"{self.subtoken_pooling} pooling mode not valid. Choose between "
+                "`first`, `last`, `mean` and `none`"
             )
         return word_embeddings
 
