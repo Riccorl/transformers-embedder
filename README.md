@@ -2,7 +2,7 @@
 [![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder?style=plastic)](https://github.com/Riccorl/transformer-embedder/releases)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.7-EE4C2C?style=plastic&logo=pytorch)](https://pytorch.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000?style=plastic)](https://github.com/psf/black)
-
+[![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
 # Transformer Embedder
 
 A Word Level Transformer layer based on Pytorch and 🤗 Transformers. 

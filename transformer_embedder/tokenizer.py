@@ -15,9 +15,7 @@ utils.get_logger("transformers")
 
 
 class Tokenizer:
-    """
-    Tokenizer class.
-    """
+    """Tokenizer class."""
 
     def __init__(self, model_name: str, language: str = "xx_sent_ud_sm"):
         # init huggingface tokenizer
@@ -254,6 +252,12 @@ class Tokenizer:
         return batch
 
     def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
+        """
+        Pre-tokenize the text in input, splitting on spaces or using SpaCy tokenizer if `use_spacy` is True.
+        :param text: text to tokenize
+        :param use_spacy: if True, uses a SpaCy tokenizer
+        :return: the tokenized text
+        """
         if use_spacy:
             if not self.spacy_tokenizer:
                 self._load_spacy()
@@ -262,6 +266,7 @@ class Tokenizer:
         return text.split(" ")
 
     def _load_spacy(self):
+        """Download and load spacy model"""
         try:
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         except OSError:
@@ -289,54 +294,50 @@ class Tokenizer:
         return batch
 
     @staticmethod
-    def _get_token_type_id(config):
+    def _get_token_type_id(config) -> int:
+        """
+        Get token type id. Useful when dealing with models that don't accept 1 as type id.
+        :param config: transformer config
+        :return: correct token tyoe id for that model
+        """
         if hasattr(config, "type_vocab_size"):
             return 1 if config.type_vocab_size == 2 else 0
         return 0
 
     @staticmethod
-    def _type_checking(text, text_pair):
-        if not (
-            isinstance(text, str)
-            or (
-                isinstance(text, (list, tuple))
-                and (
-                    len(text) == 0
-                    or (
-                        isinstance(text[0], str)
-                        or (
-                            isinstance(text[0], (list, tuple))
-                            and (len(text[0]) == 0 or isinstance(text[0][0], str))
-                        )
-                    )
-                )
-            )
-        ):
-            raise AssertionError(
-                """text input must of type `str` (single example), `List[str]` (batch or single 
-                pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
-            )
+    def _type_checking(text: Any, text_pair: Any):
+        """
+        Checks type of the inputs
+        :param text:
+        :param text_pair:
+        :return:
+        """
 
-        if not (
-            text_pair is None
-            or isinstance(text_pair, str)
-            or (
-                isinstance(text_pair, (list, tuple))
+        def is_type_correct(text_to_check):
+            return isinstance(text_to_check, str) or (
+                isinstance(text_to_check, (list, tuple))
                 and (
-                    len(text_pair) == 0
+                    len(text_to_check) == 0
                     or (
-                        isinstance(text_pair[0], str)
+                        isinstance(text_to_check[0], str)
                         or (
-                            isinstance(text_pair[0], (list, tuple))
+                            isinstance(text_to_check[0], (list, tuple))
                             and (
-                                len(text_pair[0]) == 0
-                                or isinstance(text_pair[0][0], str)
+                                len(text_to_check[0]) == 0
+                                or isinstance(text_to_check[0][0], str)
                             )
                         )
                     )
                 )
             )
-        ):
+
+        if not is_type_correct(text):
+            raise AssertionError(
+                """text input must of type `str` (single example), `List[str]` (batch or single 
+                pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
+            )
+
+        if not is_type_correct(text_pair):
             raise AssertionError(
                 """text_pair input must be `str` (single example), `List[str]` (batch or single 
                 pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."""
@@ -344,9 +345,7 @@ class Tokenizer:
 
 
 class ModelInputs(UserDict):
-    """
-    Model input dictionary wrapper.
-    """
+    """Model input dictionary wrapper."""
 
     def __init__(self, data: Dict[str, Any]):
         super().__init__(data)
@@ -368,17 +367,20 @@ class ModelInputs(UserDict):
             self.data = state["data"]
 
     def keys(self):
+        """A set-like object providing a view on D's keys"""
         return self.data.keys()
 
     def values(self):
+        """An object providing a view on D's values"""
         return self.data.values()
 
     def items(self):
+        """A set-like object providing a view on D's items"""
         return self.data.items()
 
     def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
         """
-        Send all values to device by calling :obj:`v.to(device)` (PyTorch only).
+        Send all values to device by calling.
         :param device: (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
         :return: :class:`~transformers.BatchEncoding`: The same instance of
         :class:`~transformers.BatchEncoding` after modification.
