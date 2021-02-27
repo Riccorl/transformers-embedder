@@ -14,7 +14,7 @@ utils.get_logger("transformers")
 
 
 class TransformerEmbedder(torch.nn.Module):
-    """Transformer Embedder class."""
+    """Transforeemer Embedder class."""
 
     def __init__(
         self,
