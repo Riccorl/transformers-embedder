@@ -173,8 +173,8 @@ def flatten_and_batch_shift_indices(
 
 def get_range_vector(size: int, device: int) -> torch.Tensor:
     """
-    Returns a range vector with the desired size, starting at 0. The CUDA implementation
-    is meant to avoid copy data from CPU to GPU.
+    Returns a range vector with the desired size, starting at 0. The CUDA implementation.
+    It is meant to avoid copy data from CPU to GPU.
     """
     if device > -1:
         return torch.cuda.LongTensor(size, device=device).fill_(1).cumsum(0) - 1
@@ -188,5 +188,10 @@ def get_device_of(tensor: torch.Tensor) -> int:
     return tensor.get_device()
 
 
-def get_logger(name):
+def get_logger(name: str) -> logging.Logger:
+    """
+    Return the logger of the given name.
+    :param name: name of the logger to return
+    :return: the logger
+    """
     return logging.getLogger(name)

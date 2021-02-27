@@ -190,7 +190,7 @@ class Tokenizer:
         self, sentence: List[str], is_b: bool = False, max_len: int = math.inf
     ) -> Tuple[list, list, List[Tuple[int, int]]]:
         """
-        Encode the sentence for BERT.
+        Encode the sentence for transformer model.
         :param sentence: sentence to encode
         :param is_b: if it's the second sentence pair, skips first CLS token
                 and set token_type_id to 1
@@ -266,7 +266,7 @@ class Tokenizer:
         return text.split(" ")
 
     def _load_spacy(self):
-        """Download and load spacy model"""
+        """Download and load spacy model."""
         try:
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         except OSError:
@@ -307,13 +307,18 @@ class Tokenizer:
     @staticmethod
     def _type_checking(text: Any, text_pair: Any):
         """
-        Checks type of the inputs
+        Checks type of the inputs.
         :param text:
         :param text_pair:
         :return:
         """
 
         def is_type_correct(text_to_check):
+            """
+            Check if input type is correct, returning a boolean.
+            :param text_to_check: text to check
+            :return: True if the type is correct
+            """
             return isinstance(text_to_check, str) or (
                 isinstance(text_to_check, (list, tuple))
                 and (
@@ -367,15 +372,15 @@ class ModelInputs(UserDict):
             self.data = state["data"]
 
     def keys(self):
-        """A set-like object providing a view on D's keys"""
+        """A set-like object providing a view on D's keys."""
         return self.data.keys()
 
     def values(self):
-        """An object providing a view on D's values"""
+        """An object providing a view on D's values."""
         return self.data.values()
 
     def items(self):
-        """A set-like object providing a view on D's items"""
+        """A set-like object providing a view on D's items."""
         return self.data.items()
 
     def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":

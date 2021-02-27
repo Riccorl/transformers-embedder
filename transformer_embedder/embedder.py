@@ -46,7 +46,7 @@ class TransformerEmbedder(torch.nn.Module):
     @property
     def hidden_size(self) -> int:
         """
-        Returns the hidden size of the transformer
+        Returns the hidden size of the transformer.
         :return: hidden size of self.transformer_model
         """
         multiplayer = 4 if self.output_layer == "concat" else 1
@@ -61,6 +61,16 @@ class TransformerEmbedder(torch.nn.Module):
         *args,
         **kwargs,
     ) -> torch.Tensor:
+        """
+        Forward method of the PyTorch module.
+        :param input_ids: Input ids for the transformer model
+        :param offsets: Offsets of the sub-token, used to reconstruct the word embeddings
+        :param attention_mask: Attention mask for the transformer model
+        :param token_type_ids: Token type ids for the transformer model
+        :param args:
+        :param kwargs:
+        :return: the word embeddings
+        """
         # Shape: [batch_size, num_subtoken, embedding_size].
         transformer_outputs = self.transformer_model(
             input_ids, attention_mask, token_type_ids
