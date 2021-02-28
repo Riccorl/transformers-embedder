@@ -5,7 +5,7 @@
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
 # Transformer Embedder
 
-A Word Level Transformer layer based on Pytorch and 🤗 Transformers. 
+A Word Level Transformer layer based on PyTorch and 🤗 Transformers. 
 
 ## How to use
 
@@ -15,7 +15,7 @@ Install the library
 pip install transformer-embedder
 ```
 
-It offers a Pytorch layer and a tokenizer that support almost every pretrained model from Huggingface
+It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface
 [🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
 
 ```python
