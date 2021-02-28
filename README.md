@@ -15,8 +15,7 @@ Install the library
 pip install transformer-embedder
 ```
 
-It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface
-[🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
+It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface [🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
 
 ```python
 import transformer_embedder as tre
