@@ -1,11 +1,11 @@
 [![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
-[![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder?style=plastic)](https://github.com/Riccorl/transformer-embedder/releases)
-[![PyTorch](https://img.shields.io/badge/PyTorch-1.7-EE4C2C?style=plastic&logo=pytorch)](https://pytorch.org/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000?style=plastic)](https://github.com/psf/black)
+[![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder)](https://github.com/Riccorl/transformer-embedder/releases)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.7-EE4C2C?&logo=pytorch)](https://pytorch.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
 # Transformer Embedder
 
-A Word Level Transformer layer based on Pytorch and 🤗 Transformers. 
+A Word Level Transformer layer based on PyTorch and 🤗 Transformers. 
 
 ## How to use
 
@@ -15,8 +15,7 @@ Install the library
 pip install transformer-embedder
 ```
 
-It offers a Pytorch layer and a tokenizer that support almost every pretrained model from Huggingface
-[🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
+It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface [🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
 
 ```python
 import transformer_embedder as tre
