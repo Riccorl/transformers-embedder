@@ -265,6 +265,14 @@ class Tokenizer:
             return [t.text for t in text]
         return text.split(" ")
 
+    @property
+    def get_pad_token_id(self):
+        return self.tokenizer.pad_token_id
+
+    @property
+    def get_unk_token_id(self):
+        return self.tokenizer.unk_token_id
+
     def _load_spacy(self):
         """Download and load spacy model."""
         try:
@@ -386,7 +394,7 @@ class ModelInputs(UserDict):
 
     def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
         """
-        Send all values to device by calling.
+        Send all tensors values to device
         :param device: (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
         :return: :class:`~transformers.BatchEncoding`: The same instance of
         :class:`~transformers.BatchEncoding` after modification.
@@ -395,7 +403,10 @@ class ModelInputs(UserDict):
         # Otherwise it passes the casts down and casts the LongTensor containing the token idxs
         # into a HalfTensor
         if isinstance(device, (str, torch.device, int)):
-            self.data = {k: v.to(device=device) for k, v in self.data.items()}
+            self.data = {
+                k: v.to(device=device) if isinstance(v, torch.Tensor) else v
+                for k, v in self.data.items()
+            }
         else:
             logger.warning(
                 f"Attempting to cast to another type, {str(device)}. This is not supported."
