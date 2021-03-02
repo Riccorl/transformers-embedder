@@ -21,12 +21,11 @@ class Tokenizer:
         # init huggingface tokenizer
         self.tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
         # get config
-        config = tr.AutoConfig.from_pretrained(model_name)
-        # set the token type id
-        self.token_type_id = self._get_token_type_id(config)
+        self.config = tr.AutoConfig.from_pretrained(model_name)
         # spacy tokenizer, lazy load. None at first
         self.spacy_tokenizer = None
-        self.language = language  # default multilingual model
+        # default multilingual model
+        self.language = language
 
     def __call__(
         self,
@@ -265,14 +264,6 @@ class Tokenizer:
             return [t.text for t in text]
         return text.split(" ")
 
-    @property
-    def get_pad_token_id(self):
-        return self.tokenizer.pad_token_id
-
-    @property
-    def get_unk_token_id(self):
-        return self.tokenizer.unk_token_id
-
     def _load_spacy(self):
         """Download and load spacy model."""
         try:
@@ -360,6 +351,79 @@ class Tokenizer:
                 "pretokenized example) or `List[List[str]]` (batch of pretokenized examples)."
             )
 
+    @property
+    def token_type_id(self):
+        """Padding token."""
+        return self._get_token_type_id(self.config)
+
+    @property
+    def pad_token(self):
+        """Padding token."""
+        return self.tokenizer.pad_token
+
+    @property
+    def pad_token_id(self):
+        """Padding token id."""
+        return self.tokenizer.pad_token_id
+
+    @property
+    def unk_token(self):
+        """Unknown token."""
+        return self.tokenizer.unk_token
+
+    @property
+    def unk_token_id(self):
+        """Unknown token id."""
+        return self.tokenizer.unk_token_id
+
+    @property
+    def cls_token(self):
+        """
+        Classification token.
+        To extract a summary of an input sequence leveraging self-attention along the
+        full depth of the model.
+        """
+        return self.tokenizer.cls_token
+
+    @property
+    def cls_token_id(self):
+        """
+        Classification token id.
+        To extract a summary of an input sequence leveraging self-attention along the
+        full depth of the model.
+        """
+        return self.tokenizer.cls_token_id
+
+    @property
+    def sep_token(self):
+        """Separation token, to separate context and query in an input sequence."""
+        return self.tokenizer.sep_token
+
+    @property
+    def sep_token_id(self):
+        """Separation token id, to separate context and query in an input sequence."""
+        return self.tokenizer.sep_token_id
+
+    @property
+    def bos_token(self):
+        """Beginning of sentence token."""
+        return self.tokenizer.bos_token
+
+    @property
+    def bos_token_id(self):
+        """Beginning of sentence token id."""
+        return self.tokenizer.bos_token_id
+
+    @property
+    def eos_token(self):
+        """End of sentence token."""
+        return self.tokenizer.eos_token
+
+    @property
+    def eos_token_id(self):
+        """End of sentence token id."""
+        return self.tokenizer.eos_token_id
+
 
 class ModelInputs(UserDict):
     """Model input dictionary wrapper."""
@@ -394,7 +458,7 @@ class ModelInputs(UserDict):
 
     def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
         """
-        Send all tensors values to device
+        Send all tensors values to device.
         :param device: (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
         :return: :class:`~transformers.BatchEncoding`: The same instance of
         :class:`~transformers.BatchEncoding` after modification.

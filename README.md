@@ -173,6 +173,8 @@ For a complete list of languages and models, you can go [here](https://spacy.io/
 
 Future developments
 - [X] Add an optional word tokenizer, maybe using SpaCy
+- [ ] Add `add_special_tokens` wrapper
+- [ ] Add logic (like how to pad, etc) for custom fields
 
 ## Acknowledgements
 
