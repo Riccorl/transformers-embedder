@@ -106,7 +106,7 @@ text = [
     ["This", "is", "a", "sample", "sentence", "1"],
     ["This", "is", "sample", "sentence", "2"],
 ]
-tokenizer(text, is_split_into_words=True) # here is_split_into_words it's redundant
+tokenizer(text, is_split_into_words=True) # here is_split_into_words is redundant
 ```
 
 Here some examples:
