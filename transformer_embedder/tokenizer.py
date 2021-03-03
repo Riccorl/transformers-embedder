@@ -361,8 +361,8 @@ class Tokenizer:
             self.tokenizer, MODELS_WITH_STARTING_TOKEN
         ):
             return 4
-        if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) or isinstance(
-            self.tokenizer, MODELS_WITH_STARTING_TOKEN
+        if isinstance(
+            self.tokenizer, (MODELS_WITH_DOUBLE_SEP, MODELS_WITH_STARTING_TOKEN)
         ):
             return 3
         return 2
