@@ -110,8 +110,13 @@ class Tokenizer:
                 )
                 padding = True
             output = self.build_tokens_batch(text, text_pair, max_length, padding)
+
+        # clean the output
+        output = self._clean_output(output)
+
         if return_tensors:
             output = self.to_tensor(output)
+
         output = ModelInputs(output)
         return output
 
@@ -277,17 +282,22 @@ class Tokenizer:
         self.spacy_tokenizer = spacy_tagger.tokenizer
 
     @staticmethod
+    def _clean_output(output: Union[List, Dict]) -> Dict:
+        """Clean before output."""
+        # single sentence case, generalize
+        if isinstance(output, dict):
+            output = [output]
+        # convert list to dict
+        output = {k: [d[k] for d in output] for k in output[0]}
+        return output
+
+    @staticmethod
     def to_tensor(batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
         """
         Return a the batch in input as Pytorch tensors.
         :param batch: batch in input
         :return: the batch as tensor
         """
-        # single sentence case, generalize
-        if isinstance(batch, dict):
-            batch = [batch]
-        # convert list to dict
-        batch = {k: [d[k] for d in batch] for k in batch[0]}
         # convert to tensor
         batch = {k: torch.as_tensor(v) for k, v in batch.items()}
         return batch
