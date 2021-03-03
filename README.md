@@ -175,6 +175,7 @@ Future developments
 - [X] Add an optional word tokenizer, maybe using SpaCy
 - [ ] Add `add_special_tokens` wrapper
 - [ ] Add logic (like how to pad, etc) for custom fields
+- [ ] Make `pad_batch` function more general
 
 ## Acknowledgements
 

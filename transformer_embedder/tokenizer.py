@@ -352,6 +352,22 @@ class Tokenizer:
             )
 
     @property
+    def num_special_tokens(self):
+        """
+        Return the number of special tokens the model needs.
+        It assume the input contains both sentences (`text` and `text_pair`).
+        """
+        if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) and isinstance(
+            self.tokenizer, MODELS_WITH_STARTING_TOKEN
+        ):
+            return 4
+        if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) or isinstance(
+            self.tokenizer, MODELS_WITH_STARTING_TOKEN
+        ):
+            return 3
+        return 2
+
+    @property
     def token_type_id(self):
         """Padding token."""
         return self._get_token_type_id(self.config)

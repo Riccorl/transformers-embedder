@@ -27,8 +27,8 @@ class TransformerEmbedder(torch.nn.Module):
         Embeddings of words from various transformer architectures from Huggingface Trasnformers API.
         :param model_name: name of the transformer model
         (https://huggingface.co/transformers/pretrained_models.html).
-        :param subtoken_pooling: how to get back word embeddings from subtokens. First subtoken (`first`),
-        the last subtoken (`last`), or the mean of all the subtokens of the word (`mean`). `none` returns
+        :param subtoken_pooling: how to get back word embeddings from sub-tokens. First sub-token (`first`),
+        the last sub-token (`last`), or the mean of all the sub-tokens of the word (`mean`). `none` returns
         the raw output from the transformer model.
         :param output_layer: what output to get from the transformer model. The last hidden state (`last`),
         the concatenation of the last four hidden layers (`concat`), the sum of the last four hidden layers
@@ -50,8 +50,8 @@ class TransformerEmbedder(torch.nn.Module):
         Returns the hidden size of the transformer.
         :return: hidden size of self.transformer_model
         """
-        multiplayer = 4 if self.output_layer == "concat" else 1
-        return self.transformer_model.config.hidden_size * multiplayer
+        multiplier = 4 if self.output_layer == "concat" else 1
+        return self.transformer_model.config.hidden_size * multiplier
 
     def forward(
         self,
@@ -98,10 +98,10 @@ class TransformerEmbedder(torch.nn.Module):
         self, embeddings: torch.Tensor, offsets: torch.Tensor
     ) -> torch.Tensor:
         """
-        Retrieve the word embeddings from the subtokens embeddings by either computing the
-        mean of the subtokens or taking one (first or last) as word representation.
-        :param embeddings: subtokens embeddings
-        :param offsets: offsets of the subtokens
+        Retrieve the word embeddings from the sub-tokens embeddings by either computing the
+        mean of the sub-tokens or taking one (first or last) as word representation.
+        :param embeddings: sub-tokens embeddings
+        :param offsets: offsets of the sub-tokens
         :return: the word embeddings
         """
         # span_embeddings: (batch_size, num_orig_tokens, max_span_length, embedding_size)
@@ -131,8 +131,8 @@ class TransformerEmbedder(torch.nn.Module):
         embeddings: torch.Tensor, span_mask: torch.Tensor
     ) -> torch.Tensor:
         """
-        Merge subtokens of a word by computing their mean.
-        :param embeddings: subtokens embeddings
+        Merge sub-tokens of a word by computing their mean.
+        :param embeddings: sub-tokens embeddings
         :param span_mask: span_mask
         :return: the word embeddings
         """
@@ -149,9 +149,9 @@ class TransformerEmbedder(torch.nn.Module):
         embeddings: torch.Tensor, position: int
     ) -> torch.Tensor:
         """
-        Get the first or last subtoken as word representation.
-        :param embeddings: subtoken embeddings
-        :param position: 0 for first subtoken, -1 for last subtoken
+        Get the first or last sub-token as word representation.
+        :param embeddings: sub-token embeddings
+        :param position: 0 for first sub-token, -1 for last sub-token
         :return: the word embeddings
         """
         return embeddings[:, :, position, :]
