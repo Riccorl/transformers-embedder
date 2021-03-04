@@ -56,8 +56,8 @@ class TransformerEmbedder(torch.nn.Module):
     def forward(
         self,
         input_ids: torch.LongTensor,
-        offsets: torch.LongTensor,
-        attention_mask: torch.BoolTensor,
+        offsets: torch.LongTensor = None,
+        attention_mask: torch.BoolTensor = None,
         token_type_ids: Optional[torch.LongTensor] = None,
         *args,
         **kwargs,
@@ -95,7 +95,7 @@ class TransformerEmbedder(torch.nn.Module):
         return word_embeddings
 
     def get_word_embeddings(
-        self, embeddings: torch.Tensor, offsets: torch.Tensor
+        self, embeddings: torch.Tensor, offsets: torch.Tensor = None
     ) -> torch.Tensor:
         """
         Retrieve the word embeddings from the sub-tokens embeddings by either computing the
@@ -104,6 +104,10 @@ class TransformerEmbedder(torch.nn.Module):
         :param offsets: offsets of the sub-tokens
         :return: the word embeddings
         """
+        # no offsets provided, returns the embeddings as they are.
+        # subtoken_pooling parameter ignored.
+        if not offsets:
+            return embeddings
         # span_embeddings: (batch_size, num_orig_tokens, max_span_length, embedding_size)
         # span_mask: (batch_size, num_orig_tokens, max_span_length)
         span_embeddings, span_mask = utils.batched_span_select(
