@@ -19,7 +19,7 @@ class Tokenizer:
 
     def __init__(self, model_name: str, language: str = "xx_sent_ud_sm"):
         # init huggingface tokenizer
-        self.tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
+        self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
         # get config
         self.config = tr.AutoConfig.from_pretrained(model_name)
         # spacy tokenizer, lazy load. None at first
@@ -98,7 +98,7 @@ class Tokenizer:
 
         # get model max length if not specified by user
         if max_length == 0:
-            max_length = self.tokenizer.model_max_length
+            max_length = self.huggingface_tokenizer.model_max_length
 
         if not is_batched:
             output = self.build_tokens(text, text_pair, max_length)
@@ -162,7 +162,9 @@ class Tokenizer:
         """
         input_ids, token_type_ids, offsets = self._build_tokens(text, max_len=max_len)
         len_pair = len(text) + (
-            2 if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN) else 1
+            2
+            if isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN)
+            else 1
         )
         if text_pair:
             input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(
@@ -176,7 +178,9 @@ class Tokenizer:
             input_ids += input_ids_b
             token_type_ids += token_type_ids_b
             len_pair += len(text_pair) + (
-                2 if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) else 1
+                2
+                if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP)
+                else 1
             )
 
         word_mask = [True] * len_pair  # for original tokens
@@ -204,8 +208,8 @@ class Tokenizer:
         if not is_b:
             token_type_id = 0
             # some models don't need starting special token
-            if isinstance(self.tokenizer, MODELS_WITH_STARTING_TOKEN):
-                input_ids += [self.tokenizer.cls_token_id]
+            if isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN):
+                input_ids += [self.huggingface_tokenizer.cls_token_id]
                 token_type_ids += [token_type_id]
                 # first offset
                 offsets.append((1, 1))
@@ -213,12 +217,12 @@ class Tokenizer:
             token_type_id = self.token_type_id
             # check if the input needs an additional sep token
             # XLM-R for example wants an additional `</s>` between text pairs
-            if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP):
-                input_ids += [self.tokenizer.sep_token_id]
+            if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP):
+                input_ids += [self.huggingface_tokenizer.sep_token_id]
                 token_type_ids += [token_type_id]
                 offsets.append((len(input_ids), len(input_ids) + 1))
         for w in sentence:
-            ids = self.tokenizer(w, add_special_tokens=False)["input_ids"]
+            ids = self.huggingface_tokenizer(w, add_special_tokens=False)["input_ids"]
             # if max_len exceeded, stop (leave space for closing token)
             if len(input_ids) + len(ids) >= max_len - 1:
                 break
@@ -228,7 +232,7 @@ class Tokenizer:
             token_type_ids += [token_type_id] * len(ids)
         # last offset
         offsets.append((len(input_ids), len(input_ids)))
-        input_ids += [self.tokenizer.sep_token_id]
+        input_ids += [self.huggingface_tokenizer.sep_token_id]
         token_type_ids += [token_type_id]
         return input_ids, token_type_ids, offsets
 
@@ -249,7 +253,7 @@ class Tokenizer:
             word_pad_len = word_max_batch_len - b["sentence_length"]
             # for pad offset must be (0, 0)
             b["offsets"] += [(0, 0) for _ in range(word_pad_len)]
-            b["input_ids"] += [self.tokenizer.pad_token_id] * pad_len
+            b["input_ids"] += [self.huggingface_tokenizer.pad_token_id] * pad_len
             b["attention_mask"] += [False] * pad_len
             b["word_mask"] += [False] * word_pad_len
             b["token_type_ids"] += [self.token_type_id] * pad_len
@@ -367,12 +371,13 @@ class Tokenizer:
         Return the number of special tokens the model needs.
         It assume the input contains both sentences (`text` and `text_pair`).
         """
-        if isinstance(self.tokenizer, MODELS_WITH_DOUBLE_SEP) and isinstance(
-            self.tokenizer, MODELS_WITH_STARTING_TOKEN
-        ):
+        if isinstance(
+            self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP
+        ) and isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN):
             return 4
         if isinstance(
-            self.tokenizer, (MODELS_WITH_DOUBLE_SEP, MODELS_WITH_STARTING_TOKEN)
+            self.huggingface_tokenizer,
+            (MODELS_WITH_DOUBLE_SEP, MODELS_WITH_STARTING_TOKEN),
         ):
             return 3
         return 2
@@ -385,22 +390,22 @@ class Tokenizer:
     @property
     def pad_token(self):
         """Padding token."""
-        return self.tokenizer.pad_token
+        return self.huggingface_tokenizer.pad_token
 
     @property
     def pad_token_id(self):
         """Padding token id."""
-        return self.tokenizer.pad_token_id
+        return self.huggingface_tokenizer.pad_token_id
 
     @property
     def unk_token(self):
         """Unknown token."""
-        return self.tokenizer.unk_token
+        return self.huggingface_tokenizer.unk_token
 
     @property
     def unk_token_id(self):
         """Unknown token id."""
-        return self.tokenizer.unk_token_id
+        return self.huggingface_tokenizer.unk_token_id
 
     @property
     def cls_token(self):
@@ -409,7 +414,7 @@ class Tokenizer:
         To extract a summary of an input sequence leveraging self-attention along the
         full depth of the model.
         """
-        return self.tokenizer.cls_token
+        return self.huggingface_tokenizer.cls_token
 
     @property
     def cls_token_id(self):
@@ -418,37 +423,37 @@ class Tokenizer:
         To extract a summary of an input sequence leveraging self-attention along the
         full depth of the model.
         """
-        return self.tokenizer.cls_token_id
+        return self.huggingface_tokenizer.cls_token_id
 
     @property
     def sep_token(self):
         """Separation token, to separate context and query in an input sequence."""
-        return self.tokenizer.sep_token
+        return self.huggingface_tokenizer.sep_token
 
     @property
     def sep_token_id(self):
         """Separation token id, to separate context and query in an input sequence."""
-        return self.tokenizer.sep_token_id
+        return self.huggingface_tokenizer.sep_token_id
 
     @property
     def bos_token(self):
         """Beginning of sentence token."""
-        return self.tokenizer.bos_token
+        return self.huggingface_tokenizer.bos_token
 
     @property
     def bos_token_id(self):
         """Beginning of sentence token id."""
-        return self.tokenizer.bos_token_id
+        return self.huggingface_tokenizer.bos_token_id
 
     @property
     def eos_token(self):
         """End of sentence token."""
-        return self.tokenizer.eos_token
+        return self.huggingface_tokenizer.eos_token
 
     @property
     def eos_token_id(self):
         """End of sentence token id."""
-        return self.tokenizer.eos_token_id
+        return self.huggingface_tokenizer.eos_token_id
 
 
 class ModelInputs(UserDict):
