@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Riccorl/transformer-embedder",
-    keywords="NLP deep learning transformer pytorch BERT GPT GPT-2 google openai subtoken wordpieces",
+    keywords="NLP deep learning transformer pytorch BERT google subtoken wordpieces embeddings",
     packages=setuptools.find_packages(),
     include_package_data=True,
     license="Apache",

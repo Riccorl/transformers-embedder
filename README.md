@@ -9,7 +9,7 @@ A Word Level Transformer layer based on PyTorch and 🤗 Transformers.
 
 ## How to use
 
-Install the library
+Install the library from [PyPI](https://pypi.org/project/transformer-embedder):
 
 ```bash
 pip install transformer-embedder
