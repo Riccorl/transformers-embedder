@@ -384,10 +384,12 @@ class Tokenizer:
 
     @property
     def has_double_sep(self):
+        """True if tokenizer uses two SEP tokens."""
         return isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP)
 
     @property
     def has_starting_token(self):
+        """True if tokenizer uses a starting token."""
         return isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN)
 
     @property
