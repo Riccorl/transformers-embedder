@@ -383,6 +383,14 @@ class Tokenizer:
         return 2
 
     @property
+    def has_double_sep(self):
+        return isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP)
+
+    @property
+    def has_starting_token(self):
+        return isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN)
+
+    @property
     def token_type_id(self):
         """Padding token."""
         return self._get_token_type_id(self.config)
