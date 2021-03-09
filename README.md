@@ -176,8 +176,9 @@ Future developments
 - [X] Add `add_special_tokens` wrapper
 - [X] Make `pad_batch` function more general
 - [X] Add logic (like how to pad, etc) for custom fields
-
-[comment]: <> (- [ ] Include all model outputs)
+    - [ ] Documentation for this functionality
+- [X] Include all model outputs
+    - [ ] Documentation for this functionality
 
 [comment]: <> (- [ ] Include more &#40;maybe all&#41; tokenizer outputs)
 
