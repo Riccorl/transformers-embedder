@@ -309,10 +309,9 @@ class Tokenizer:
             if isinstance(sequence, torch.Tensor):
                 return torch.cat((padding, sequence), -1)
             return padding + sequence
-        else:
-            if isinstance(sequence, torch.Tensor):
-                return torch.cat((sequence, padding), -1)
-            return sequence + padding
+        if isinstance(sequence, torch.Tensor):
+            return torch.cat((sequence, padding), -1)
+        return sequence + padding
 
     def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
         """
