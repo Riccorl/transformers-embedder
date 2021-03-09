@@ -116,8 +116,7 @@ class TransformerEmbedder(torch.nn.Module):
                 pooler_output=transformer_outputs.pooler_output,
                 attentions=transformer_outputs.attentions,
             )
-        else:
-            return WordsModelOutput(word_embeddings=word_embeddings)
+        return WordsModelOutput(word_embeddings=word_embeddings)
 
     def get_word_embeddings(
         self, embeddings: torch.Tensor, offsets: torch.Tensor = None
