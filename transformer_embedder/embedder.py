@@ -16,6 +16,8 @@ utils.get_logger("transformers")
 
 @dataclass
 class WordsModelOutput(tr.file_utils.ModelOutput):
+    """Class for model's outputs."""
+
     word_embeddings: torch.Tensor = None
     last_hidden_state: torch.FloatTensor = None
     pooler_output: torch.FloatTensor = None
