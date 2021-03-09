@@ -1,5 +1,6 @@
 import math
 from collections import UserDict
+from functools import partial
 from typing import List, Dict, Union, Tuple, Any
 
 import spacy
@@ -26,6 +27,28 @@ class Tokenizer:
         self.spacy_tokenizer = None
         # default multilingual model
         self.language = language
+        # padding stuff
+        # default, batch length is model max length
+        self.subtoken_max_batch_len = self.huggingface_tokenizer.model_max_length
+        self.word_max_batch_len = self.huggingface_tokenizer.model_max_length
+        # padding ops
+        self.padding_ops = {
+            "input_ids": partial(
+                self.pad_sequence,
+                value=self.huggingface_tokenizer.pad_token_id,
+                length="subtoken",
+            ),
+            "offsets": partial(self.pad_sequence, value=(0, 0), length="subtoken"),
+            "attention_mask": partial(
+                self.pad_sequence, value=False, length="subtoken"
+            ),
+            "word_mask": partial(self.pad_sequence, value=False, length="word"),
+            "token_type_ids": partial(
+                self.pad_sequence,
+                value=self.token_type_id,
+                length="subtoken",
+            ),
+        }
 
     def __call__(
         self,
@@ -109,11 +132,16 @@ class Tokenizer:
                     "not padded sequences. `padding` forced automatically to True"
                 )
                 padding = True
-            output = self.build_tokens_batch(text, text_pair, max_length, padding)
+            output = self.build_tokens_batch(text, text_pair, max_length)
 
         # clean the output
         output = self._clean_output(output)
 
+        # pad batch
+        if padding:
+            output = self.pad_batch(output)
+
+        # convert to tensor
         if return_tensors:
             output = self.to_tensor(output)
 
@@ -125,7 +153,6 @@ class Tokenizer:
         text: List[List[str]],
         text_pair: List[List[str]] = None,
         max_len: int = math.inf,
-        padding: bool = False,
     ) -> Union[
         Dict[str, torch.Tensor],
         List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]],
@@ -135,19 +162,16 @@ class Tokenizer:
         :param text:
         :param text_pair:
         :param max_len:
-        :param padding:
         :return:
         """
         batch = []
         if not text_pair:
-            # In this way we can re-use the already defined methods, regardless the presence of the text pairs
+            # In this way we can re-use the already defined methods,
+            # regardless the presence of the text pairs
             text_pair = [None for _ in text]
         for t, t_p in zip(text, text_pair):
             token_pair = self.build_tokens(t, t_p, max_len)
             batch.append(token_pair)
-        # convert to dict
-        if padding:
-            batch = self.pad_batch(batch)
         return batch
 
     def build_tokens(
@@ -236,28 +260,59 @@ class Tokenizer:
         token_type_ids += [token_type_id]
         return input_ids, token_type_ids, offsets
 
-    def pad_batch(
-        self, batch: List[Dict[str, Union[list, int]]]
-    ) -> List[Dict[str, Union[list, List[bool], List[Tuple[int, int]]]]]:
+    def pad_batch(self, batch: Dict[str, list]) -> Dict[str, list]:
         """
         Pad the batch to its maximum length.
         :param batch: the batch to pad
         :return: the padded batch
         """
         # get maximum len inside a batch
-        wp_max_batch_len = max(len(x["input_ids"]) for x in batch)
-        word_max_batch_len = max(x["sentence_length"] for x in batch)
-        for b in batch:
-            input_ids_len = len(b["input_ids"])
-            pad_len = wp_max_batch_len - input_ids_len
-            word_pad_len = word_max_batch_len - b["sentence_length"]
-            # for pad offset must be (0, 0)
-            b["offsets"] += [(0, 0) for _ in range(word_pad_len)]
-            b["input_ids"] += [self.huggingface_tokenizer.pad_token_id] * pad_len
-            b["attention_mask"] += [False] * pad_len
-            b["word_mask"] += [False] * word_pad_len
-            b["token_type_ids"] += [self.token_type_id] * pad_len
+        self.subtoken_max_batch_len = max(len(x) for x in batch["input_ids"])
+        self.word_max_batch_len = max(x for x in batch["sentence_length"])
+        for key in batch.keys():
+            if key in self.padding_ops.keys():
+                batch[key] = [self.padding_ops[key](b) for b in batch[key]]
         return batch
+
+    def pad_sequence(
+        self,
+        sequence: Union[List, torch.Tensor],
+        value: Any,
+        length: Union[int, str] = "subtoken",
+        pad_to_left: bool = False,
+    ) -> Union[List, torch.Tensor]:
+        """
+        Pad the input to the specified length with the given value.
+        :param sequence: element to pad, it can be either a `List` or a `torch.Tensor`
+        :param value: value to use as padding
+        :param length: length after pad
+        :param pad_to_left: if True, pads to the left, right otherwise
+        :return: the padded sequence
+        """
+        if length == "subtoken":
+            length = self.subtoken_max_batch_len
+        elif length == "word":
+            length = self.word_max_batch_len
+        else:
+            if not isinstance(length, int):
+                raise ValueError(
+                    f"`length` must be an `int`, `subtoken` or `word`. Current value is `{length}`"
+                )
+        padding = [value] * abs(length - len(sequence))
+        if isinstance(sequence, torch.Tensor):
+            if len(sequence.shape) > 1:
+                raise ValueError(
+                    f"Sequence tensor must be 1D. Current shape is `{len(sequence.shape)}`"
+                )
+            padding = torch.as_tensor(padding)
+        if pad_to_left:
+            if isinstance(sequence, torch.Tensor):
+                return torch.cat((padding, sequence), -1)
+            return padding + sequence
+        else:
+            if isinstance(sequence, torch.Tensor):
+                return torch.cat((sequence, padding), -1)
+            return sequence + padding
 
     def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
         """
@@ -273,13 +328,38 @@ class Tokenizer:
             return [t.text for t in text]
         return text.split(" ")
 
+    def add_special_tokens(
+        self, special_tokens_dict: Dict[str, Union[str, tr.AddedToken]]
+    ) -> int:
+        """
+        Add a dictionary of special tokens (eos, pad, cls, etc.) to the encoder.
+        If special tokens are NOT in the vocabulary, they are added to it (indexed starting from the last
+        index of the current vocabulary).
+
+        :param special_tokens_dict:
+        :return: Number of tokens added to the vocabulary.
+        """
+        return self.huggingface_tokenizer.add_special_tokens(special_tokens_dict)
+
+    def add_padding_ops(self, key: str, value: Any, length: Union[int, str]):
+        """
+        Add padding logic to custom fields.
+        :param key: name of the field in the tokenzer input
+        :param value: value to use for padding
+        :param length: length to pad. It can be an `int`, or two string value
+            `subtoken`: the element is padded to the batch max length relative to the subtokens length
+            `word`: the element is padded to the batch max length relative to the original word length
+        :return:
+        """
+        self.padding_ops[key] = partial(self.pad_sequence, value=value, length=length)
+
     def _load_spacy(self):
         """Download and load spacy model."""
         try:
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         except OSError:
             logger.info(
-                f"Spacy models '{self.language}' not found.  Downloading and installing."
+                f"Spacy model '{self.language}' not found. Downloading and installing."
             )
             spacy_download(self.language)
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])

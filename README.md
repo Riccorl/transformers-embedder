@@ -1,6 +1,6 @@
 [![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
 [![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder)](https://github.com/Riccorl/transformer-embedder/releases)
-[![PyTorch](https://img.shields.io/badge/PyTorch-1.7-EE4C2C?&logo=pytorch)](https://pytorch.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.8-EE4C2C?&logo=pytorch)](https://pytorch.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
 # Transformer Embedder
@@ -173,9 +173,13 @@ For a complete list of languages and models, you can go [here](https://spacy.io/
 
 Future developments
 - [X] Add an optional word tokenizer, maybe using SpaCy
-- [ ] Add `add_special_tokens` wrapper
-- [ ] Add logic (like how to pad, etc) for custom fields
-- [ ] Make `pad_batch` function more general
+- [X] Add `add_special_tokens` wrapper
+- [X] Make `pad_batch` function more general
+- [X] Add logic (like how to pad, etc) for custom fields
+
+[comment]: <> (- [ ] Include all model outputs)
+
+[comment]: <> (- [ ] Include more &#40;maybe all&#41; tokenizer outputs)
 
 ## Acknowledgements
 

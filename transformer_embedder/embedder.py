@@ -1,5 +1,6 @@
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Union, List
+from typing import Optional, Union, Tuple
 
 import torch
 import transformers as tr
@@ -13,6 +14,15 @@ logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
 
 
+@dataclass
+class WordsModelOutput(tr.file_utils.ModelOutput):
+    word_embeddings: torch.Tensor = None
+    last_hidden_state: torch.FloatTensor = None
+    pooler_output: torch.FloatTensor = None
+    hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    attentions: Optional[Tuple[torch.FloatTensor]] = None
+
+
 class TransformerEmbedder(torch.nn.Module):
     """Transforeemer Embedder class."""
 
@@ -22,6 +32,7 @@ class TransformerEmbedder(torch.nn.Module):
         subtoken_pooling: str = "first",
         output_layer: str = "last",
         fine_tune: bool = True,
+        return_all: bool = False,
     ) -> None:
         """
         Embeddings of words from various transformer architectures from Huggingface Trasnformers API.
@@ -34,12 +45,16 @@ class TransformerEmbedder(torch.nn.Module):
         the concatenation of the last four hidden layers (`concat`), the sum of the last four hidden layers
          (`sum`), the pooled output (`pooled`).
         :param fine_tune: if True, the transformer model is fine-tuned during training.
+        :param return_all: if True, returns all the outputs from the HuggingFace model.
         """
         super().__init__()
-        config = tr.AutoConfig.from_pretrained(model_name, output_hidden_states=True)
+        config = tr.AutoConfig.from_pretrained(
+            model_name, output_hidden_states=True, output_attention=True
+        )
         self.transformer_model = tr.AutoModel.from_pretrained(model_name, config=config)
         self.subtoken_pooling = subtoken_pooling
         self.output_layer = output_layer
+        self.return_all = return_all
         if not fine_tune:
             for param in self.transformer_model.parameters():
                 param.requires_grad = False
@@ -61,7 +76,7 @@ class TransformerEmbedder(torch.nn.Module):
         token_type_ids: Optional[torch.LongTensor] = None,
         *args,
         **kwargs,
-    ) -> torch.Tensor:
+    ) -> WordsModelOutput:
         """
         Forward method of the PyTorch module.
         :param input_ids: Input ids for the transformer model
@@ -89,10 +104,20 @@ class TransformerEmbedder(torch.nn.Module):
         else:
             raise ValueError(
                 "output_layer parameter not valid, choose between `last`, `concat`, "
-                f"`sum`, `pooled`. Current value {self.output_layer}"
+                f"`sum`, `pooled`. Current value `{self.output_layer}`"
             )
+        # outputs = {"word_embeddings": self.get_word_embeddings(embeddings, offsets)}
         word_embeddings = self.get_word_embeddings(embeddings, offsets)
-        return word_embeddings
+        if self.return_all:
+            return WordsModelOutput(
+                word_embeddings=word_embeddings,
+                last_hidden_state=transformer_outputs.last_hidden_state,
+                hidden_states=transformer_outputs.hidden_states,
+                pooler_output=transformer_outputs.pooler_output,
+                attentions=transformer_outputs.attentions,
+            )
+        else:
+            return WordsModelOutput(word_embeddings=word_embeddings)
 
     def get_word_embeddings(
         self, embeddings: torch.Tensor, offsets: torch.Tensor = None
@@ -106,7 +131,7 @@ class TransformerEmbedder(torch.nn.Module):
         """
         # no offsets provided, returns the embeddings as they are.
         # subtoken_pooling parameter ignored.
-        if not offsets:
+        if offsets is None:
             return embeddings
         # span_embeddings: (batch_size, num_orig_tokens, max_span_length, embedding_size)
         # span_mask: (batch_size, num_orig_tokens, max_span_length)
@@ -129,6 +154,16 @@ class TransformerEmbedder(torch.nn.Module):
                 "`first`, `last`, `mean` and `none`"
             )
         return word_embeddings
+
+    def resize_token_embeddings(
+        self, new_num_tokens: Optional[int] = None
+    ) -> torch.nn.Embedding:
+        """
+        Resizes input token embeddings matrix of the model if :obj:`new_num_tokens != config.vocab_size`.
+        new_num_tokens: The number of new tokens in the embedding matrix.
+        :return: Pointer to the input tokens Embeddings Module of the model.
+        """
+        return self.transformer_model.resize_token_embeddings(new_num_tokens)
 
     @staticmethod
     def merge_subtoken_embeddings(
