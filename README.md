@@ -191,7 +191,7 @@ custom_fields = {
 inputs.update(custom_fields)
 ```
 
-Now you can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input 
+Now we can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input 
 - `key`: name of the field in the tokenzer input
 - `value`: value to use for padding
 - `length`: length to pad. It can be an `int`, or two string value, `subtoken` in which the element is padded to the batch max length relative to the sub-tokens length, and `word` where the element is padded to the batch max length relative to the original word length
@@ -209,7 +209,7 @@ inputs = tokenizer.pad_batch(inputs)
 inputs = tokenizer.to_tensor(inputs)
 ```
 
-Now you have the inputs ready for the model, including the custom filed.
+The inputs are ready for the model, including the custom filed.
 
 ```python
 >>> inputs
