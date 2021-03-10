@@ -188,7 +188,7 @@ custom_fields = {
   ]
 }
 
-inputs = {**inputs, **custom_fields}
+inputs.update(custom_fields)
 ```
 
 Now you can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input 
