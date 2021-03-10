@@ -1,5 +1,6 @@
 [![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
 [![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder)](https://github.com/Riccorl/transformer-embedder/releases)
+[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.3-6670ff?&logo=)](https://pytorch.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.8-EE4C2C?&logo=pytorch)](https://pytorch.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
@@ -62,6 +63,8 @@ There are also multiple type of outputs you can get using `output_layer` paramet
 - `sum`: returns the sum of the last four hidden states of the transformer model
 - `pooled`: returns the output of the pooling layer
 
+If you also want all the output from the HuggingFace model, you can set `return_all=True` to get them. 
+
 ```python
 class TransformerEmbedder(torch.nn.Module):
     def __init__(
@@ -70,6 +73,7 @@ class TransformerEmbedder(torch.nn.Module):
         subtoken_pooling: str = "first",
         output_layer: str = "last",
         fine_tune: bool = True,
+        return_all: bool = False,
     )
 ```
 
@@ -158,6 +162,93 @@ batch_pair = [
 tokenizer(batch, batch_pair, padding=True, return_tensors=True)
 ```
 
+### Custom fields
+
+It is possible to add custom fields to the model input and tell the `tokenizer` how to pad them using `add_padding_ops`.
+Start by simply tokenizing the input (without padding or tensor mapping)
+```python
+import transformer_embedder as tre
+
+tokenizer = tre.Tokenizer("bert-base-cased")
+
+text = [
+    ["This", "is", "a", "sample", "sentence"],
+    ["This", "is", "another", "example", "sentence", "just", "make", "it", "longer"]
+]
+inputs = tokenizer(text)
+```
+
+Then add the custom fileds to the result
+
+```python
+custom_fields = {
+  "custom_filed_1": [
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]
+  ]
+}
+
+inputs = {**inputs, **custom_fields}
+```
+
+Now you can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input 
+- `key`: name of the field in the tokenzer input
+- `value`: value to use for padding
+- `length`: length to pad. It can be an `int`, or two string value, `subtoken` in which the element is padded to the batch max length relative to the sub-tokens length, and `word` where the element is padded to the batch max length relative to the original word length
+
+
+```python
+tokenizer.add_padding_ops("custom_filed_1", 0, "word")
+```
+
+Finally, pad the input and convert it to a tensor:
+
+```python
+# manual processing
+inputs = tokenizer.pad_batch(inputs)
+inputs = tokenizer.to_tensor(inputs)
+```
+
+Now you have the inputs ready for the model, including the custom filed.
+
+```python
+>>> inputs
+
+# {
+#     "input_ids": tensor(
+#         [
+#             [101, 1188, 1110, 170, 6876, 5650, 102, 0, 0, 0, 0],
+#             [101, 1188, 1110, 1330, 1859, 5650, 1198, 1294, 1122, 2039, 102],
+#         ]
+#     ),
+#     "offsets": tensor(
+#         [
+#             [[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [0, 0], [0, 0], [0, 0], [0, 0]],
+#             [[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
+#         ]
+#     ),
+#     "attention_mask": tensor(
+#         [
+#             [True, True, True, True, True, True, True, False, False, False, False],
+#             [True, True, True, True, True, True, True, True, True, True, True],
+#         ]
+#     ),
+#     "word_mask": tensor(
+#         [
+#             [True, True, True, True, True, True, True, False, False, False, False],
+#             [True, True, True, True, True, True, True, True, True, True, True],
+#         ]
+#     ),
+#     "token_type_ids": tensor(
+#         [[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+#     ),
+#     "sentence_length": tensor([7, 11]),
+#     "custom_filed_1": tensor(
+#         [[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
+#     ),
+# }
+```
+
 ### SpaCy Tokenizer
 
 By default, it uses the [multilingual model](https://spacy.io/models/xx#xx_sent_ud_sm) `xx_sent_ud_sm`. You can change
@@ -176,9 +267,9 @@ Future developments
 - [X] Add `add_special_tokens` wrapper
 - [X] Make `pad_batch` function more general
 - [X] Add logic (like how to pad, etc) for custom fields
-    - [ ] Documentation for this functionality
+  - [X] Documentation
 - [X] Include all model outputs
-    - [ ] Documentation for this functionality
+  - [X] Documentation
 
 [comment]: <> (- [ ] Include more &#40;maybe all&#41; tokenizer outputs)
 
