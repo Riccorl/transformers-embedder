@@ -4,6 +4,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.8-EE4C2C?&logo=pytorch)](https://pytorch.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
+
 # Transformer Embedder
 
 A Word Level Transformer layer based on PyTorch and 🤗 Transformers. 
@@ -26,22 +27,29 @@ tokenizer = tre.Tokenizer("bert-base-cased")
 
 example = "This is a sample sentence"
 inputs = tokenizer(example, return_tensors=True)
-
-# {
-#   'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
-#   'offsets': tensor([[[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
-#   'attention_mask': tensor([[True, True, True, True, True, True, True]]),
-#   'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
-#   'sentence_length': 7  # with special tokens included
-# }
-
-outputs = model(**inputs)
-
-# outputs.shape[1:-1]       # remove [CLS] and [SEP]
-# torch.Size([1, 5, 768])
-# len(example)
-# 5
 ```
+
+```text
+{
+   'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
+   'offsets': tensor([[[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
+   'attention_mask': tensor([[True, True, True, True, True, True, True]]),
+   'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
+   'sentence_length': 7  # with special tokens included
+}
+```
+
+```python
+outputs = model(**inputs)
+```
+
+```text
+# outputs.shape[1:-1]       # remove [CLS] and [SEP]
+torch.Size([1, 5, 768])
+# len(example)
+5
+```
+
 
 ## Info
 
@@ -113,36 +121,54 @@ text = [
 tokenizer(text, is_split_into_words=True) # here is_split_into_words is redundant
 ```
 
-Here some examples:
+#### Examples
+
+First, initialize the tokenizer
 
 ```python
 import transformer_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
+```
 
+- You can pass a single sentence as a string:
+
+```python
 text = "This is a sample sentence"
 tokenizer(text)
+```
 
-# {
-#  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 102],
-#  'offsets': [(1, 1), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)],
-#  'attention_mask': [True, True, True, True, True, True, True],
-#  'token_type_ids': [0, 0, 0, 0, 0, 0, 0],
-#  'sentence_length': 7
-#  }
+```text
+{
+  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 102],
+  'offsets': [(1, 1), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)],
+  'attention_mask': [True, True, True, True, True, True, True],
+  'token_type_ids': [0, 0, 0, 0, 0, 0, 0],
+  'sentence_length': 7
+}
+```
 
+- A sentence pair
+
+```python
 text = "This is a sample sentence A"
 text_pair = "This is a sample sentence B"
 tokenizer(text, text_pair)
+```
 
-# {
-#  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
-#  'offsets': [(1, 1), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)],
-#  'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
-#  'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-#  'sentence_length': 15
-# }
+```text
+{
+  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
+  'offsets': [(1, 1), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)],
+  'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
+  'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+  'sentence_length': 15
+}
+```
 
+- A batch of sentence pairs. Using `padding=True` and `return_tensors=True`, the tokenizer returns the text ready for the model
+
+```python
 batch = [
     ["This", "is", "a", "sample", "sentence", "1"],
     ["This", "is", "sample", "sentence", "2"],
@@ -162,7 +188,7 @@ batch_pair = [
 tokenizer(batch, batch_pair, padding=True, return_tensors=True)
 ```
 
-### Custom fields
+#### Custom fields
 
 It is possible to add custom fields to the model input and tell the `tokenizer` how to pad them using `add_padding_ops`.
 Start by simply tokenizing the input (without padding or tensor mapping)
@@ -211,45 +237,45 @@ inputs = tokenizer.to_tensor(inputs)
 
 Now you have the inputs ready for the model, including the custom filed.
 
-```python
+```text
 >>> inputs
 
-# {
-#     "input_ids": tensor(
-#         [
-#             [101, 1188, 1110, 170, 6876, 5650, 102, 0, 0, 0, 0],
-#             [101, 1188, 1110, 1330, 1859, 5650, 1198, 1294, 1122, 2039, 102],
-#         ]
-#     ),
-#     "offsets": tensor(
-#         [
-#             [[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [0, 0], [0, 0], [0, 0], [0, 0]],
-#             [[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
-#         ]
-#     ),
-#     "attention_mask": tensor(
-#         [
-#             [True, True, True, True, True, True, True, False, False, False, False],
-#             [True, True, True, True, True, True, True, True, True, True, True],
-#         ]
-#     ),
-#     "word_mask": tensor(
-#         [
-#             [True, True, True, True, True, True, True, False, False, False, False],
-#             [True, True, True, True, True, True, True, True, True, True, True],
-#         ]
-#     ),
-#     "token_type_ids": tensor(
-#         [[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-#     ),
-#     "sentence_length": tensor([7, 11]),
-#     "custom_filed_1": tensor(
-#         [[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
-#     ),
-# }
+{
+   "input_ids": tensor(
+       [
+           [101, 1188, 1110, 170, 6876, 5650, 102, 0, 0, 0, 0],
+           [101, 1188, 1110, 1330, 1859, 5650, 1198, 1294, 1122, 2039, 102],
+       ]
+   ),
+   "offsets": tensor(
+       [
+           [[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [0, 0], [0, 0], [0, 0], [0, 0]],
+           [[1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
+       ]
+   ),
+   "attention_mask": tensor(
+       [
+           [True, True, True, True, True, True, True, False, False, False, False],
+           [True, True, True, True, True, True, True, True, True, True, True],
+       ]
+   ),
+   "word_mask": tensor(
+       [
+           [True, True, True, True, True, True, True, False, False, False, False],
+           [True, True, True, True, True, True, True, True, True, True, True],
+       ]
+   ),
+   "token_type_ids": tensor(
+       [[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+   ),
+   "sentence_length": tensor([7, 11]),
+   "custom_filed_1": tensor(
+       [[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
+   ),
+}
 ```
 
-### SpaCy Tokenizer
+#### SpaCy Tokenizer
 
 By default, it uses the [multilingual model](https://spacy.io/models/xx#xx_sent_ud_sm) `xx_sent_ud_sm`. You can change
 it with the `language` parameter during the tokenizer initialization. For example, if you prefer an English tokenizer:
@@ -270,6 +296,7 @@ Future developments
   - [X] Documentation
 - [X] Include all model outputs
   - [X] Documentation
+- [ ] A TensorFlow version (improbable)
 
 [comment]: <> (- [ ] Include more &#40;maybe all&#41; tokenizer outputs)
 
