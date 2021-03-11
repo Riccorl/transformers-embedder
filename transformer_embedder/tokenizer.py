@@ -526,10 +526,11 @@ class Tokenizer:
     @property
     def num_special_tokens(self) -> int:
         """
+        Return the number of special tokens the model needs.
+        It assume the input contains both sentences (`text` and `text_pair`).
 
         Returns:
-            int: Return the number of special tokens the model needs.
-            It assume the input contains both sentences (`text` and `text_pair`).
+            int: the number of special tokens
 
         """
         if isinstance(
