@@ -166,7 +166,7 @@ tokenizer(text, text_pair)
 }
 ```
 
-- A batch of sentence pairs. Using `padding=True` and `return_tensors=True`, the tokenizer returns the text ready for the model
+- A batch of sentences or sentence pairs. Using `padding=True` and `return_tensors=True`, the tokenizer returns the text ready for the model
 
 ```python
 batch = [
