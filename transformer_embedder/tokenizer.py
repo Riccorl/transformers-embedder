@@ -49,6 +49,14 @@ class Tokenizer:
                 length="subtoken",
             ),
         }
+        # keys that will be converted in tensors
+        self.to_tensor_inputs = {
+            "input_ids",
+            "offsets",
+            "attention_mask",
+            "word_mask",
+            "token_type_ids",
+        }
 
     def __call__(
         self,
@@ -395,7 +403,23 @@ class Tokenizer:
         Returns:
 
         """
+        if key not in self.to_tensor_inputs:
+            self.to_tensor_inputs.add(key)
         self.padding_ops[key] = partial(self.pad_sequence, value=value, length=length)
+
+    def add_to_tensor_inputs(self, names: Union[str, set]):
+        """
+        Add these keys to the ones that will be converted in Tensors.
+
+        Args:
+            names (`str` or `set`): name of the field (or fields) to convert to tensors
+
+        Returns:
+
+        """
+        if isinstance(names, str):
+            keys = {names}
+        self.to_tensor_inputs |= names
 
     def _load_spacy(self) -> spacy.tokenizer.Tokenizer:
         """
