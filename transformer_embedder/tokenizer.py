@@ -418,8 +418,26 @@ class Tokenizer:
 
         """
         if isinstance(names, str):
-            keys = {names}
+            names = {names}
         self.to_tensor_inputs |= names
+
+    def to_tensor(self, batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
+        """
+        Return a the batch in input as Pytorch tensors.
+
+        Args:
+            batch (List[dict] or dict): batch in input
+
+        Returns:
+            Dict: the batch as tensor
+
+        """
+        # convert to tensor
+        batch = {
+            k: torch.as_tensor(v) if k in self.to_tensor_inputs else v
+            for k, v in batch.items()
+        }
+        return batch
 
     def _load_spacy(self) -> spacy.tokenizer.Tokenizer:
         """
@@ -458,25 +476,6 @@ class Tokenizer:
         # convert list to dict
         output = {k: [d[k] for d in output] for k in output[0]}
         return output
-
-    @staticmethod
-    def to_tensor(batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
-        """
-        Return a the batch in input as Pytorch tensors.
-
-        Args:
-            batch (List[dict] or dict): batch in input
-
-        Returns:
-            Dict: the batch as tensor
-
-        """
-        # convert to tensor
-        batch = {
-            k: torch.as_tensor(v) if isinstance(v[0], list) else v
-            for k, v in batch.items()
-        }
-        return batch
 
     @staticmethod
     def _get_token_type_id(config) -> int:
