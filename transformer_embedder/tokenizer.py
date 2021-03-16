@@ -448,7 +448,10 @@ class Tokenizer:
 
         """
         # convert to tensor
-        batch = {k: torch.as_tensor(v) for k, v in batch.items()}
+        batch = {
+            k: torch.as_tensor(v) if isinstance(v[0], list) else v
+            for k, v in batch.items()
+        }
         return batch
 
     @staticmethod
