@@ -272,18 +272,18 @@ class Tokenizer:
             if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP):
                 input_ids += [self.huggingface_tokenizer.sep_token_id]
                 token_type_ids += [token_type_id]
-                offsets.append((len(input_ids), len(input_ids) + 1))
+                offsets.append((len(input_ids), len(input_ids)))
         for w in sentence:
             ids = self.huggingface_tokenizer(w, add_special_tokens=False)["input_ids"]
             # if max_len exceeded, stop (leave space for closing token)
             if len(input_ids) + len(ids) >= max_len - 1:
                 break
             # token offset before wordpiece, (start, end + 1)
-            offsets.append((len(input_ids), len(input_ids) + len(ids) - 1))
+            offsets.append((len(input_ids) + 1, len(input_ids) + len(ids)))
             input_ids += ids
             token_type_ids += [token_type_id] * len(ids)
         # last offset
-        offsets.append((len(input_ids), len(input_ids)))
+        offsets.append((len(input_ids) + 1, len(input_ids) + 1))
         input_ids += [self.huggingface_tokenizer.sep_token_id]
         token_type_ids += [token_type_id]
         return input_ids, token_type_ids, offsets
@@ -392,6 +392,7 @@ class Tokenizer:
     def add_padding_ops(self, key: str, value: Any, length: Union[int, str]):
         """
         Add padding logic to custom fields.
+        If the field is not in `self.to_tensor_inputs`, this method will add the key to it.
 
         Args:
             key (str): name of the field in the tokenzer input
@@ -424,6 +425,8 @@ class Tokenizer:
     def to_tensor(self, batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
         """
         Return a the batch in input as Pytorch tensors.
+        The fields that are converted in tensors are in `self.to_tensor_inputs`. By default, only the
+        standard model inputs are converted. Use 'Tokenizer.add_to_tensor_inputs` to add custom fields.
 
         Args:
             batch (List[dict] or dict): batch in input
