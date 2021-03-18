@@ -1,6 +1,6 @@
 [![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
 [![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder)](https://github.com/Riccorl/transformer-embedder/releases)
-[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.3-6670ff?&logo=)](https://huggingface.co/transformers/)
+[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.4-6670ff?&logo=)](https://huggingface.co/transformers/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.8-EE4C2C?&logo=pytorch)](https://pytorch.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
