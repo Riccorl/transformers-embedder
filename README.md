@@ -22,8 +22,8 @@ It offers a PyTorch layer and a tokenizer that support almost every pretrained m
 ```python
 import transformer_embedder as tre
 
-model = tre.TransformerEmbedder("bert-base-cased", subtoken_pooling="mean", output_layer="sum")
 tokenizer = tre.Tokenizer("bert-base-cased")
+model = tre.TransformerEmbedder("bert-base-cased", subtoken_pooling="mean", output_layer="sum")
 
 example = "This is a sample sentence"
 inputs = tokenizer(example, return_tensors=True)

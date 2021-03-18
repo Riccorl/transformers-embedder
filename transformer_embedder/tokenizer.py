@@ -253,8 +253,7 @@ class Tokenizer:
             max_len (int):
 
         Returns:
-            Tuple:
-            The encoded sentence.
+            Tuple: The encoded sentence.
         """
         input_ids, token_type_ids, offsets = [], [], []
         if not is_b:

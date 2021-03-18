@@ -7,9 +7,6 @@ import transformers as tr
 
 from transformer_embedder import utils
 
-# Most of the code is taken from [AllenNLP](https://github.com/allenai/allennlp)
-
-
 logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
 
@@ -38,16 +35,18 @@ class TransformerEmbedder(torch.nn.Module):
     ) -> None:
         """
         Embeddings of words from various transformer architectures from Huggingface Trasnformers API.
-        :param model_name: name of the transformer model
-        (https://huggingface.co/transformers/pretrained_models.html).
-        :param subtoken_pooling: how to get back word embeddings from sub-tokens. First sub-token (`first`),
-        the last sub-token (`last`), or the mean of all the sub-tokens of the word (`mean`). `none` returns
-        the raw output from the transformer model.
-        :param output_layer: what output to get from the transformer model. The last hidden state (`last`),
-        the concatenation of the last four hidden layers (`concat`), the sum of the last four hidden layers
-         (`sum`), the pooled output (`pooled`).
-        :param fine_tune: if True, the transformer model is fine-tuned during training.
-        :param return_all: if True, returns all the outputs from the HuggingFace model.
+
+        Args:
+            model_name (): name of the transformer model
+                (https://huggingface.co/transformers/pretrained_models.html).
+            subtoken_pooling (): how to get back word embeddings from sub-tokens. First sub-token (`first`),
+                the last sub-token (`last`), or the mean of all the sub-tokens of the word (`mean`). `none`
+                returns the raw output from the transformer model.
+            output_layer (): what output to get from the transformer model. The last hidden state (`last`),
+                the concatenation of the last four hidden layers (`concat`), the sum of the last four hidden
+                layers (`sum`), the pooled output (`pooled`).
+            fine_tune (): if `True`, the transformer model is fine-tuned during training.
+            return_all (): if `True`, returns all the outputs from the HuggingFace model.
         """
         super().__init__()
         config = tr.AutoConfig.from_pretrained(
@@ -61,15 +60,6 @@ class TransformerEmbedder(torch.nn.Module):
             for param in self.transformer_model.parameters():
                 param.requires_grad = False
 
-    @property
-    def hidden_size(self) -> int:
-        """
-        Returns the hidden size of the transformer.
-        :return: hidden size of self.transformer_model
-        """
-        multiplier = 4 if self.output_layer == "concat" else 1
-        return self.transformer_model.config.hidden_size * multiplier
-
     def forward(
         self,
         input_ids: torch.LongTensor,
@@ -81,13 +71,18 @@ class TransformerEmbedder(torch.nn.Module):
     ) -> WordsModelOutput:
         """
         Forward method of the PyTorch module.
-        :param input_ids: Input ids for the transformer model
-        :param offsets: Offsets of the sub-token, used to reconstruct the word embeddings
-        :param attention_mask: Attention mask for the transformer model
-        :param token_type_ids: Token type ids for the transformer model
-        :param args:
-        :param kwargs:
-        :return: the word embeddings
+
+        Args:
+            input_ids (torch.LongTensor): Input ids for the transformer model
+            offsets (torch.LongTensor): Offsets of the sub-token, used to reconstruct the word embeddings
+            attention_mask (torch.BoolTensor): Attention mask for the transformer model
+            token_type_ids (torch.LongTensor): Token type ids for the transformer model
+            *args ():
+            **kwargs ():
+
+        Returns:
+             the word embeddings
+
         """
         # Shape: [batch_size, num_subtoken, embedding_size].
         transformer_outputs = self.transformer_model(
@@ -124,11 +119,16 @@ class TransformerEmbedder(torch.nn.Module):
         self, embeddings: torch.Tensor, offsets: torch.Tensor = None
     ) -> torch.Tensor:
         """
-        Retrieve the word embeddings from the sub-tokens embeddings by either computing the
-        mean of the sub-tokens or taking one (first or last) as word representation.
-        :param embeddings: sub-tokens embeddings
-        :param offsets: offsets of the sub-tokens
-        :return: the word embeddings
+        Retrieve the word embeddings from the sub-tokens embeddings.
+        It computes the mean of the sub-tokens or taking one (first or last) as word representation.
+
+        Args:
+            embeddings (torch.Tensor): sub-tokens embeddings
+            offsets (torch.Tensor): offsets of the sub-tokens
+
+        Returns:
+            torch.Tensor: the word embeddings
+
         """
         # no offsets provided, returns the embeddings as they are.
         # subtoken_pooling parameter ignored.
@@ -161,10 +161,27 @@ class TransformerEmbedder(torch.nn.Module):
     ) -> torch.nn.Embedding:
         """
         Resizes input token embeddings matrix of the model if :obj:`new_num_tokens != config.vocab_size`.
-        new_num_tokens: The number of new tokens in the embedding matrix.
-        :return: Pointer to the input tokens Embeddings Module of the model.
+
+        Args:
+            new_num_tokens (int): The number of new tokens in the embedding matrix.
+
+        Returns:
+            torch.nn.Embedding: Pointer to the input tokens Embeddings Module of the model.
+
         """
         return self.transformer_model.resize_token_embeddings(new_num_tokens)
+
+    @property
+    def hidden_size(self) -> int:
+        """
+        Returns the hidden size of the transformer.
+
+        Returns:
+            int: hidden size of self.transformer_model
+
+        """
+        multiplier = 4 if self.output_layer == "concat" else 1
+        return self.transformer_model.config.hidden_size * multiplier
 
     @staticmethod
     def merge_subtoken_embeddings(
@@ -172,9 +189,15 @@ class TransformerEmbedder(torch.nn.Module):
     ) -> torch.Tensor:
         """
         Merge sub-tokens of a word by computing their mean.
-        :param embeddings: sub-tokens embeddings
-        :param span_mask: span_mask
-        :return: the word embeddings
+        Most of the code is taken from [AllenNLP](https://github.com/allenai/allennlp).
+
+        Args:
+            embeddings (torch.Tensor): sub-tokens embeddings
+            span_mask (torch.Tensor): span_mask
+
+        Returns:
+            torch.Tensor: the word embeddings
+
         """
         embeddings_sum = embeddings.sum(2)
         span_embeddings_len = span_mask.sum(2)
@@ -190,16 +213,25 @@ class TransformerEmbedder(torch.nn.Module):
     ) -> torch.Tensor:
         """
         Get the first or last sub-token as word representation.
-        :param embeddings: sub-token embeddings
-        :param position: 0 for first sub-token, -1 for last sub-token
-        :return: the word embeddings
+
+        Args:
+            embeddings (torch.Tensor): sub-token embeddings
+            position (int): 0 for first sub-token, -1 for last sub-token
+
+        Returns:
+            torch.Tensor: the word embeddings
+
         """
         return embeddings[:, :, position, :]
 
     def save_pretrained(self, save_directory: Union[str, Path]):
         """
         Save a model and its configuration file to a directory.
-        :param save_directory: Directory to which to save.
-        :return:
+
+        Args:
+            save_directory (`str` or `Path`): Directory to which to save
+
+        Returns:
+
         """
         self.transformer_model.save_pretrained(save_directory)

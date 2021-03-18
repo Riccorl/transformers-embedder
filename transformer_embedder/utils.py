@@ -44,7 +44,7 @@ def batched_span_select(
     # These indices will then get masked below, such that if the length
     # of a given span is smaller than the max, the rest of the values
     # are masked.
-    max_batch_span_width = span_widths.max().item() + 1
+    max_batch_span_width = span_widths.max().item() + 1  # TODO make it ONNX-compatible
 
     # Shape: (1, 1, max_batch_span_width)
     max_span_range_indices = get_range_vector(
