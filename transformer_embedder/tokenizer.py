@@ -38,7 +38,7 @@ class Tokenizer:
                 value=self.huggingface_tokenizer.pad_token_id,
                 length="subtoken",
             ),
-            "offsets": partial(self.pad_sequence, value=(0, 0), length="subtoken"),
+            "offsets": partial(self.pad_sequence, value=(0, 0), length="word"),
             "attention_mask": partial(
                 self.pad_sequence, value=False, length="subtoken"
             ),

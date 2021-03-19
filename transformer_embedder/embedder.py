@@ -103,7 +103,6 @@ class TransformerEmbedder(torch.nn.Module):
                 "output_layer parameter not valid, choose between `last`, `concat`, "
                 f"`sum`, `pooled`. Current value `{self.output_layer}`"
             )
-        # outputs = {"word_embeddings": self.get_word_embeddings(embeddings, offsets)}
         word_embeddings = self.get_word_embeddings(embeddings, offsets)
         if self.return_all:
             return WordsModelOutput(
