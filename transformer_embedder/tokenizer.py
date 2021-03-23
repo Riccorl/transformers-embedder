@@ -58,6 +58,12 @@ class Tokenizer:
             "token_type_ids",
         }
 
+    def __len__(self):
+        """
+        Size of the full vocabulary with the added tokens.
+        """
+        return len(self.huggingface_tokenizer)
+
     def __call__(
         self,
         text: Union[List[List[str]], List[str], str],
@@ -263,7 +269,7 @@ class Tokenizer:
                 input_ids += [self.huggingface_tokenizer.cls_token_id]
                 token_type_ids += [token_type_id]
                 # first offset
-                offsets.append((1, 1))
+                offsets.append((0, 0))
         else:
             token_type_id = self.token_type_id
             # check if the input needs an additional sep token
@@ -271,18 +277,18 @@ class Tokenizer:
             if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP):
                 input_ids += [self.huggingface_tokenizer.sep_token_id]
                 token_type_ids += [token_type_id]
-                offsets.append((len(input_ids), len(input_ids)))
+                offsets.append((len(input_ids) - 1, len(input_ids) - 1))
         for w in sentence:
             ids = self.huggingface_tokenizer(w, add_special_tokens=False)["input_ids"]
             # if max_len exceeded, stop (leave space for closing token)
             if len(input_ids) + len(ids) >= max_len - 1:
                 break
             # token offset before wordpiece, (start, end + 1)
-            offsets.append((len(input_ids) + 1, len(input_ids) + len(ids)))
+            offsets.append((len(input_ids), len(input_ids) + len(ids) - 1))
             input_ids += ids
             token_type_ids += [token_type_id] * len(ids)
         # last offset
-        offsets.append((len(input_ids) + 1, len(input_ids) + 1))
+        offsets.append((len(input_ids), len(input_ids)))
         input_ids += [self.huggingface_tokenizer.sep_token_id]
         token_type_ids += [token_type_id]
         return input_ids, token_type_ids, offsets
