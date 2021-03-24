@@ -38,7 +38,7 @@ class Tokenizer:
                 value=self.huggingface_tokenizer.pad_token_id,
                 length="subtoken",
             ),
-            "offsets": partial(self.pad_sequence, value=(0, 0), length="word"),
+            "offsets": partial(self.pad_sequence, value=(-1, -1), length="word"),
             "attention_mask": partial(
                 self.pad_sequence, value=False, length="subtoken"
             ),
@@ -59,9 +59,7 @@ class Tokenizer:
         }
 
     def __len__(self):
-        """
-        Size of the full vocabulary with the added tokens.
-        """
+        """Size of the full vocabulary with the added tokens."""
         return len(self.huggingface_tokenizer)
 
     def __call__(
