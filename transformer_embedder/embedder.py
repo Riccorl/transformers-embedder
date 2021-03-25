@@ -27,7 +27,7 @@ class TransformerEmbedder(torch.nn.Module):
 
     def __init__(
         self,
-        model_name: str,
+        model_name: Union[str, tr.PreTrainedModel],
         subtoken_pooling: str = "first",
         output_layer: str = "last",
         fine_tune: bool = True,
@@ -37,7 +37,7 @@ class TransformerEmbedder(torch.nn.Module):
         Embeddings of words from various transformer architectures from Huggingface Trasnformers API.
 
         Args:
-            model_name (): name of the transformer model
+            model_name (`str` or `tr.PreTrainedModel`): transformer model to use
                 (https://huggingface.co/transformers/pretrained_models.html).
             subtoken_pooling (): how to get back word embeddings from sub-tokens. First sub-token (`first`),
                 the last sub-token (`last`), or the mean of all the sub-tokens of the word (`mean`). `none`
@@ -49,10 +49,13 @@ class TransformerEmbedder(torch.nn.Module):
             return_all (): if `True`, returns all the outputs from the HuggingFace model.
         """
         super().__init__()
-        config = tr.AutoConfig.from_pretrained(
-            model_name, output_hidden_states=True, output_attention=True
-        )
-        self.transformer_model = tr.AutoModel.from_pretrained(model_name, config=config)
+        if isinstance(model_name, str):
+            config = tr.AutoConfig.from_pretrained(
+                model_name, output_hidden_states=True, output_attention=True
+            )
+            self.transformer_model = tr.AutoModel.from_pretrained(model_name, config=config)
+        else:
+            self.transformer_model = model_name
         self.subtoken_pooling = subtoken_pooling
         self.output_layer = output_layer
         self.return_all = return_all

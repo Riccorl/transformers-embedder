@@ -18,11 +18,22 @@ utils.get_logger("transformers")
 class Tokenizer:
     """Tokenizer class."""
 
-    def __init__(self, model_name: str, language: str = "xx_sent_ud_sm"):
-        # init huggingface tokenizer
-        self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model_name)
-        # get config
-        self.config = tr.AutoConfig.from_pretrained(model_name)
+    def __init__(
+        self,
+        model_name: Union[str, tr.PreTrainedTokenizer],
+        language: str = "xx_sent_ud_sm",
+        tokenizer_class: tr.PreTrainedTokenizer = tr.AutoTokenizer,
+    ):
+        if isinstance(model_name, str):
+            # init huggingface tokenizer
+            self.huggingface_tokenizer = tokenizer_class.from_pretrained(model_name)
+            # get config
+            self.config = tr.AutoConfig.from_pretrained(model_name)
+        else:
+            self.huggingface_tokenizer = model_name
+            self.config = tr.AutoConfig.from_pretrained(
+                self.huggingface_tokenizer.name_or_path
+            )
         # spacy tokenizer, lazy load. None at first
         self.spacy_tokenizer = None
         # default multilingual model
