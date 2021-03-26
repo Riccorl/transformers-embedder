@@ -20,17 +20,16 @@ class Tokenizer:
 
     def __init__(
         self,
-        model_name: Union[str, tr.PreTrainedTokenizer],
+        model: Union[str, tr.PreTrainedTokenizer],
         language: str = "xx_sent_ud_sm",
-        tokenizer_class: tr.PreTrainedTokenizer = tr.AutoTokenizer,
     ):
-        if isinstance(model_name, str):
+        if isinstance(model, str):
             # init huggingface tokenizer
-            self.huggingface_tokenizer = tokenizer_class.from_pretrained(model_name)
+            self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model)
             # get config
-            self.config = tr.AutoConfig.from_pretrained(model_name)
+            self.config = tr.AutoConfig.from_pretrained(model)
         else:
-            self.huggingface_tokenizer = model_name
+            self.huggingface_tokenizer = model
             self.config = tr.AutoConfig.from_pretrained(
                 self.huggingface_tokenizer.name_or_path
             )
@@ -50,10 +49,8 @@ class Tokenizer:
                 length="subtoken",
             ),
             "offsets": partial(self.pad_sequence, value=(-1, -1), length="word"),
-            "attention_mask": partial(
-                self.pad_sequence, value=False, length="subtoken"
-            ),
-            "word_mask": partial(self.pad_sequence, value=False, length="word"),
+            "attention_mask": partial(self.pad_sequence, value=0, length="subtoken"),
+            "word_mask": partial(self.pad_sequence, value=0, length="word"),
             "token_type_ids": partial(
                 self.pad_sequence,
                 value=self.token_type_id,
@@ -245,8 +242,8 @@ class Tokenizer:
                 else 1
             )
 
-        word_mask = [True] * len_pair  # for original tokens
-        attention_mask = [True] * len(input_ids)
+        word_mask = [1] * len_pair  # for original tokens
+        attention_mask = [1] * len(input_ids)
         return {
             "input_ids": input_ids,
             "offsets": offsets,

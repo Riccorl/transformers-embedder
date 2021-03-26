@@ -27,7 +27,7 @@ class TransformerEmbedder(torch.nn.Module):
 
     def __init__(
         self,
-        model_name: Union[str, tr.PreTrainedModel],
+        model: Union[str, tr.PreTrainedModel],
         subtoken_pooling: str = "first",
         output_layer: str = "last",
         fine_tune: bool = True,
@@ -37,7 +37,7 @@ class TransformerEmbedder(torch.nn.Module):
         Embeddings of words from various transformer architectures from Huggingface Trasnformers API.
 
         Args:
-            model_name (`str` or `tr.PreTrainedModel`): transformer model to use
+            model (`str` or `tr.PreTrainedModel`): transformer model to use
                 (https://huggingface.co/transformers/pretrained_models.html).
             subtoken_pooling (): how to get back word embeddings from sub-tokens. First sub-token (`first`),
                 the last sub-token (`last`), or the mean of all the sub-tokens of the word (`mean`). `none`
@@ -49,13 +49,13 @@ class TransformerEmbedder(torch.nn.Module):
             return_all (): if `True`, returns all the outputs from the HuggingFace model.
         """
         super().__init__()
-        if isinstance(model_name, str):
+        if isinstance(model, str):
             config = tr.AutoConfig.from_pretrained(
-                model_name, output_hidden_states=True, output_attention=True
+                model, output_hidden_states=True, output_attention=True
             )
-            self.transformer_model = tr.AutoModel.from_pretrained(model_name, config=config)
+            self.transformer_model = tr.AutoModel.from_pretrained(model, config=config)
         else:
-            self.transformer_model = model_name
+            self.transformer_model = model
         self.subtoken_pooling = subtoken_pooling
         self.output_layer = output_layer
         self.return_all = return_all
@@ -87,10 +87,17 @@ class TransformerEmbedder(torch.nn.Module):
              the word embeddings
 
         """
+        # Some of the huggingface models don't have the
+        # token_type_ids parameter and fail even when it's given as None.
+        max_type_id = token_type_ids.max()
+        if max_type_id == 0:
+            token_type_ids = None
+        inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
+        if token_type_ids is not None:
+            inputs["token_type_ids"] = token_type_ids
+
         # Shape: [batch_size, num_subtoken, embedding_size].
-        transformer_outputs = self.transformer_model(
-            input_ids, attention_mask, token_type_ids
-        )
+        transformer_outputs = self.transformer_model(**inputs)
         if self.output_layer == "last":
             embeddings = transformer_outputs.last_hidden_state
         elif self.output_layer == "concat":

@@ -77,7 +77,7 @@ If you also want all the outputs from the HuggingFace model, you can set `return
 class TransformerEmbedder(torch.nn.Module):
     def __init__(
         self,
-        model_name: str,
+        model: str,
         subtoken_pooling: str = "first",
         output_layer: str = "last",
         fine_tune: bool = True,
