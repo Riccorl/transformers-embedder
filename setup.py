@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="transformer_embedder",  # Replace with your own username
-    version="1.7.1",
+    version="1.7.2",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",
@@ -21,6 +21,6 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["torch>=1.7,<1.9", "transformers>=4.3<4.5", "spacy>=3.0,<3.1"],
+    install_requires=["torch>=1.5,<1.9", "transformers>=4.3<4.6", "spacy>=3.0,<3.1"],
     python_requires=">=3.6",
 )
