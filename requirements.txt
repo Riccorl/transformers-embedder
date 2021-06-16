@@ -1,3 +1,3 @@
-torch>=1.7,<1.9
+torch>=1.7,<1.10
 transformers>=4.3,<4.7
 spacy>=3.0,<3.1
