@@ -21,6 +21,6 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["torch>=1.5,<1.10", "transformers>=4.3<4.6", "spacy>=3.0,<3.1"],
+    install_requires=["torch>=1.5,<1.10", "transformers>=4.3<4.9", "spacy>=3.0,<3.1"],
     python_requires=">=3.6",
 )
