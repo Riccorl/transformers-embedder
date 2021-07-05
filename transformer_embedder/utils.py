@@ -177,7 +177,7 @@ def get_range_vector(size: int, device: int) -> torch.Tensor:
     It is meant to avoid copy data from CPU to GPU.
     """
     if device > -1:
-        return torch.as_tensor(size).to(device).fill_(1).cumsum(0) - 1
+        return torch.as_tensor(size).device(device).fill_(1).cumsum(0) - 1
     return torch.arange(0, size, dtype=torch.long)
 
 
