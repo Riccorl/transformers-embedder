@@ -101,7 +101,7 @@ class Tokenizer:
             "offsets",
             "attention_mask",
             "token_type_ids",
-            "sentence_length"
+            "sentence_lengths"
 
         """
         # type checking before everything
@@ -211,35 +211,33 @@ class Tokenizer:
         Returns:
             a dictionary with A and B encoded
         """
-        input_ids, token_type_ids, offsets = self._build_tokens(text, max_len=max_len)
-        len_pair = len(text) + (
-            2 if isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN) else 1
-        )
+        words, input_ids, token_type_ids, offsets = self._build_tokens(text, max_len=max_len)
         if text_pair:
-            input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(text_pair, True, max_len)
+            words_b, input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(
+                text_pair, True, max_len
+            )
             # align offsets of sentence b
             offsets_b = [(o[0] + len(input_ids), o[1] + len(input_ids)) for o in offsets_b]
             offsets = offsets + offsets_b
             input_ids += input_ids_b
             token_type_ids += token_type_ids_b
-            len_pair += len(text_pair) + (
-                2 if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP) else 1
-            )
+            words += words_b
 
-        word_mask = [1] * len_pair  # for original tokens
+        word_mask = [1] * len(words)  # for original tokens
         attention_mask = [1] * len(input_ids)
         return {
+            "words": words,
             "input_ids": input_ids,
             "offsets": offsets,
             "attention_mask": attention_mask,
             "word_mask": word_mask,
             "token_type_ids": token_type_ids,
-            "sentence_length": len_pair,
+            "sentence_lengths": len(words),
         }
 
     def _build_tokens(
         self, sentence: List[str], is_b: bool = False, max_len: int = math.inf
-    ) -> Tuple[list, list, List[Tuple[int, int]]]:
+    ) -> Tuple[list, list, list, List[Tuple[int, int]]]:
         """
         Encode the sentence for transformer model.
 
@@ -251,11 +249,12 @@ class Tokenizer:
         Returns:
             Tuple: The encoded sentence.
         """
-        input_ids, token_type_ids, offsets = [], [], []
+        words, input_ids, token_type_ids, offsets = [], [], [], []
         if not is_b:
             token_type_id = 0
             # some models don't need starting special token
             if isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN):
+                words += [self.huggingface_tokenizer.cls_token]
                 input_ids += [self.huggingface_tokenizer.cls_token_id]
                 token_type_ids += [token_type_id]
                 # first offset
@@ -265,6 +264,7 @@ class Tokenizer:
             # check if the input needs an additional sep token
             # XLM-R for example wants an additional `</s>` between text pairs
             if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP):
+                words += [self.huggingface_tokenizer.sep_token]
                 input_ids += [self.huggingface_tokenizer.sep_token_id]
                 token_type_ids += [token_type_id]
                 offsets.append((len(input_ids) - 1, len(input_ids) - 1))
@@ -275,13 +275,15 @@ class Tokenizer:
                 break
             # token offset before wordpiece, (start, end + 1)
             offsets.append((len(input_ids), len(input_ids) + len(ids) - 1))
+            words += [w]
             input_ids += ids
             token_type_ids += [token_type_id] * len(ids)
         # last offset
         offsets.append((len(input_ids), len(input_ids)))
+        words += [self.huggingface_tokenizer.sep_token]
         input_ids += [self.huggingface_tokenizer.sep_token_id]
         token_type_ids += [token_type_id]
-        return input_ids, token_type_ids, offsets
+        return words, input_ids, token_type_ids, offsets
 
     def pad_batch(self, batch: Dict[str, list], max_length: int = None) -> Dict[str, list]:
         """
@@ -300,7 +302,7 @@ class Tokenizer:
         else:
             # get maximum len inside a batch
             self.subtoken_max_batch_len = max(len(x) for x in batch["input_ids"])
-            self.word_max_batch_len = max(x for x in batch["sentence_length"])
+            self.word_max_batch_len = max(x for x in batch["sentence_lengths"])
         for key in batch.keys():
             if key in self.padding_ops.keys():
                 batch[key] = [self.padding_ops[key](b) for b in batch[key]]
