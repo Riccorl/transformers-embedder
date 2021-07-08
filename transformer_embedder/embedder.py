@@ -2,10 +2,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union, Tuple
 
-import torch
 import transformers as tr
 
 from transformer_embedder import utils
+
+if utils.is_torch_available():
+    import torch
 
 logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
@@ -15,11 +17,11 @@ utils.get_logger("transformers")
 class WordsModelOutput(tr.file_utils.ModelOutput):
     """Class for model's outputs."""
 
-    word_embeddings: torch.Tensor = None
-    last_hidden_state: torch.FloatTensor = None
-    pooler_output: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor]] = None
-    attentions: Optional[Tuple[torch.FloatTensor]] = None
+    word_embeddings: "torch.Tensor" = None
+    last_hidden_state: "torch.FloatTensor" = None
+    pooler_output: "torch.FloatTensor" = None
+    hidden_states: Optional[Tuple["torch.FloatTensor"]] = None
+    attentions: Optional[Tuple["torch.FloatTensor"]] = None
 
 
 class TransformerEmbedder(torch.nn.Module):

@@ -3,13 +3,18 @@ from collections import UserDict
 from functools import partial
 from typing import List, Dict, Union, Tuple, Any
 
-import spacy
-import torch
+
 import transformers as tr
-from spacy.cli.download import download as spacy_download
 
 from transformer_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
 from transformer_embedder import utils
+
+if utils.is_torch_available():
+    import torch
+
+if utils.is_spacy_available():
+    import spacy
+    from spacy.cli.download import download as spacy_download
 
 logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
@@ -171,7 +176,7 @@ class Tokenizer:
         text_pair: List[List[str]] = None,
         max_len: int = math.inf,
     ) -> Union[
-        Dict[str, torch.Tensor],
+        Dict[str, "torch.Tensor"],
         List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]],
     ]:
         """
@@ -310,11 +315,11 @@ class Tokenizer:
 
     def pad_sequence(
         self,
-        sequence: Union[List, torch.Tensor],
+        sequence: Union[List, "torch.Tensor"],
         value: Any,
         length: Union[int, str] = "subtoken",
         pad_to_left: bool = False,
-    ) -> Union[List, torch.Tensor]:
+    ) -> Union[List, "torch.Tensor"]:
         """
         Pad the input to the specified length with the given value.
 
@@ -422,7 +427,7 @@ class Tokenizer:
             names = {names}
         self.to_tensor_inputs |= names
 
-    def to_tensor(self, batch: Union[List[dict], dict]) -> Dict[str, torch.Tensor]:
+    def to_tensor(self, batch: Union[List[dict], dict]) -> Dict[str, "torch.Tensor"]:
         """
         Return a the batch in input as Pytorch tensors.
         The fields that are converted in tensors are in `self.to_tensor_inputs`. By default, only the
@@ -441,7 +446,7 @@ class Tokenizer:
         }
         return batch
 
-    def _load_spacy(self) -> spacy.tokenizer.Tokenizer:
+    def _load_spacy(self) -> "spacy.tokenizer.Tokenizer":
         """
         Download and load spacy model.
 

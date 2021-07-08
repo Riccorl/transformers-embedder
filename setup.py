@@ -3,9 +3,13 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+extras = {"torch": ["torch>=1.5,<1.10"], "spacy": ["spacy>=3.0,<3.1"]}
+
+install_requires = ["transformers>=4.3<4.9"]
+
 setuptools.setup(
     name="transformer_embedder",  # Replace with your own username
-    version="1.7.11",
+    version="1.7.12",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",
@@ -21,6 +25,7 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["torch>=1.5,<1.10", "transformers>=4.3<4.9", "spacy>=3.0,<3.1"],
+    extras_require=extras,
+    install_requires=install_requires,
     python_requires=">=3.6",
 )
