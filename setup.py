@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-extras = {"torch": ["torch>=1.5,<1.10"], "spacy": ["spacy>=3.0,<3.1"]}
+extras = {"torch": ["torch>=1.5,<1.10"], "spacy": ["spacy>=3.0,<3.2"]}
 
 install_requires = ["transformers>=4.3<4.9"]
 
