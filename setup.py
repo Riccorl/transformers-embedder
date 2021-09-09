@@ -3,13 +3,16 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-extras = {"torch": ["torch>=1.5,<1.10"], "spacy": ["spacy>=3.0,<3.2"]}
+extras = {}
+extras["torch"] = ["torch>=1.5,<1.10"]
+extras["spacy"] = ["spacy>=3.0,<3.2"]
+extras["all"] = extras["torch"] + extras["spacy"]
 
-install_requires = ["transformers>=4.3<4.9"]
+install_requires = ["transformers>=4.3,<4.9"]
 
 setuptools.setup(
     name="transformer_embedder",  # Replace with your own username
-    version="1.7.13",
+    version="1.7.14",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",

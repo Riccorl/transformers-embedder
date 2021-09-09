@@ -49,6 +49,16 @@ class TransformerEmbedder(torch.nn.Module):
                 layers (`sum`), the pooled output (`pooled`).
             fine_tune (): if `True`, the transformer model is fine-tuned during training.
             return_all (): if `True`, returns all the outputs from the HuggingFace model.
+        
+        Args:
+            model (str or :obj:`transformers.PreTrainedModel`): A string with the name of the model
+                or a :obj:`transformers.PreTrainedModel` object.
+            subtoken_pooling (str, optional): Method for pooling the sub-tokens. Can either be `first`, `last`, `mean`, or `sum`.
+            output_layer (str, optional): Method for pooling the word embeddings. Can either be `last`, `concat`,
+                `sum`, `pooled`, or `none`.
+            fine_tune (bool, optional): Whether to fine-tune the model.
+            return_all (bool, optional): Whether to return all outputs of the model.
+
         """
         super().__init__()
         if isinstance(model, str):
@@ -78,15 +88,21 @@ class TransformerEmbedder(torch.nn.Module):
         Forward method of the PyTorch module.
 
         Args:
-            input_ids (torch.LongTensor): Input ids for the transformer model
-            offsets (torch.LongTensor): Offsets of the sub-token, used to reconstruct the word embeddings
-            attention_mask (torch.BoolTensor): Attention mask for the transformer model
-            token_type_ids (torch.LongTensor): Token type ids for the transformer model
-            *args ():
-            **kwargs ():
+            input_ids (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`):
+                Indices of input sequence tokens in the vocabulary.
+            offsets (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, optional):
+                Offsets of the sub-token, used to reconstruct the word embeddings.
+            attention_mask (:obj:`torch.BoolTensor` of shape :obj:`(batch_size, sequence_length)`, optional):
+                Mask to avoid performing attention on padding token indices.
+            token_type_ids (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, optional):
+                Segment token indices to indicate first and second portions of the inputs.
+            args: 
+                Additional positional arguments.
+            kwargs: 
+                Additional keyword arguments.
 
         Returns:
-             the word embeddings
+            :obj:`WordsModelOutput`: The output of the model.
 
         """
         # Some of the huggingface models don't have the
@@ -134,11 +150,13 @@ class TransformerEmbedder(torch.nn.Module):
         It computes the mean of the sub-tokens or taking one (first or last) as word representation.
 
         Args:
-            embeddings (torch.Tensor): sub-tokens embeddings
-            offsets (torch.Tensor): offsets of the sub-tokens
+            embeddings (:obj:`torch.Tensor` of shape :obj:`(batch_size, num_subtoken, embedding_size)`):
+                Sub-tokens embeddings.
+            offsets (:obj:`torch.LongTensor` of shape :obj:`(batch_size, num_subtoken)`, optional):
+                Offsets of the sub-tokens.
 
         Returns:
-            torch.Tensor: the word embeddings
+            :obj:`torch.Tensor`: The word embeddings.
 
         """
         # no offsets provided, returns the embeddings as they are.
