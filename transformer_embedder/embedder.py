@@ -49,7 +49,7 @@ class TransformerEmbedder(torch.nn.Module):
                 layers (`sum`), the pooled output (`pooled`).
             fine_tune (): if `True`, the transformer model is fine-tuned during training.
             return_all (): if `True`, returns all the outputs from the HuggingFace model.
-        
+
         Args:
             model (str or :obj:`transformers.PreTrainedModel`): A string with the name of the model
                 or a :obj:`transformers.PreTrainedModel` object.
@@ -96,9 +96,9 @@ class TransformerEmbedder(torch.nn.Module):
                 Mask to avoid performing attention on padding token indices.
             token_type_ids (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, optional):
                 Segment token indices to indicate first and second portions of the inputs.
-            args: 
+            args:
                 Additional positional arguments.
-            kwargs: 
+            kwargs:
                 Additional keyword arguments.
 
         Returns:
