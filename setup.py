@@ -8,7 +8,7 @@ extras["torch"] = ["torch>=1.5,<1.10"]
 extras["spacy"] = ["spacy>=3.0,<3.2"]
 extras["all"] = extras["torch"] + extras["spacy"]
 
-install_requires = ["transformers>=4.3,<4.11"]
+install_requires = ["transformers>=4.3,<4.12"]
 
 setuptools.setup(
     name="transformer_embedder",  # Replace with your own username
