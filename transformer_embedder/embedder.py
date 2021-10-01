@@ -65,7 +65,9 @@ class TransformerEmbedder(torch.nn.Module):
             self.config = tr.AutoConfig.from_pretrained(
                 model, output_hidden_states=True, output_attention=True
             )
-            self.transformer_model = tr.AutoModel.from_pretrained(model, config=self.config)
+            self.transformer_model = tr.AutoModel.from_pretrained(
+                model, config=self.config
+            )
         else:
             self.transformer_model = model
         self.subtoken_pooling = subtoken_pooling
