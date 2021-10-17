@@ -1,3 +1,5 @@
+# Transformer Embedder
+
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/Riccorl/transformer-embedder)
 [![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
 [![PyTorch](https://img.shields.io/badge/PyTorch-orange?logo=pytorch)](https://pytorch.org/)
@@ -6,9 +8,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
 
-# Transformer Embedder
-
-A Word Level Transformer layer based on PyTorch and 🤗 Transformers. 
+A Word Level Transformer layer based on PyTorch and 🤗 Transformers.
 
 ## How to use
 
@@ -51,7 +51,6 @@ torch.Size([1, 5, 768])
 5
 ```
 
-
 ## Info
 
 One of the annoyance of using transfomer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this library it's as easy as using 🤗Transformers API to get word-level embeddings from theoretically every transformer model it supports.
@@ -72,7 +71,7 @@ There are also multiple type of outputs you can get using `output_layer` paramet
 - `sum`: returns the sum of the last four hidden states of the transformer model
 - `pooled`: returns the output of the pooling layer
 
-If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them. 
+If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
 
 ```python
 class TransformerEmbedder(torch.nn.Module):
@@ -93,6 +92,7 @@ can pass raw sentences, pre-tokenized sentences and sentences in batch. It will 
 with the inputs for the model. By passing `return_tensors=True` it will return the inputs as `torch.Tensor`.
 
 By default, if you pass text (or batch) as strings, it splits them on spaces
+
 ```python
 text = "This is a sample sentence"
 tokenizer(text)
@@ -100,7 +100,9 @@ tokenizer(text)
 text = ["This is a sample sentence", "This is another sample sentence"]
 tokenizer(text)
 ```
+
 You can also use SpaCy to pre-tokenize the inputs into words first, using `use_spacy=True`
+
 ```python
 text = "This is a sample sentence"
 tokenizer(text, use_spacy=True)
@@ -193,6 +195,7 @@ tokenizer(batch, batch_pair, padding=True, return_tensors=True)
 
 It is possible to add custom fields to the model input and tell the `tokenizer` how to pad them using `add_padding_ops`.
 Start by simply tokenizing the input (without padding or tensor mapping)
+
 ```python
 import transformer_embedder as tre
 
@@ -218,11 +221,11 @@ custom_fields = {
 inputs.update(custom_fields)
 ```
 
-Now we can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input 
+Now we can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input
+
 - `key`: name of the field in the tokenzer input
 - `value`: value to use for padding
 - `length`: length to pad. It can be an `int`, or two string value, `subtoken` in which the element is padded to the batch max length relative to the sub-tokens length, and `word` where the element is padded to the batch max length relative to the original word length
-
 
 ```python
 tokenizer.add_padding_ops("custom_filed_1", 0, "word")
@@ -290,6 +293,7 @@ For a complete list of languages and models, you can go [here](https://spacy.io/
 ## To-Do
 
 Future developments
+
 - [X] Add an optional word tokenizer, maybe using SpaCy
 - [X] Add `add_special_tokens` wrapper
 - [X] Make `pad_batch` function more general
@@ -303,5 +307,5 @@ Future developments
 
 ## Acknowledgements
 
-Most of the code in the `TransformerEmbedder` class is taken from the [AllenNLP](https://github.com/allenai/allennlp) 
+Most of the code in the `TransformerEmbedder` class is taken from the [AllenNLP](https://github.com/allenai/allennlp)
 library. The pretrained models and the core of the tokenizer is from [🤗 Transformers](https://huggingface.co/transformers/).
