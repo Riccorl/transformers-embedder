@@ -44,9 +44,9 @@ MODELS_WITH_DOUBLE_SEP = (
     XLMRobertaTokenizerFast,
 )
 
-from transformer_embedder import utils
+from transformers_embedder import utils
 
 if utils.is_torch_available():
-    from transformer_embedder.embedder import TransformerEmbedder
+    from transformers_embedder.embedder import TransformersEmbedder
 
-from transformer_embedder.tokenizer import Tokenizer
+from transformers_embedder.tokenizer import Tokenizer

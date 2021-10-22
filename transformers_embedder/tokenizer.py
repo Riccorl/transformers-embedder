@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from collections import UserDict
 from functools import partial
@@ -5,9 +7,9 @@ from typing import List, Dict, Union, Tuple, Any
 
 import transformers as tr
 
-from transformer_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
-from transformer_embedder import utils
-from transformer_embedder.utils import is_torch_available, is_spacy_available
+from transformers_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
+from transformers_embedder import utils
+from transformers_embedder.utils import is_torch_available, is_spacy_available
 
 if is_torch_available():
     import torch
@@ -21,27 +23,25 @@ utils.get_logger("transformers")
 
 
 class Tokenizer:
-    """Tokenizer class."""
+    """
+    A wrapper class for HuggingFace Tokenizer.
 
-    def __init__(
-        self,
-        model: Union[str, tr.PreTrainedTokenizer],
-        language: str = "xx_sent_ud_sm",
-    ):
+    Args:
+        model (:obj:`str`, :obj:`transformers.PreTrainedTokenizer`):
+            Language model name (or a transformer :obj:`PreTrainedTokenizer`.
+    """
+
+    def __init__(self, model: Union[str, tr.PreTrainedTokenizer]):
         if isinstance(model, str):
-            # init huggingface tokenizer
+            # init HuggingFace tokenizer
             self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model)
             # get config
             self.config = tr.AutoConfig.from_pretrained(model)
         else:
             self.huggingface_tokenizer = model
-            self.config = tr.AutoConfig.from_pretrained(
-                self.huggingface_tokenizer.name_or_path
-            )
-        # spacy tokenizer, lazy load. None at first
+            self.config = tr.AutoConfig.from_pretrained(self.huggingface_tokenizer.name_or_path)
+        # simple tokenizer used if the input is `str`
         self.spacy_tokenizer = None
-        # default multilingual model
-        self.language = language
         # padding stuff
         # default, batch length is model max length
         self.subtoken_max_batch_len = self.huggingface_tokenizer.model_max_length
@@ -53,7 +53,8 @@ class Tokenizer:
                 value=self.huggingface_tokenizer.pad_token_id,
                 length="subtoken",
             ),
-            "offsets": partial(self.pad_sequence, value=(-1, -1), length="word"),
+            # value is None because: (read `pad_sequence` doc)
+            "offsets": partial(self.pad_sequence, value=None, length="subtoken"),
             "attention_mask": partial(self.pad_sequence, value=0, length="subtoken"),
             "word_mask": partial(self.pad_sequence, value=0, length="word"),
             "token_type_ids": partial(
@@ -77,70 +78,53 @@ class Tokenizer:
 
     def __call__(
         self,
-        text: Union[List[List[str]], List[str], str],
-        text_pair: Union[List[List[str]], List[str], str] = None,
-        padding: bool = False,
+        text: Union[str, List[str], List[List[str]]],
+        text_pair: Union[str, List[str], List[List[str]]] = None,
+        padding: bool = True,
         max_length: int = 0,
+        return_tensors: bool = True,
         is_split_into_words: bool = False,
         use_spacy: bool = False,
-        return_tensors: bool = False,
         *args,
         **kwargs,
-    ):
+    ) -> ModelInputs:
         """
-        Prepare the text in input for the :obj:`TransformerEmbedder` module.
+        Prepare the text in input for models that uses HuggingFace as embeddings.
 
         Args:
-            text: Text or batch of text to be encoded.
-            text_pair: Text or batch of text to be encoded.
-            padding: If True, applies padding to the batch based on the maximum length of the batch.
-            max_length: If specified, truncates the input sequence to that value. Otherwise,
-            uses the model max length.
-            is_split_into_words: If True and the input is a string, the input is split on spaces.
-            use_spacy: If True, use :obj:`self.spacy_tokenizer`
-            return_tensors: If True, the outputs is converted to :obj:`torch.Tensor`
-            *args:
-            **kwargs:
+            text (:obj:`str`, :obj:`List[str]`, :obj:`List[List[str]]`, :obj:`List[List[Word]]`, :obj:`List[Word]`):
+                Text or batch of text to be encoded.
+            text_pair (:obj:`str`, :obj:`List[str]`, :obj:`List[List[str]]`, :obj:`List[List[Word]]`, :obj:`List[Word]`):
+                Text or batch of text to be encoded.
+            padding (:obj:`bool`, optional, defaults to :obj:`True`):
+                If :obj:`True`, applies padding to the batch based on the maximum length of the batch.
+            max_length (:obj:`int`, optional, defaults to :obj:`0`):
+                If specified, truncates the input sequence to that value. Otherwise,
+                uses the model max length.
+            return_tensors (:obj:`bool`, optional, defaults to :obj:`True`):
+                If :obj:`True`, the outputs is converted to :obj:`torch.Tensor`
+            is_split_into_words (:obj:`bool`, optional, defaults to :obj:`False`):
+                If :obj:`True` and the input is a string, the input is split on spaces.
+            use_spacy (:obj:`bool`, optional, defaults to :obj:`False`):
+                If :obj:`True` the input is split using SpaCy, otherwise it is split on spaces.
 
         Returns:
-            The input for the model as dictionary with the following keys:
-            "input_ids",
-            "offsets",
-            "attention_mask",
-            "token_type_ids",
-            "sentence_lengths"
+            :obj:`ModelInputs`: The inputs to the transformer model.
 
         """
         # type checking before everything
-        self._type_checking(text, text_pair)
-        if isinstance(text, str) and not use_spacy:
-            logger.warning(
-                "`text` field is of type `str`, splitting by spaces. "
-                "Set `use_spacy` to tokenize using spacy model."
-            )
+        # self._type_checking(text, text_pair)
 
         # check if input is batched or a single sample
         is_batched = bool(
-            (not is_split_into_words and isinstance(text, (list, tuple)))
-            or (
-                is_split_into_words
-                and isinstance(text, (list, tuple))
-                and text
-                and isinstance(text[0], (list, tuple))
-            )
+            isinstance(text, (list, tuple)) and text and isinstance(text[0], (list, tuple))
         )
 
         # if text is str or a list of str and they are not split, then text needs to be tokenized
-        if isinstance(text, str) or (
-            not is_split_into_words and isinstance(text[0], str)
-        ):
+        if isinstance(text, str) or (not is_split_into_words and isinstance(text[0], str)):
             if not is_batched:
                 text = self.pretokenize(text, use_spacy=use_spacy)
-                text_pair = (
-                    self.pretokenize(text_pair, use_spacy=use_spacy)
-                    if text_pair
-                    else None
-                )
+                text_pair = self.pretokenize(text_pair, use_spacy=use_spacy) if text_pair else None
             else:
                 text = [self.pretokenize(t, use_spacy=use_spacy) for t in text]
                 text_pair = (
@@ -158,23 +142,18 @@ class Tokenizer:
         else:
             if not padding and return_tensors:
                 logger.info(
-                    "`padding` is False and return_tensor is True. Cannot make tensors from "
-                    "not padded sequences. `padding` forced automatically to True"
+                    "`padding` is `False` and return_tensor is `True`. Cannot make tensors from "
+                    "not padded sequences. `padding` forced automatically to `True`"
                 )
                 padding = True
             output = self.build_tokens_batch(text, text_pair, max_length)
 
         # clean the output
         output = self._clean_output(output)
-
-        # pad batch
         if padding:
             output = self.pad_batch(output)
-
-        # convert to tensor
         if return_tensors:
             output = self.to_tensor(output)
-
         output = ModelInputs(output)
         return output
 
@@ -182,22 +161,22 @@ class Tokenizer:
         self,
         text: List[List[str]],
         text_pair: List[List[str]] = None,
-        max_len: int = math.inf,
-    ) -> Union[
-        Dict[str, "torch.Tensor"],
-        List[Dict[str, Union[list, List[Tuple[int, int]], List[bool]]]],
-    ]:
+        max_length: int = math.inf,
+    ) -> List[Dict[str, Union[list, int]]]:
         """
         Builds the batched input.
 
         Args:
-            text (List[List[str]]): Text or batch of text to be encoded.
-            text_pair (List[List[str]] or None): Text pair or batch of text to be encoded.
-            max_len (int): If specified, truncates the input sequence to that value. Otherwise,
-            uses the model max length.
+            text (:obj:`List[List[Word]]`, :obj:`List[Word]`):
+                Text or batch of text to be encoded.
+            text_pair (:obj:`List[List[Word]]`, :obj:`List[Word]`):
+                Text pair or batch of text to be encoded.
+           max_length (:obj:`int`, optional, defaults to :obj:`0`):
+                If specified, truncates the input sequence to that value. Otherwise,
+                uses the model max length.
 
         Returns:
-            The encoded batch
+            :obj:`List[Dict[str, Union[list, int]]]`: The encoded batch
 
         """
         batch = []
@@ -206,35 +185,35 @@ class Tokenizer:
             # regardless the presence of the text pairs
             text_pair = [None for _ in text]
         for t, t_p in zip(text, text_pair):
-            token_pair = self.build_tokens(t, t_p, max_len)
+            token_pair = self.build_tokens(t, t_p, max_length)
             batch.append(token_pair)
         return batch
 
     def build_tokens(
-        self, text: List[str], text_pair: List[str] = None, max_len: int = math.inf
+        self, text: List[str], text_pair: List[str] = None, max_length: int = math.inf
     ) -> Dict[str, Union[list, int]]:
         """
         Build transformer pair input.
 
         Args:
-            text (): sentence A
-            text_pair (): sentence B
-            max_len (): max length of the sequence
+            text (:obj:`List[Word]`):
+                Text to be encoded.
+            text_pair (:obj:`List[Word]`):
+                Text pair to be encoded.
+           max_length (:obj:`int`, optional, defaults to :obj:`0`):
+                If specified, truncates the input sequence to that value. Otherwise,
+                uses the model max length.
 
         Returns:
-            a dictionary with A and B encoded
+            :obj:`Dict[str, Union[list, int]]`: A dictionary with :obj:`text` and :obj:`text_pair` encoded.
         """
-        words, input_ids, token_type_ids, offsets = self._build_tokens(
-            text, max_len=max_len
-        )
+        words, input_ids, token_type_ids, offsets = self._build_tokens(text, max_length=max_length)
         if text_pair:
             words_b, input_ids_b, token_type_ids_b, offsets_b = self._build_tokens(
-                text_pair, True, max_len
+                text_pair, True, max_length
             )
             # align offsets of sentence b
-            offsets_b = [
-                (o[0] + len(input_ids), o[1] + len(input_ids)) for o in offsets_b
-            ]
+            offsets_b = [o + len(words) for o in offsets_b]
             offsets = offsets + offsets_b
             input_ids += input_ids_b
             token_type_ids += token_type_ids_b
@@ -242,6 +221,7 @@ class Tokenizer:
 
         word_mask = [1] * len(words)  # for original tokens
         attention_mask = [1] * len(input_ids)
+
         return {
             "words": words,
             "input_ids": input_ids,
@@ -253,20 +233,31 @@ class Tokenizer:
         }
 
     def _build_tokens(
-        self, sentence: List[str], is_b: bool = False, max_len: int = math.inf
-    ) -> Tuple[list, list, list, List[Tuple[int, int]]]:
+        self, text: List[str], is_b: bool = False, max_length: int = math.inf
+    ) -> Tuple[list, list, list, list]:
         """
         Encode the sentence for transformer model.
 
         Args:
-            sentence (List[str]): sentence to encode
-            is_b (bool): if it's the second sentence pair, skips first CLS token and set token_type_id to 1
-            max_len (int):
+            text (:obj:`List[Word]`):
+                Text to encode.
+            is_b (:obj:`bool`, optional, defaults to :obj:`False`):
+                if :obj:`True`, skips first :obj:`CLS` token and set token_type_id to :obj:`1`
+            max_length (:obj:`int`, optional, defaults to :obj:`0`):
+                If specified, truncates the input sequence to that value. Otherwise,
+                uses the model max length.
 
         Returns:
-            Tuple: The encoded sentence.
+            :obj:`Tuple`:
+                The encoded sentence, with :obj:`input_ids`, :obj:`token_type_ids` and :obj:`offsets`.
         """
-        words, input_ids, token_type_ids, offsets = [], [], [], []
+        # words
+        words = []
+        # HuggingFace model inputs
+        input_ids = []
+        token_type_ids = []
+        offsets = []
+        offset_starting_index = 0
         if not is_b:
             token_type_id = 0
             # some models don't need starting special token
@@ -275,7 +266,8 @@ class Tokenizer:
                 input_ids += [self.huggingface_tokenizer.cls_token_id]
                 token_type_ids += [token_type_id]
                 # first offset
-                offsets.append((0, 0))
+                offsets.append(0)
+                offset_starting_index = 1
         else:
             token_type_id = self.token_type_id
             # check if the input needs an additional sep token
@@ -284,36 +276,41 @@ class Tokenizer:
                 words += [self.huggingface_tokenizer.sep_token]
                 input_ids += [self.huggingface_tokenizer.sep_token_id]
                 token_type_ids += [token_type_id]
-                offsets.append((len(input_ids) - 1, len(input_ids) - 1))
-        for w in sentence:
-            ids = self.huggingface_tokenizer(w, add_special_tokens=False)["input_ids"]
+                offsets.append(0)
+                offset_starting_index = 1
+
+        for word_index, word in enumerate(text):
+            ids = self.huggingface_tokenizer(word, add_special_tokens=False)["input_ids"]
             # if max_len exceeded, stop (leave space for closing token)
-            if len(input_ids) + len(ids) >= max_len - 1:
+            if len(input_ids) + len(ids) >= max_length - 1:
                 break
             # token offset before wordpiece, (start, end + 1)
-            offsets.append((len(input_ids), len(input_ids) + len(ids) - 1))
-            words += [w]
+            # offsets.append((len(input_ids), len(input_ids) + len(ids) - 1))
+            offsets += [word_index + offset_starting_index] * len(ids)
+            words += [word]
             input_ids += ids
             token_type_ids += [token_type_id] * len(ids)
         # last offset
-        offsets.append((len(input_ids), len(input_ids)))
         words += [self.huggingface_tokenizer.sep_token]
         input_ids += [self.huggingface_tokenizer.sep_token_id]
         token_type_ids += [token_type_id]
+        offsets.append(len(words) - 1)  # -1 because we want the last index
         return words, input_ids, token_type_ids, offsets
 
     def pad_batch(
-        self, batch: Dict[str, list], max_length: int = None
-    ) -> Dict[str, list]:
+        self, batch: Union[ModelInputs, Dict[str, list]], max_length: int = None
+    ) -> ModelInputs:
         """
-        Pad the batch to its maximum length.
+        Pad the batch to its maximum length or to the specified :obj:`max_length`.
 
         Args:
-            batch (Dict[str, list]): the batch to pad
-            max_length (int): override maximum length of the batch
+            batch (:obj:`Dict[str, list]`):
+                The batch to pad.
+            max_length (:obj:`int`, optional):
+                Override maximum length of the batch.
 
         Returns:
-            Dict[str, list]: The padded batch
+            :obj:`Dict[str, list]`: The padded batch.
         """
         if max_length:
             self.subtoken_max_batch_len = max_length
@@ -322,30 +319,34 @@ class Tokenizer:
             # get maximum len inside a batch
             self.subtoken_max_batch_len = max(len(x) for x in batch["input_ids"])
             self.word_max_batch_len = max(x for x in batch["sentence_lengths"])
-        for key in batch.keys():
-            if key in self.padding_ops.keys():
+
+        for key in batch:
+            if key in self.padding_ops:
                 batch[key] = [self.padding_ops[key](b) for b in batch[key]]
-        return batch
+        return ModelInputs(batch)
 
     def pad_sequence(
         self,
-        sequence: Union[List, "torch.Tensor"],
-        value: Any,
+        sequence: Union[List, torch.Tensor],
+        value: Any = None,
         length: Union[int, str] = "subtoken",
         pad_to_left: bool = False,
-    ) -> Union[List, "torch.Tensor"]:
+    ) -> Union[List, torch.Tensor]:
         """
         Pad the input to the specified length with the given value.
 
         Args:
-            sequence (Union[List, torch.Tensor]):  element to pad, it can be either a :obj:`List`
-            or a :obj:`torch.Tensor`
-            value (Any): value to use as padding
-            length (Union[int, str]): length after pad
-            pad_to_left (bool): if True, pads to the left, right otherwise
+            sequence (:obj:`List`, :obj:`torch.Tensor`):
+                Element to pad, it can be either a :obj:`List` or a :obj:`torch.Tensor`.
+            value (:obj:`Any`, optional):
+                Value to use as padding.
+            length (:obj:`int`, :obj:`str`, optional, defaults to :obj:`subtoken`):
+                Length after pad.
+            pad_to_left (:obj:`bool`, optional, defaults to :obj:`False`):
+                If :obj:`True`, pads to the left, right otherwise.
 
         Returns:
-            Union[List, torch.Tensor]: the padded sequence
+            :obj:`List`, :obj:`torch.Tensor`: The padded sequence.
 
         """
         if length == "subtoken":
@@ -357,31 +358,38 @@ class Tokenizer:
                 raise ValueError(
                     f"`length` must be an `int`, `subtoken` or `word`. Current value is `{length}`"
                 )
+        if value is None:
+            # this is a trick used to pad the offset.
+            # here we want the offset pad to be the max offset index in the batch
+            # that is the maximum word length in the batch
+            value = self.word_max_batch_len - 1
         padding = [value] * abs(length - len(sequence))
-        if is_torch_available() and isinstance(sequence, torch.Tensor):
+        if isinstance(sequence, torch.Tensor):
             if len(sequence.shape) > 1:
                 raise ValueError(
                     f"Sequence tensor must be 1D. Current shape is `{len(sequence.shape)}`"
                 )
             padding = torch.as_tensor(padding)
         if pad_to_left:
-            if is_torch_available() and isinstance(sequence, torch.Tensor):
+            if isinstance(sequence, torch.Tensor):
                 return torch.cat((padding, sequence), -1)
             return padding + sequence
-        if is_torch_available() and isinstance(sequence, torch.Tensor):
+        if isinstance(sequence, torch.Tensor):
             return torch.cat((sequence, padding), -1)
         return sequence + padding
 
     def pretokenize(self, text: str, use_spacy: bool = False) -> List[str]:
         """
         Pre-tokenize the text in input, splitting on spaces or using SpaCy tokenizer if `use_spacy` is True.
+
         Args:
-            text (str): text to tokenize
-            use_spacy (bool): if True, uses a SpaCy tokenizer
+            text (:obj:`str`):
+                The text to pre-tokenize.
+            use_spacy (:obj:`bool`, optional, defaults to :obj:`False`):
+                If :obj:`True`, uses SpaCy tokenizer.
 
         Returns:
-            List[str]: the tokenized text
-
+            :obj:`List[str]`: The pre-tokenized text.
         """
         if use_spacy:
             if not self.spacy_tokenizer:
@@ -390,22 +398,21 @@ class Tokenizer:
             return [t.text for t in text]
         return text.split(" ")
 
-    def add_special_tokens(
-        self, special_tokens_dict: Dict[str, Union[str, tr.AddedToken]]
-    ) -> int:
+    def add_special_tokens(self, special_tokens_dict: Dict[str, Union[str, tr.AddedToken]]) -> int:
         """
         Add a dictionary of special tokens (eos, pad, cls, etc.) to the encoder.
         If special tokens are NOT in the vocabulary, they are added to it (indexed starting from the last
         index of the current vocabulary).
 
         Args:
-            special_tokens_dict (`dict`): the dictionary containing special tokens. Keys should be in
-            the list of predefined special attributes: [``bos_token``, ``eos_token``,
-            ``unk_token``, ``sep_token``, ``pad_token``, ``cls_token``, ``mask_token``,
-            ``additional_special_tokens``].
+            special_tokens_dict (:obj:`Dict`):
+                The dictionary containing special tokens. Keys should be in
+                the list of predefined special attributes: [``bos_token``, ``eos_token``,
+                ``unk_token``, ``sep_token``, ``pad_token``, ``cls_token``, ``mask_token``,
+                ``additional_special_tokens``].
 
         Returns:
-            int: Number of tokens added to the vocabulary.
+            :obj:`int`: Number of tokens added to the vocabulary.
 
         """
         return self.huggingface_tokenizer.add_special_tokens(special_tokens_dict)
@@ -413,14 +420,17 @@ class Tokenizer:
     def add_padding_ops(self, key: str, value: Any, length: Union[int, str]):
         """
         Add padding logic to custom fields.
-        If the field is not in `self.to_tensor_inputs`, this method will add the key to it.
+        If the field is not in :obj:`self.to_tensor_inputs`, this method will add the key to it.
 
         Args:
-            key (str): name of the field in the tokenzer input
-            value (Any): value to use for padding
-            length (int or str): length to pad. It can be an `int`, or two string value
-            `subtoken`: the element is padded to the batch max length relative to the subtokens length
-            `word`: the element is padded to the batch max length relative to the original word length
+            key (:obj:`str`):
+                Name of the field in the tokenizer input.
+            value (:obj:`Any`):
+                Value to use for padding.
+            length (:obj:`int`, :obj:`str`):
+                Length to pad. It can be an :obj:`int`, or two string value
+                - :obj:`subtoken`: the element is padded to the batch max length relative to the subtokens length
+                - :obj:`word`: the element is padded to the batch max length relative to the original word length
 
         Returns:
 
@@ -434,7 +444,8 @@ class Tokenizer:
         Add these keys to the ones that will be converted in Tensors.
 
         Args:
-            names (`str` or `set`): name of the field (or fields) to convert to tensors
+            names (:obj:`str`, :obj:`set`):
+                Name of the field (or fields) to convert to tensors.
 
         Returns:
 
@@ -443,40 +454,40 @@ class Tokenizer:
             names = {names}
         self.to_tensor_inputs |= names
 
-    def to_tensor(self, batch: Union[List[dict], dict]) -> Dict[str, "torch.Tensor"]:
+    def to_tensor(self, batch: Union[ModelInputs, List[dict], dict]) -> ModelInputs:
         """
         Return a the batch in input as Pytorch tensors.
-        The fields that are converted in tensors are in `self.to_tensor_inputs`. By default, only the
-        standard model inputs are converted. Use 'Tokenizer.add_to_tensor_inputs` to add custom fields.
+        The fields that are converted in tensors are in :obj:`self.to_tensor_inputs`. By default, only the
+        standard model inputs are converted. Use :obj:`self.add_to_tensor_inputs` to add custom fields.
 
         Args:
-            batch (List[dict] or dict): batch in input
+            batch (:obj:`List[dict]`, :obj:`dict`):
+                Batch in input.
 
         Returns:
-            Dict: the batch as tensor
+            :obj:`dict`: The batch as tensor.
 
         """
         # convert to tensor
         batch = {
-            k: torch.as_tensor(v) if k in self.to_tensor_inputs else v
+            k: torch.as_tensor(v)
+            if k in self.to_tensor_inputs and not isinstance(v, torch.Tensor)
+            else v
             for k, v in batch.items()
         }
-        return batch
+        return ModelInputs(batch)
 
     def _load_spacy(self) -> "spacy.tokenizer.Tokenizer":
         """
         Download and load spacy model.
 
         Returns:
-            spacy.tokenizer.Tokenizer: The spacy tokenizer loaded.
-
+            :obj:`spacy.tokenizer.Tokenizer`: The spacy tokenizer.
         """
         try:
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         except OSError:
-            logger.info(
-                f"Spacy model '{self.language}' not found. Downloading and installing."
-            )
+            logger.info(f"Spacy model '{self.language}' not found. Downloading and installing.")
             spacy_download(self.language)
             spacy_tagger = spacy.load(self.language, exclude=["ner", "parser"])
         self.spacy_tokenizer = spacy_tagger.tokenizer
@@ -488,10 +499,11 @@ class Tokenizer:
         Clean before output.
 
         Args:
-            output (Union[List, Dict]): the output to clean
+            output (:obj`List[dict]`, :obj:`dict`):
+                The output to clean.
 
         Returns:
-            Dict: the cleaned output
+            :obj:`dict`: The cleaned output.
 
         """
         # single sentence case, generalize
@@ -502,14 +514,15 @@ class Tokenizer:
         return output
 
     @staticmethod
-    def _get_token_type_id(config) -> int:
+    def _get_token_type_id(config: tr.PretrainedConfig) -> int:
         """
         Get token type id. Useful when dealing with models that don't accept 1 as type id.
         Args:
-            config (): transformer config
+            config (:obj:`transformers.PretrainedConfig`):
+                Transformer config.
 
         Returns:
-            int: correct token tyoe id for that model
+            :obj:`int`: Correct token type id for that model.
 
         """
         if hasattr(config, "type_vocab_size"):
@@ -522,8 +535,10 @@ class Tokenizer:
         Checks type of the inputs.
 
         Args:
-            text ():
-            text_pair ():
+            text (:obj:`Any`):
+                Text to check.
+            text_pair (:obj:`Any`):
+                Text pair to check.
 
         Returns:
 
@@ -534,10 +549,11 @@ class Tokenizer:
             Check if input type is correct, returning a boolean.
 
             Args:
-                text_to_check (): text to check
+                text_to_check (:obj:`Any`):
+                    text to check.
 
             Returns:
-                (bool): True if the type is correct
+                :obj`bool`: :obj`True` if the type is correct.
 
             """
             return (
@@ -577,15 +593,15 @@ class Tokenizer:
     def num_special_tokens(self) -> int:
         """
         Return the number of special tokens the model needs.
-        It assume the input contains both sentences (`text` and `text_pair`).
+        It assume the input contains both sentences (:obj:`text` and :obj:`text_pair`).
 
         Returns:
-            int: the number of special tokens
+            :obj:`int`: the number of special tokens.
 
         """
-        if isinstance(
-            self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP
-        ) and isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN):
+        if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP) and isinstance(
+            self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN
+        ):
             return 4
         if isinstance(
             self.huggingface_tokenizer,
@@ -709,7 +725,7 @@ class ModelInputs(UserDict):
         """A set-like object providing a view on D's items."""
         return self.data.items()
 
-    def to(self, device: Union[str, "torch.device"]) -> "ModelInputs":
+    def to(self, device: Union[str, torch.device]) -> ModelInputs:
         """
         Send all tensors values to device.
 
@@ -721,9 +737,6 @@ class ModelInputs(UserDict):
         :class:`~tokenizers.ModelInputs` after modification.
 
         """
-        # This check catches things like APEX blindly calling "to" on all inputs to a module
-        # Otherwise it passes the casts down and casts the LongTensor containing the token idxs
-        # into a HalfTensor
         if isinstance(device, (str, torch.device, int)):
             self.data = {
                 k: v.to(device=device) if isinstance(v, torch.Tensor) else v

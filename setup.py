@@ -11,14 +11,14 @@ extras["all"] = extras["torch"] + extras["spacy"]
 install_requires = ["transformers>=4.3,<4.12"]
 
 setuptools.setup(
-    name="transformer_embedder",  # Replace with your own username
-    version="1.7.16",
+    name="transformers_embedder",  # Replace with your own username
+    version="1.8.0",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Riccorl/transformer-embedder",
+    url="https://github.com/Riccorl/transformers-embedder",
     keywords="NLP deep learning transformer pytorch BERT google subtoken wordpieces embeddings",
     packages=setuptools.find_packages(),
     include_package_data=True,

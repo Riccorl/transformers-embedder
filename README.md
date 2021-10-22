@@ -1,18 +1,18 @@
 # Transformer Embedder
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/Riccorl/transformer-embedder)
-[![Upload to PyPi](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/Riccorl/transformers-embedder)
+[![Upload to PyPi](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Riccorl/transformer-embedder/actions/workflows/python-publish.yml)
 [![PyTorch](https://img.shields.io/badge/PyTorch-orange?logo=pytorch)](https://pytorch.org/)
 [![Transformers](https://img.shields.io/badge/4.11-🤗%20Transformers-6670ff)](https://huggingface.co/transformers/)
 [![Version](https://img.shields.io/github/v/release/Riccorl/transformer-embedder)](https://github.com/Riccorl/transformer-embedder/releases)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
-[![DeepSource](https://deepsource.io/gh/Riccorl/transformer-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
+[![DeepSource](https://deepsource.io/gh/Riccorl/transformers-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformer-embedder/?ref=repository-badge)
 
 A Word Level Transformer layer based on PyTorch and 🤗 Transformers.
 
 ## How to use
 
-Install the library from [PyPI](https://pypi.org/project/transformer-embedder):
+Install the library from [PyPI](https://pypi.org/project/transformers-embedder):
 
 ```bash
 pip install transformer-embedder
@@ -24,7 +24,7 @@ It offers a PyTorch layer and a tokenizer that support almost every pretrained m
 import transformer_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
-model = tre.TransformerEmbedder("bert-base-cased", subtoken_pooling="mean", output_layer="sum")
+model = tre.TransformersEmbedder("bert-base-cased", return_words="mean", output_layer="sum")
 
 example = "This is a sample sentence"
 inputs = tokenizer(example, return_tensors=True)
@@ -33,9 +33,9 @@ inputs = tokenizer(example, return_tensors=True)
 ```text
 {
    'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
-   'offsets': tensor([[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
    'attention_mask': tensor([[True, True, True, True, True, True, True]]),
    'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
+   'offsets': tensor([[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
    'sentence_length': 7  # with special tokens included
 }
 ```
@@ -53,16 +53,14 @@ torch.Size([1, 5, 768])
 
 ## Info
 
-One of the annoyance of using transfomer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this library it's as easy as using 🤗Transformers API to get word-level embeddings from theoretically every transformer model it supports.
+One of the annoyance of using transfomer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this API it's as easy as using 🤗Transformers to get word-level embeddings from theoretically every transformer model it supports.
 
 ### Model
 
-The `TransformerEmbedder` offer 4 ways to retrieve the word embeddings, defined by `subtoken_pooling` parameter:
+The `TransformersEmbedder` offer 2 ways to retrieve the embeddings:
 
-- `first`: uses only the embedding of the first sub-token of each word
-- `last`: uses only the embedding of the last sub-token of each word
-- `mean`: computes the mean of the embeddings of the sub-tokens of each word
-- `none`: returns the raw output of the transformer model without sub-token pooling
+- `return_words=True`: computes the mean of the embeddings of the sub-tokens of each word
+- `return_words=False`: returns the raw output of the transformer model without sub-token pooling
 
 There are also multiple type of outputs you can get using `output_layer` parameter:
 
@@ -74,11 +72,11 @@ There are also multiple type of outputs you can get using `output_layer` paramet
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
 
 ```python
-class TransformerEmbedder(torch.nn.Module):
+class TransformersEmbedder(torch.nn.Module):
     def __init__(
         self,
         model: Union[str, tr.PreTrainedModel],
-        subtoken_pooling: str = "first",
+        return_words: bool = True,
         output_layer: str = "last",
         fine_tune: bool = True,
         return_all: bool = False,
@@ -87,7 +85,7 @@ class TransformerEmbedder(torch.nn.Module):
 
 ### Tokenizer
 
-The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformerEmbedder` layer. You
+The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformersEmbedder` layer. You
 can pass raw sentences, pre-tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
 with the inputs for the model. By passing `return_tensors=True` it will return the inputs as `torch.Tensor`.
 
@@ -162,9 +160,9 @@ tokenizer(text, text_pair)
 ```text
 {
   'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
-  'offsets': [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)],
   'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
   'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+  'offsets': [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)],
   'sentence_length': 15
 }
 ```
@@ -251,12 +249,6 @@ The inputs are ready for the model, including the custom filed.
            [101, 1188, 1110, 1330, 1859, 5650, 1198, 1294, 1122, 2039, 102],
        ]
    ),
-   "offsets": tensor(
-       [
-           [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [-1, -1], [-1, -1], [-1, -1]],
-           [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
-       ]
-   ),
    "attention_mask": tensor(
        [
            [True, True, True, True, True, True, True, False, False, False, False],
@@ -271,6 +263,12 @@ The inputs are ready for the model, including the custom filed.
    ),
    "token_type_ids": tensor(
        [[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+   ),
+   "offsets": tensor(
+       [
+           [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [-1, -1], [-1, -1], [-1, -1]],
+           [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
+       ]
    ),
    "sentence_length": tensor([7, 11]),
    "custom_filed_1": tensor(
@@ -307,5 +305,5 @@ Future developments
 
 ## Acknowledgements
 
-Most of the code in the `TransformerEmbedder` class is taken from the [AllenNLP](https://github.com/allenai/allennlp)
+Some of the code in the `TransformersEmbedder` class is taken from the [PyTorch Scatter](https://github.com/rusty1s/pytorch_scatter/)
 library. The pretrained models and the core of the tokenizer is from [🤗 Transformers](https://huggingface.co/transformers/).
