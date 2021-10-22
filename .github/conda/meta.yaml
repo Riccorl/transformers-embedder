@@ -16,7 +16,7 @@ requirements:
     - python={{ python_version }}
 
 source:
-  path: ..
+  path: ../..
 
 build:
   script: python setup.py install --single-version-externally-managed --record=record.txt

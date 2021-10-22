@@ -1,4 +1,4 @@
-# Transformer Embedder
+# Transformers Embedder
 
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://github.dev/Riccorl/transformers-embedder)
 [![PyTorch](https://img.shields.io/badge/PyTorch-orange?logo=pytorch)](https://pytorch.org/)
@@ -20,16 +20,16 @@ Install the library from [PyPI](https://pypi.org/project/transformers-embedder):
 pip install transformers-embedder
 ```
 
-or from [conda](https://pypi.org/project/transformers-embedder)
+or from [Conda](https://pypi.org/project/transformers-embedder)
 
 ```bash
-conda install transformers-embedder
+conda install -c riccorl transformers-embedder
 ```
 
 It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface [🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
 
 ```python
-import transformer_embedder as tre
+import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
 model = tre.TransformersEmbedder("bert-base-cased", return_words="mean", output_layer="sum")
@@ -135,7 +135,7 @@ tokenizer(text, is_split_into_words=True) # here is_split_into_words is redundan
 First, initialize the tokenizer
 
 ```python
-import transformer_embedder as tre
+import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
 ```
@@ -203,7 +203,7 @@ It is possible to add custom fields to the model input and tell the `tokenizer` 
 Start by simply tokenizing the input (without padding or tensor mapping)
 
 ```python
-import transformer_embedder as tre
+import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
 
