@@ -1,4 +1,4 @@
-name: publish_conda
+name: Upload Python Package to Conda
 
 on:
   release:

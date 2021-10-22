@@ -1,4 +1,4 @@
-name: Lint
+name: Code quality
 
 on: [push, pull_request]
 
@@ -18,8 +18,8 @@ jobs:
         uses: julianwachholz/flake8-action@v2
         with:
           checkName: "Python Lint"
-          path: path/to/files
-          plugins: flake8-spellcheck
-          config: path/to/flake8.ini
+          path: ./transformers_embedder
+          plugins: "pep8-naming==0.12.1 flake8-comprehensions==3.6.1"
+          config: .flake8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
