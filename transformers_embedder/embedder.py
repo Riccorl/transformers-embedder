@@ -55,9 +55,7 @@ class TransformersEmbedder(torch.nn.Module):
     ) -> None:
         super().__init__()
         if isinstance(model, str):
-            config = tr.AutoConfig.from_pretrained(
-                model, output_hidden_states=True, output_attention=True
-            )
+            config = tr.AutoConfig.from_pretrained(model, output_hidden_states=True, output_attention=True)
             self.transformer_model = tr.AutoModel.from_pretrained(model, config=config)
         else:
             self.transformer_model = model
@@ -123,10 +121,10 @@ class TransformersEmbedder(torch.nn.Module):
 
         if self.return_words and offsets is None:
             raise ValueError(
-                f"`return_words` is `True` but `offsets` was not passed to the model. "
-                f"Cannot compute word embeddings. To solve:\n"
-                f"- Set `return_words` to `False` or"
-                f"- Pass `offsets` to the model during forward."
+                "`return_words` is `True` but `offsets` was not passed to the model. "
+                "Cannot compute word embeddings. To solve:\n"
+                "- Set `return_words` to `False` or"
+                "- Pass `offsets` to the model during forward."
             )
         if self.return_words:
             # Shape: [batch_size, num_token, embedding_size].
