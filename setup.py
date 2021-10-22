@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 extras = {}
-extras["torch"] = ["torch>=1.5,<1.10"]
+extras["torch"] = ["torch>=1.5,<1.11"]
 extras["spacy"] = ["spacy>=3.0,<3.2"]
 extras["all"] = extras["torch"] + extras["spacy"]
 
