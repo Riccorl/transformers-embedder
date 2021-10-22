@@ -7,10 +7,16 @@ _spacy_available = importlib.util.find_spec("spacy") is not None
 
 
 def is_torch_available():
+    """
+    Check if PyTorch is available.
+    """
     return _torch_available
 
 
 def is_spacy_available():
+    """
+    Check if spaCy is available.
+    """
     return _spacy_available
 
 

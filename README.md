@@ -17,7 +17,13 @@ A Word Level Transformer layer based on PyTorch and 🤗 Transformers.
 Install the library from [PyPI](https://pypi.org/project/transformers-embedder):
 
 ```bash
-pip install transformer-embedder
+pip install transformers-embedder
+```
+
+or from [conda](https://pypi.org/project/transformers-embedder)
+
+```bash
+conda install transformers-embedder
 ```
 
 It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface [🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
@@ -37,7 +43,7 @@ inputs = tokenizer(example, return_tensors=True)
    'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
    'attention_mask': tensor([[True, True, True, True, True, True, True]]),
    'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
-   'offsets': tensor([[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6]]]),
+   'offsets': tensor([[0, 1, 2, 3, 4, 5, 6]]),
    'sentence_length': 7  # with special tokens included
 }
 ```
@@ -164,7 +170,7 @@ tokenizer(text, text_pair)
   'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
   'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
   'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-  'offsets': [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14)],
+  'offsets': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]],
   'sentence_length': 15
 }
 ```
@@ -268,8 +274,8 @@ The inputs are ready for the model, including the custom filed.
    ),
    "offsets": tensor(
        [
-           [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [-1, -1], [-1, -1], [-1, -1]],
-           [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
+           [0, 1, 2, 3, 4, 5, 6, 7, 10, 10, 10],
+           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
        ]
    ),
    "sentence_length": tensor([7, 11]),

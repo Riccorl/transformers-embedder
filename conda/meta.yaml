@@ -1,0 +1,23 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: albumentations
+  version: {{ data['version'] }}
+
+about:
+  home: {{ data['url'] }}
+  license: {{ data['license'] }}
+  summary: {{ data['description'] }}
+
+requirements:
+  build:
+    - python={{ python_version }}
+  run:
+    - python={{ python_version }}
+
+source:
+  path: ..
+
+build:
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  string: py{{ python_version | replace(".", "") }}
