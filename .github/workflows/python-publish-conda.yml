@@ -37,7 +37,7 @@ jobs:
         run: |
           conda info
           conda list
-          conda-build .github/conda
+          conda-build -c riccorl .github/conda
 
       - name: Upload to Anaconda
         run: anaconda upload `conda-build .github/conda --output` --force
