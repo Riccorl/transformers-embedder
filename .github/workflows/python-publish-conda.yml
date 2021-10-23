@@ -37,7 +37,7 @@ jobs:
         run: |
           conda info
           conda list
-          conda-build -c riccorl .github/conda
+          conda-build -c riccorl -c conda-forge -c huggingface .github/conda
 
       - name: Upload to Anaconda
         run: anaconda upload `conda-build .github/conda --output` --force
