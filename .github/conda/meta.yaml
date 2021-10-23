@@ -14,11 +14,9 @@ requirements:
   build:
     - python
     - transformers>=4.3,<4.12
-    - spacy>=3.0,<3.2
   run:
     - python
     - transformers>=4.3,<4.12
-    - spacy>=3.0,<3.2
 
 source:
   path: ../../
