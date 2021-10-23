@@ -12,9 +12,9 @@ about:
 
 requirements:
   build:
-    - python={{ python_version }}
+    - python
   run:
-    - python={{ python_version }}
+    - python
 
 source:
   path: ../../
