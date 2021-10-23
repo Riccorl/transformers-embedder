@@ -1,8 +1,8 @@
-{% set data = load_setup_py_data() %}
+{% set name = "transformers-embedder" %}
 
 package:
-  name: albumentations
-  version: {{ data['version'] }}
+  name: "{{ name|lower }}"
+  version: "{{ TRANSFORMERS_VERSION }}"
 
 about:
   home: {{ data['url'] }}
@@ -16,8 +16,7 @@ requirements:
     - python={{ python_version }}
 
 source:
-  path: ../..
+  path: ../../
 
 build:
-  script: python setup.py install --single-version-externally-managed --record=record.txt
-  string: py{{ python_version | replace(".", "") }}
+  noarch: python
