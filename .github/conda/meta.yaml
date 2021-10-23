@@ -1,4 +1,5 @@
 {% set name = "transformers-embedder" %}
+{% set data = load_setup_py_data() %}
 
 package:
   name: "{{ name|lower }}"
