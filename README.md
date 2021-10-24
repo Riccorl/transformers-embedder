@@ -1,4 +1,5 @@
-<p align=center>
+<div align="center">
+
 # Transformers Embedder
 
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://github.dev/Riccorl/transformers-embedder)
@@ -11,7 +12,8 @@
 [![PyPi Version](https://img.shields.io/github/v/release/Riccorl/transformers-embedder)](https://github.com/Riccorl/transformers-embedder/releases)
 [![Anaconda-Server Badge](https://anaconda.org/riccorl/transformers-embedder/badges/version.svg)](https://anaconda.org/riccorl/transformers-embedder)
 [![DeepSource](https://deepsource.io/gh/Riccorl/transformers-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformers-embedder/?ref=repository-badge)
-</p>
+
+</div>
 
 A Word Level Transformer layer based on PyTorch and 🤗 Transformers.
 
