@@ -21,7 +21,7 @@ Install the library from [PyPI](https://pypi.org/project/transformers-embedder):
 pip install transformers-embedder
 ```
 
-or from [Conda](https://pypi.org/project/transformers-embedder)
+or from [Conda](https://anaconda.org/riccorl/transformers-embedder):
 
 ```bash
 conda install -c riccorl transformers-embedder
