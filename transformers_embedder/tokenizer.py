@@ -31,7 +31,7 @@ class Tokenizer:
             Language model name (or a transformer :obj:`PreTrainedTokenizer`.
     """
 
-    def __init__(self, model: Union[str, tr.PreTrainedTokenizer]):
+    def __init__(self, model: Union[str, tr.PreTrainedTokenizer], language: str = "xx_sent_ud_sm"):
         if isinstance(model, str):
             # init HuggingFace tokenizer
             self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model)
@@ -41,7 +41,10 @@ class Tokenizer:
             self.huggingface_tokenizer = model
             self.config = tr.AutoConfig.from_pretrained(self.huggingface_tokenizer.name_or_path)
         # simple tokenizer used if the input is `str`
+        # lazy load, None at first
         self.spacy_tokenizer = None
+        # default multilingual model
+        self.language = language
         # padding stuff
         # default, batch length is model max length
         self.subtoken_max_batch_len = self.huggingface_tokenizer.model_max_length
@@ -116,9 +119,7 @@ class Tokenizer:
         # self._type_checking(text, text_pair)
 
         # check if input is batched or a single sample
-        is_batched = bool(
-            isinstance(text, (list, tuple)) and text and isinstance(text[0], (list, tuple))
-        )
+        is_batched = bool(isinstance(text, (list, tuple)) and text and isinstance(text[0], (list, tuple)))
 
         # if text is str or a list of str and they are not split, then text needs to be tokenized
         if isinstance(text, str) or (not is_split_into_words and isinstance(text[0], str)):
@@ -128,9 +129,7 @@ class Tokenizer:
             else:
                 text = [self.pretokenize(t, use_spacy=use_spacy) for t in text]
                 text_pair = (
-                    [self.pretokenize(t, use_spacy=use_spacy) for t in text_pair]
-                    if text_pair
-                    else None
+                    [self.pretokenize(t, use_spacy=use_spacy) for t in text_pair] if text_pair else None
                 )
 
         # get model max length if not specified by user
@@ -297,9 +296,7 @@ class Tokenizer:
         offsets.append(len(words) - 1)  # -1 because we want the last index
         return words, input_ids, token_type_ids, offsets
 
-    def pad_batch(
-        self, batch: Union[ModelInputs, Dict[str, list]], max_length: int = None
-    ) -> ModelInputs:
+    def pad_batch(self, batch: Union[ModelInputs, Dict[str, list]], max_length: int = None) -> ModelInputs:
         """
         Pad the batch to its maximum length or to the specified :obj:`max_length`.
 
@@ -366,9 +363,7 @@ class Tokenizer:
         padding = [value] * abs(length - len(sequence))
         if isinstance(sequence, torch.Tensor):
             if len(sequence.shape) > 1:
-                raise ValueError(
-                    f"Sequence tensor must be 1D. Current shape is `{len(sequence.shape)}`"
-                )
+                raise ValueError(f"Sequence tensor must be 1D. Current shape is `{len(sequence.shape)}`")
             padding = torch.as_tensor(padding)
         if pad_to_left:
             if isinstance(sequence, torch.Tensor):
@@ -470,9 +465,7 @@ class Tokenizer:
         """
         # convert to tensor
         batch = {
-            k: torch.as_tensor(v)
-            if k in self.to_tensor_inputs and not isinstance(v, torch.Tensor)
-            else v
+            k: torch.as_tensor(v) if k in self.to_tensor_inputs and not isinstance(v, torch.Tensor) else v
             for k, v in batch.items()
         }
         return ModelInputs(batch)
@@ -567,10 +560,7 @@ class Tokenizer:
                             isinstance(text_to_check[0], str)
                             or (
                                 isinstance(text_to_check[0], (list, tuple))
-                                and (
-                                    len(text_to_check[0]) == 0
-                                    or isinstance(text_to_check[0][0], str)
-                                )
+                                and (len(text_to_check[0]) == 0 or isinstance(text_to_check[0][0], str))
                             )
                         )
                     )
@@ -739,11 +729,8 @@ class ModelInputs(UserDict):
         """
         if isinstance(device, (str, torch.device, int)):
             self.data = {
-                k: v.to(device=device) if isinstance(v, torch.Tensor) else v
-                for k, v in self.data.items()
+                k: v.to(device=device) if isinstance(v, torch.Tensor) else v for k, v in self.data.items()
             }
         else:
-            logger.warning(
-                f"Attempting to cast to another type, {str(device)}. This is not supported."
-            )
+            logger.warning(f"Attempting to cast to another type, {str(device)}. This is not supported.")
         return self

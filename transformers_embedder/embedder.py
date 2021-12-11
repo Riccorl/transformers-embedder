@@ -55,7 +55,7 @@ class TransformersEmbedder(torch.nn.Module):
     ) -> None:
         super().__init__()
         if isinstance(model, str):
-            config = tr.AutoConfig.from_pretrained(model, output_hidden_states=True, output_attention=True)
+            config = tr.AutoConfig.from_pretrained(model, output_hidden_states=True, output_attentions=True)
             self.transformer_model = tr.AutoModel.from_pretrained(model, config=config)
         else:
             self.transformer_model = model
@@ -194,7 +194,7 @@ class TransformersEmbedder(torch.nn.Module):
 
     def resize_token_embeddings(self, new_num_tokens: Optional[int] = None) -> torch.nn.Embedding:
         """
-        Resizes input token embeddings matrix of the model if :obj:`new_num_tokens != config.vocab_size`.
+        Resizes input token embeddings' matrix of the model if :obj:`new_num_tokens != config.vocab_size`.
 
         Args:
             new_num_tokens (:obj:`int`):
@@ -223,7 +223,7 @@ class TransformersEmbedder(torch.nn.Module):
     def broadcast(src: torch.Tensor, other: torch.Tensor):
         """
         Minimal version of ``broadcast``, from `pytorch_scatter <https://github.com/rusty1s/pytorch_scatter/>`_
-        library, that is compatible for ONNX but works only for our case.
+        library, that is compatible with ONNX but works only for our case.
 
         Args:
             src (:obj:`torch.Tensor`):

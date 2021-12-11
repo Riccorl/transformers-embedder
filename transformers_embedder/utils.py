@@ -1,6 +1,5 @@
 import importlib.util
 import logging
-from typing import Optional, Tuple, Union, Any
 
 _torch_available = importlib.util.find_spec("torch") is not None
 _spacy_available = importlib.util.find_spec("spacy") is not None
