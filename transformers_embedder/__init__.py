@@ -3,8 +3,6 @@ from transformers_embedder import utils
 if utils.is_torch_available():
     from transformers_embedder.embedder import TransformersEmbedder
 
-from transformers_embedder.tokenizer import Tokenizer
-
 from transformers import (
     BertTokenizer,
     BertTokenizerFast,
@@ -51,3 +49,5 @@ MODELS_WITH_DOUBLE_SEP = (
     XLMRobertaTokenizer,
     XLMRobertaTokenizerFast,
 )
+
+from transformers_embedder.tokenizer import Tokenizer
