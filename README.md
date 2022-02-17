@@ -58,7 +58,7 @@ outputs = model(**inputs)
 ```
 
 ```text
-# outputs.shape[1:-1]       # remove [CLS] and [SEP]
+# outputs.word_embeddings.shape[1:-1]       # remove [CLS] and [SEP]
 torch.Size([1, 5, 768])
 # len(example)
 5
