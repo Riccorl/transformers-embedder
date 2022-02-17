@@ -38,7 +38,7 @@ class TransformersEmbedder(torch.nn.Module):
         output_layer (:obj:`str`, optional, defaults to :obj:`last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the last four hidden layers (``concat``), the sum of the last four hidden
-            layers (``sum``), the pooled output (``pooled``).
+            layers (``sum``), the average of the last four hidden layers (``mean``), the pooled output (``pooled``).
         fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
             If ``True``, the transformer model is fine-tuned during training.
         return_all (:obj:`bool`, optional, defaults to :obj:`False`):
@@ -111,6 +111,9 @@ class TransformersEmbedder(torch.nn.Module):
         elif self.output_layer == "sum":
             word_embeddings = transformer_outputs.hidden_states[-4:]
             word_embeddings = torch.stack(word_embeddings, dim=0).sum(dim=0)
+        elif self.output_layer == "mean":
+            word_embeddings = transformer_outputs.hidden_states[-4:]
+            word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
         elif self.output_layer == "pooled":
             word_embeddings = transformer_outputs.pooler_output
         else:
