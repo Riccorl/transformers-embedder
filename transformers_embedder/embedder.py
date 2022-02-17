@@ -23,6 +23,9 @@ class TransformersEmbedderOutput(tr.file_utils.ModelOutput):
     hidden_states: Optional[Tuple["torch.FloatTensor"]] = None
     attentions: Optional[Tuple["torch.FloatTensor"]] = None
 
+    @property
+    def shape(self) -> Tuple[int]:
+        return self.word_embeddings.shape
 
 class TransformersEmbedder(torch.nn.Module):
     """

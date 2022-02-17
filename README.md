@@ -80,6 +80,7 @@ There are also multiple type of outputs you can get using `output_layer` paramet
 - `last`: returns the last hidden state of the transformer model
 - `concat`: returns the concatenation of the last four hidden states of the transformer model
 - `sum`: returns the sum of the last four hidden states of the transformer model
+- `mean`: returns the average of the last four hidden states of the transformer model
 - `pooled`: returns the output of the pooling layer
 
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
