@@ -58,7 +58,7 @@ outputs = model(**inputs)
 ```
 
 ```text
-# outputs.shape[1:-1]       # remove [CLS] and [SEP]
+# outputs.word_embeddings.shape[1:-1]       # remove [CLS] and [SEP]
 torch.Size([1, 5, 768])
 # len(example)
 5
@@ -75,11 +75,12 @@ The `TransformersEmbedder` offer 2 ways to retrieve the embeddings:
 - `return_words=True`: computes the mean of the embeddings of the sub-tokens of each word
 - `return_words=False`: returns the raw output of the transformer model without sub-token pooling
 
-There are also multiple type of outputs you can get using `output_layer` parameter:
+There are also multiple type of outputs you can get using `pooling_strategy` parameter:
 
 - `last`: returns the last hidden state of the transformer model
-- `concat`: returns the concatenation of the last four hidden states of the transformer model
-- `sum`: returns the sum of the last four hidden states of the transformer model
+- `concat`: returns the concatenation of the selected `output_layers` of the transformer model
+- `sum`: returns the sum of the selected `output_layers` of the transformer model
+- `mean`: returns the average of the selected `output_layers` of the transformer model
 - `pooled`: returns the output of the pooling layer
 
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
@@ -90,7 +91,8 @@ class TransformersEmbedder(torch.nn.Module):
         self,
         model: Union[str, tr.PreTrainedModel],
         return_words: bool = True,
-        output_layer: str = "last",
+        pooling_strategy: str = "last",
+        output_layers: Tuple[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
     )

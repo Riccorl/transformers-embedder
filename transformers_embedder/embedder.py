@@ -35,10 +35,12 @@ class TransformersEmbedder(torch.nn.Module):
         return_words (:obj:`bool`, optional, defaults to :obj:`True`):
             If ``True`` it returns the word-level embeddings by computing the mean of the
             sub-words embeddings.
-        output_layer (:obj:`str`, optional, defaults to :obj:`last`):
+        pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the last four hidden layers (``concat``), the sum of the last four hidden
-            layers (``sum``), the pooled output (``pooled``).
+            layers (``sum``), the average of the last four hidden layers (``mean``), the pooled output (``pooled``).
+        output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
+            Which hidden layers to get from the transformer model.
         fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
             If ``True``, the transformer model is fine-tuned during training.
         return_all (:obj:`bool`, optional, defaults to :obj:`False`):
@@ -49,7 +51,8 @@ class TransformersEmbedder(torch.nn.Module):
         self,
         model: Union[str, tr.PreTrainedModel],
         return_words: bool = True,
-        output_layer: str = "last",
+        pooling_strategy: str = "last",
+        output_layers: Tuple[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
     ) -> None:
@@ -60,7 +63,13 @@ class TransformersEmbedder(torch.nn.Module):
         else:
             self.transformer_model = model
         self.return_words = return_words
-        self.output_layer = output_layer
+        self.pooling_strategy = pooling_strategy
+        if max(map(abs, output_layers)) >= self.transformer_model.config.num_hidden_layers:
+            raise ValueError(
+                f"output_layers parameter not valid, choose between 0 and {self.transformer_model.config.num_hidden_layers - 1}. "
+                f"Current value `{output_layers}`"
+            )
+        self.output_layers = output_layers
         self.return_all = return_all
         if not fine_tune:
             for param in self.transformer_model.parameters():
@@ -103,20 +112,23 @@ class TransformersEmbedder(torch.nn.Module):
 
         # Shape: [batch_size, num_subtoken, embedding_size].
         transformer_outputs = self.transformer_model(**inputs)
-        if self.output_layer == "last":
+        if self.pooling_strategy == "last":
             word_embeddings = transformer_outputs.last_hidden_state
-        elif self.output_layer == "concat":
-            word_embeddings = transformer_outputs.hidden_states[-4:]
+        elif self.pooling_strategy == "concat":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.cat(word_embeddings, dim=-1)
-        elif self.output_layer == "sum":
-            word_embeddings = transformer_outputs.hidden_states[-4:]
+        elif self.pooling_strategy == "sum":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.stack(word_embeddings, dim=0).sum(dim=0)
-        elif self.output_layer == "pooled":
+        elif self.pooling_strategy == "mean":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
+        elif self.pooling_strategy == "pooled":
             word_embeddings = transformer_outputs.pooler_output
         else:
             raise ValueError(
-                "output_layer parameter not valid, choose between `last`, `concat`, "
-                f"`sum`, `pooled`. Current value `{self.output_layer}`"
+                "pooling_strategy parameter not valid, choose between `last`, `concat`, "
+                f"`sum`, `pooled`. Current value `{self.pooling_strategy}`"
             )
 
         if self.return_words and offsets is None:
@@ -249,5 +261,5 @@ class TransformersEmbedder(torch.nn.Module):
             :obj:`int`: Hidden size of ``self.transformer_model``.
 
         """
-        multiplier = 4 if self.output_layer == "concat" else 1
+        multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
         return self.transformer_model.config.hidden_size * multiplier
