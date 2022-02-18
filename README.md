@@ -92,7 +92,7 @@ class TransformersEmbedder(torch.nn.Module):
         model: Union[str, tr.PreTrainedModel],
         return_words: bool = True,
         pooling_strategy: str = "last",
-        output_layers: List[int] = [-4, -3, -2, -1],
+        output_layers: Tuple[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
     )

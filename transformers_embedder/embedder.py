@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Union, Tuple, List
+from typing import Optional, Union, Tuple
 
 import transformers as tr
 
@@ -39,7 +39,7 @@ class TransformersEmbedder(torch.nn.Module):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the last four hidden layers (``concat``), the sum of the last four hidden
             layers (``sum``), the average of the last four hidden layers (``mean``), the pooled output (``pooled``).
-        output_layers (:obj:`list`, optional, defaults to :obj:`[-4, -3, -2, -1]`):
+        output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
             Which hidden layers to get from the transformer model.
         fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
             If ``True``, the transformer model is fine-tuned during training.
@@ -52,7 +52,7 @@ class TransformersEmbedder(torch.nn.Module):
         model: Union[str, tr.PreTrainedModel],
         return_words: bool = True,
         pooling_strategy: str = "last",
-        output_layers: List[int] = [-4, -3, -2, -1],
+        output_layers: Tuple[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
     ) -> None:
