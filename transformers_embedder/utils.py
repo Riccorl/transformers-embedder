@@ -23,7 +23,11 @@ if is_torch_available():
 def get_logger(name: str) -> logging.Logger:
     """
     Return the logger of the given name.
-    :param name: name of the logger to return
-    :return: the logger
+
+    Args:
+        name (`str`): The name of the logger.
+
+    Returns:
+        :obj:`logging.Logger`: The logger of the given name.
     """
     return logging.getLogger(name)

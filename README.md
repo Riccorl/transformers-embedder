@@ -37,7 +37,7 @@ It offers a PyTorch layer and a tokenizer that support almost every pretrained m
 import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
-model = tre.TransformersEmbedder("bert-base-cased", return_words=True, output_layer="sum")
+model = tre.TransformersEmbedder("bert-base-cased", return_words=True, output_layers="sum")
 
 example = "This is a sample sentence"
 inputs = tokenizer(example, return_tensors=True)
@@ -81,7 +81,6 @@ There are also multiple type of outputs you can get using `pooling_strategy` par
 - `concat`: returns the concatenation of the selected `output_layers` of the transformer model
 - `sum`: returns the sum of the selected `output_layers` of the transformer model
 - `mean`: returns the average of the selected `output_layers` of the transformer model
-- `pooled`: returns the output of the pooling layer
 
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
 
@@ -94,7 +93,7 @@ class TransformersEmbedder(torch.nn.Module):
         pooling_strategy: str = "last",
         output_layers: Tuple[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
-        return_all: bool = False,
+        return_all: bool = True,
     )
 ```
 

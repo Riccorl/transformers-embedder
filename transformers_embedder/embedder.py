@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Union, Tuple
+from typing import Optional, Union, Tuple, Sequence
 
 import transformers as tr
 
@@ -37,8 +37,8 @@ class TransformersEmbedder(torch.nn.Module):
             sub-words embeddings.
         pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
             What output to get from the transformer model. The last hidden state (``last``),
-            the concatenation of the last four hidden layers (``concat``), the sum of the last four hidden
-            layers (``sum``), the average of the last four hidden layers (``mean``), the pooled output (``pooled``).
+            the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
+            layers (``sum``), the average of the selected hidden layers (``mean``).
         output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
             Which hidden layers to get from the transformer model.
         fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
@@ -52,7 +52,7 @@ class TransformersEmbedder(torch.nn.Module):
         model: Union[str, tr.PreTrainedModel],
         return_words: bool = True,
         pooling_strategy: str = "last",
-        output_layers: Tuple[int] = (-4, -3, -2, -1),
+        output_layers: Sequence[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
     ) -> None:
@@ -66,8 +66,9 @@ class TransformersEmbedder(torch.nn.Module):
         self.pooling_strategy = pooling_strategy
         if max(map(abs, output_layers)) >= self.transformer_model.config.num_hidden_layers:
             raise ValueError(
-                f"output_layers parameter not valid, choose between 0 and {self.transformer_model.config.num_hidden_layers - 1}. "
-                f"Current value `{output_layers}`"
+                f"`output_layers` parameter not valid, choose between 0 and "
+                f"{self.transformer_model.config.num_hidden_layers - 1}. "
+                f"Current value is `{output_layers}`"
             )
         self.output_layers = output_layers
         self.return_all = return_all
@@ -123,12 +124,10 @@ class TransformersEmbedder(torch.nn.Module):
         elif self.pooling_strategy == "mean":
             word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
-        elif self.pooling_strategy == "pooled":
-            word_embeddings = transformer_outputs.pooler_output
         else:
             raise ValueError(
-                "pooling_strategy parameter not valid, choose between `last`, `concat`, "
-                f"`sum`, `pooled`. Current value `{self.pooling_strategy}`"
+                "`pooling_strategy` parameter not valid, choose between `last`, `concat`, "
+                f"`sum` and `mean`. Current value `{self.pooling_strategy}`"
             )
 
         if self.return_words and offsets is None:

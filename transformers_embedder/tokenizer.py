@@ -29,6 +29,8 @@ class Tokenizer:
     Args:
         model (:obj:`str`, :obj:`transformers.PreTrainedTokenizer`):
             Language model name (or a transformer :obj:`PreTrainedTokenizer`.
+        language (:obj:`str`, optional, defaults to `xx_sent_ud_sm`):
+            spaCy language model name to use, defaults to multilingual model `xx_sent_ud_sm`.
     """
 
     def __init__(self, model: Union[str, tr.PreTrainedTokenizer], language: str = "xx_sent_ud_sm"):
@@ -583,7 +585,7 @@ class Tokenizer:
     def num_special_tokens(self) -> int:
         """
         Return the number of special tokens the model needs.
-        It assume the input contains both sentences (:obj:`text` and :obj:`text_pair`).
+        It assumes the input contains both sentences (:obj:`text` and :obj:`text_pair`).
 
         Returns:
             :obj:`int`: the number of special tokens.
@@ -723,8 +725,8 @@ class ModelInputs(UserDict):
             device (:obj:`str` or :obj:`torch.device`): The device to put the tensors on.
 
         Returns:
-            :class:`tokenizers.ModelInputs`: The same instance of
-        :class:`~tokenizers.ModelInputs` after modification.
+            :class:`tokenizers.ModelInputs`: The same instance of :class:`~tokenizers.ModelInputs`
+            after modification.
 
         """
         if isinstance(device, (str, torch.device, int)):
