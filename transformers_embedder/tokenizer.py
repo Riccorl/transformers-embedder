@@ -134,7 +134,9 @@ class Tokenizer:
             **kwargs,
         )
         # build the offsets used to pool the subwords
-        offsets = self.build_offsets(model_inputs, return_tensors=return_tensors)
+        offsets = self.build_offsets(
+            model_inputs, return_tensors=return_tensors, there_is_text_pair=text_pair is not None
+        )
         # convert to ModelInputs
         model_inputs = ModelInputs(**model_inputs)
         # add the offsets to the model inputs
@@ -145,6 +147,7 @@ class Tokenizer:
     def build_offsets(
         model_inputs: BatchEncoding,
         return_tensors: bool = True,
+        there_is_text_pair: bool = False,
     ) -> Union[List[List[int]], torch.Tensor]:
         """
         Build the offset tensor for the batch of inputs.
@@ -154,6 +157,8 @@ class Tokenizer:
                 The inputs to the transformer model.
             return_tensors (:obj:`bool`, optional, defaults to :obj:`True`):
                 If :obj:`True`, the outputs is converted to :obj:`torch.Tensor`
+            there_is_text_pair (:obj:`bool`, optional, defaults to :obj:`False`):
+                If :obj:`True` `text_pair` is not None.
 
         Returns:
             :obj:`List[List[int]]` or :obj:`torch.Tensor`: The offsets of the sub-tokens.
@@ -167,10 +172,10 @@ class Tokenizer:
         # sub-tokens
         for batch_index in range(len(model_inputs.input_ids)):
             word_ids = model_inputs.word_ids(batch_index)
+            print(word_ids)
             # it is slightly different from what we need, so here we make it compatible
             # with our sub-word pooling strategy
             # if the first token is a special token, we need to take it into account
-            # TODO: handle inputs with text pairs
             if word_ids[0] is None:
                 word_offsets = [0] + [w + 1 if w is not None else w for w in word_ids[1:]]
             # otherwise, we can just use word_ids as is
@@ -180,8 +185,25 @@ class Tokenizer:
             # and also as padding value for the offsets
             sep_offset = max([w for w in word_offsets if w is not None]) + 1
             # replace first None occurrence with sep_offset
-            first_none_index = word_offsets.index(None)
-            word_offsets[first_none_index] = sep_offset
+            sep_index = word_offsets.index(None)
+            word_offsets[sep_index] = sep_offset
+            # if there is a text pair, we need to adjust the offsets for the second text
+            if there_is_text_pair:
+                # some models have two SEP tokens in between the two texts
+                if word_offsets[sep_index + 1] is None:
+                    sep_index += 1
+                    sep_offset += 1
+                    word_offsets[sep_index] = sep_offset
+                # keep the first offsets as is, adjust the second ones
+                word_offsets = word_offsets[: sep_index + 1] + [
+                    w + sep_offset if w is not None else w for w in word_offsets[sep_index + 1 :]
+                ]
+                # update again the sep_offset
+                sep_offset = max([w for w in word_offsets if w is not None]) + 1
+                # replace first None occurrence with sep_offset
+                # now it should be the last one
+                sep_index = word_offsets.index(None)
+                word_offsets[sep_index] = sep_offset
             # keep track of the maximum offset for padding
             max_batch_offset = max(max_batch_offset, sep_offset)
             offsets.append(word_offsets)
