@@ -5,14 +5,13 @@ with open("README.md", "r") as fh:
 
 extras = {}
 extras["torch"] = ["torch>=1.5,<1.11"]
-extras["spacy"] = ["spacy>=3.0,<3.3"]
 extras["all"] = extras["torch"] + extras["spacy"]
 
 install_requires = ["transformers>=4.3,<4.17"]
 
 setuptools.setup(
     name="transformers_embedder",  # Replace with your own username
-    version="1.9.0",
+    version="2.0.0b1",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",
