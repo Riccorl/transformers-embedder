@@ -81,6 +81,42 @@ class Tokenizer:
         """Size of the full vocabulary with the added tokens."""
         return len(self.huggingface_tokenizer)
 
+    def tokenize_new(
+        self,
+        text: Union[str, List[str], List[List[str]]],
+        text_pair: Union[str, List[str], List[List[str]]] = None,
+        padding: bool = True,
+        max_length: int = 0,
+        return_tensors: bool = True,
+        is_split_into_words: bool = False,
+        use_spacy: bool = False,
+        *args,
+        **kwargs,
+    ) -> ModelInputs:
+        output = self.huggingface_tokenizer(
+            text,
+            text_pair=text_pair,
+            padding=padding,
+            max_length=max_length,
+            is_split_into_words=is_split_into_words,
+            return_tensors="pt" if return_tensors else None,
+        )
+        offsets = []
+        max_batch_offset = 0
+        for batch_index in range(len(output["input_ids"])):
+            word_ids = output.word_ids(batch_index)
+            # print(word_ids)
+            word_offsets = [0] + [w + 1 for w in word_ids[1:] if w is not None]
+            word_offsets += [word_offsets[-1] + 1]
+            max_batch_offset = max(max_batch_offset, word_offsets[-1])
+            offsets.append(word_offsets)
+        offsets = [self.pad_sequence(offset, value=max_batch_offset, length="subtoken") for offset in offsets]
+        # print(offsets)
+        offsets = torch.as_tensor(offsets)
+        output = ModelInputs(**output)
+        output.update({"offsets": offsets})
+        return output
+
     def __call__(
         self,
         text: Union[str, List[str], List[List[str]]],
