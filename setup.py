@@ -7,11 +7,11 @@ extras = {}
 extras["torch"] = ["torch>=1.5,<1.11"]
 extras["all"] = extras["torch"] + extras["spacy"]
 
-install_requires = ["transformers>=4.3,<4.17"]
+install_requires = ["transformers>=4.3,<4.18"]
 
 setuptools.setup(
     name="transformers_embedder",  # Replace with your own username
-    version="2.0.0b1",
+    version="2.0.0b2",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",

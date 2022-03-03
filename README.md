@@ -66,7 +66,7 @@ torch.Size([1, 5, 768])
 
 ## Info
 
-One of the annoyance of using transfomer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this API it's as easy as using 🤗Transformers to get word-level embeddings from theoretically every transformer model it supports.
+One of the annoyance of using transformer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this API it's as easy as using 🤗Transformers to get word-level embeddings from theoretically every transformer model it supports.
 
 ### Model
 
@@ -103,7 +103,7 @@ The `Tokenizer` class provides the `tokenize` method to preprocess the input for
 can pass raw sentences, pre-tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
 with the inputs for the model. By passing `return_tensors=True` it will return the inputs as `torch.Tensor`.
 
-By default, if you pass text (or batch) as strings, it splits them on spaces
+By default, if you pass text (or batch) as strings, it uses the HuggingFace tokenizer to tokenize them.
 
 ```python
 text = "This is a sample sentence"
@@ -113,17 +113,7 @@ text = ["This is a sample sentence", "This is another sample sentence"]
 tokenizer(text)
 ```
 
-You can also use SpaCy to pre-tokenize the inputs into words first, using `use_spacy=True`
-
-```python
-text = "This is a sample sentence"
-tokenizer(text, use_spacy=True)
-
-text = ["This is a sample sentence", "This is another sample sentence"]
-tokenizer(text, use_spacy=True)
-```
-
-or you can pass an pre-tokenized sentence (or batch of sentences) by setting `is_split_into_words=True`
+You can pass a pre-tokenized sentence (or batch of sentences) by setting `is_split_into_words=True`
 
 ```python
 text = ["This", "is", "a", "sample", "sentence"]
@@ -176,7 +166,7 @@ tokenizer(text, text_pair)
   'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
   'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
   'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-  'offsets': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]],
+  'offsets': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
   'sentence_length': 15
 }
 ```
@@ -290,17 +280,6 @@ The inputs are ready for the model, including the custom filed.
    ),
 }
 ```
-
-#### SpaCy Tokenizer
-
-By default, it uses the [multilingual model](https://spacy.io/models/xx#xx_sent_ud_sm) `xx_sent_ud_sm`. You can change
-it with the `language` parameter during the tokenizer initialization. For example, if you prefer an English tokenizer:
-
-```python
-tokenizer = tre.Tokenizer("bert-base-cased", language="en_core_web_sm")
-```
-
-For a complete list of languages and models, you can go [here](https://spacy.io/models).
 
 ## To-Do
 

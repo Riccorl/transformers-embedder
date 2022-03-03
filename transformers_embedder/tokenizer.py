@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import math
 from collections import UserDict
 from functools import partial
-from typing import List, Dict, Union, Tuple, Any, Optional
+from typing import List, Dict, Union, Any, Optional
 
 import transformers as tr
 from transformers import BatchEncoding
@@ -12,14 +11,10 @@ from transformers.tokenization_utils_base import TruncationStrategy
 
 from transformers_embedder import MODELS_WITH_STARTING_TOKEN, MODELS_WITH_DOUBLE_SEP
 from transformers_embedder import utils
-from transformers_embedder.utils import is_torch_available, is_spacy_available
+from transformers_embedder.utils import is_torch_available
 
 if is_torch_available():
     import torch
-
-if is_spacy_available():
-    import spacy
-    from spacy.cli.download import download as spacy_download
 
 logger = utils.get_logger(__name__)
 utils.get_logger("transformers")
@@ -48,31 +43,9 @@ class Tokenizer:
         self.subtoken_max_batch_len = self.huggingface_tokenizer.model_max_length
         self.word_max_batch_len = self.huggingface_tokenizer.model_max_length
         # padding ops
-        # TODO: handle padding ops
-        self.padding_ops = {
-            "input_ids": partial(
-                self.pad_sequence,
-                value=self.huggingface_tokenizer.pad_token_id,
-                length="subtoken",
-            ),
-            # value is None because: (read `pad_sequence` doc)
-            "offsets": partial(self.pad_sequence, value=None, length="subtoken"),
-            "attention_mask": partial(self.pad_sequence, value=0, length="subtoken"),
-            "word_mask": partial(self.pad_sequence, value=0, length="word"),
-            "token_type_ids": partial(
-                self.pad_sequence,
-                value=self.token_type_id,
-                length="subtoken",
-            ),
-        }
+        self.padding_ops = {}
         # keys that will be converted in tensors
-        self.to_tensor_inputs = {
-            "input_ids",
-            "offsets",
-            "attention_mask",
-            "word_mask",
-            "token_type_ids",
-        }
+        self.to_tensor_inputs = set()
 
     def __len__(self):
         """Size of the full vocabulary with the added tokens."""
@@ -87,6 +60,7 @@ class Tokenizer:
         max_length: Optional[int] = None,
         return_tensors: Optional[Union[bool, str]] = None,
         is_split_into_words: bool = False,
+        additional_inputs: Optional[Dict[str, Any]] = None,
         *args,
         **kwargs,
     ) -> ModelInputs:
@@ -115,12 +89,11 @@ class Tokenizer:
 
         """
         # some checks before starting
-        if max_length is None or max_length == 0:
-            max_length = self.huggingface_tokenizer.model_max_length
         if return_tensors is True:
             return_tensors = "pt"
         if return_tensors is False:
             return_tensors = None
+
         # use huggingface tokenizer to encode the text
         model_inputs = self.huggingface_tokenizer(
             text,
@@ -134,13 +107,31 @@ class Tokenizer:
             **kwargs,
         )
         # build the offsets used to pool the subwords
-        offsets = self.build_offsets(
+        offsets, sentence_lengths = self.build_offsets(
             model_inputs, return_tensors=return_tensors, there_is_text_pair=text_pair is not None
         )
+
         # convert to ModelInputs
         model_inputs = ModelInputs(**model_inputs)
         # add the offsets to the model inputs
-        model_inputs.update({"offsets": offsets})
+        model_inputs.update({"offsets": offsets, "sentence_lengths": sentence_lengths})
+
+        # check if we need to convert other stuff to tensors
+        if additional_inputs:
+            model_inputs.update(additional_inputs)
+            # check if there is a padding strategy
+            if padding:
+                missing_keys = set(additional_inputs.keys()) - set(self.padding_ops.keys())
+                if missing_keys:
+                    raise ValueError(
+                        f"There are no padding strategy for the following keys: {missing_keys}. "
+                        "Please add one with `tokenizer.add_padding_ops()`."
+                    )
+                self.pad_batch(model_inputs)
+            # convert them to tensors
+            if return_tensors == "pt":
+                self.to_tensor(model_inputs)
+
         return model_inputs
 
     @staticmethod
@@ -165,6 +156,7 @@ class Tokenizer:
         """
         # output data structure
         offsets = []
+        sentence_lengths = []
         # this is used as padding value for the offsets
         max_batch_offset = 0
         # model_inputs should be the output of the HuggingFace tokenizer
@@ -207,12 +199,13 @@ class Tokenizer:
             # keep track of the maximum offset for padding
             max_batch_offset = max(max_batch_offset, sep_offset)
             offsets.append(word_offsets)
+            sentence_lengths.append(sep_offset + 1)
         # replace remaining None occurrences with max_batch_offset
         offsets = [[o if o is not None else max_batch_offset for o in offset] for offset in offsets]
         # if return_tensor is True, we need to convert the offsets to tensors
         if return_tensors:
             offsets = torch.as_tensor(offsets)
-        return offsets
+        return offsets, sentence_lengths
 
     def pad_batch(self, batch: Union[ModelInputs, Dict[str, list]], max_length: int = None) -> ModelInputs:
         """
