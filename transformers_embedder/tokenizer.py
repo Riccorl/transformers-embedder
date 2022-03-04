@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import UserDict
 from functools import partial
-from typing import List, Dict, Union, Any, Optional
+from typing import List, Dict, Union, Any, Optional, Tuple
 
 import transformers as tr
 from transformers import BatchEncoding
@@ -139,7 +139,7 @@ class Tokenizer:
         model_inputs: BatchEncoding,
         return_tensors: bool = True,
         there_is_text_pair: bool = False,
-    ) -> Union[List[List[int]], torch.Tensor]:
+    ) -> Tuple:
         """
         Build the offset tensor for the batch of inputs.
 
@@ -164,7 +164,6 @@ class Tokenizer:
         # sub-tokens
         for batch_index in range(len(model_inputs.input_ids)):
             word_ids = model_inputs.word_ids(batch_index)
-            print(word_ids)
             # it is slightly different from what we need, so here we make it compatible
             # with our sub-word pooling strategy
             # if the first token is a special token, we need to take it into account

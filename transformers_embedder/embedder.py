@@ -254,7 +254,7 @@ class TransformersEmbedder(torch.nn.Module):
     @property
     def hidden_size(self) -> int:
         """
-        Returns the hidden size of the transformer.
+        Returns the hidden size of TransformersEmbedder.
 
         Returns:
             :obj:`int`: Hidden size of ``self.transformer_model``.
@@ -262,3 +262,135 @@ class TransformersEmbedder(torch.nn.Module):
         """
         multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
         return self.transformer_model.config.hidden_size * multiplier
+
+    @property
+    def transformer_hidden_size(self) -> int:
+        """
+        Returns the hidden size of the inner transformer.
+
+        Returns:
+            :obj:`int`: Hidden size of ``self.transformer_model``.
+        """
+        multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
+        return self.transformer_model.config.hidden_size * multiplier
+
+
+class TransformersEmbedderWithProjection(TransformersEmbedder):
+    def __init__(
+        self,
+        model: Union[str, tr.PreTrainedModel],
+        return_words: bool = True,
+        pooling_strategy: str = "last",
+        output_layers: Sequence[int] = (-4, -3, -2, -1),
+        fine_tune: bool = True,
+        return_all: bool = False,
+        projection_size: int = None,
+        dropout: float = 0.1,
+        bias: bool = True,
+    ) -> None:
+        super().__init__(model, return_words, pooling_strategy, output_layers, fine_tune, return_all)
+        self.normalization_layer = torch.nn.BatchNorm1d(self.transformer_hidden_size)
+        self.projection_size = projection_size
+        self.projection_layer = None
+        if projection_size:
+            self.projection_layer = torch.nn.Linear(self.transformer_hidden_size, projection_size, bias=bias)
+        self.dropout_layer = torch.nn.Dropout(dropout)
+        self.activation_layer = torch.nn.SiLU()
+
+    def forward(
+        self,
+        input_ids: torch.LongTensor,
+        attention_mask: torch.BoolTensor = None,
+        token_type_ids: Optional[torch.LongTensor] = None,
+        offsets: torch.LongTensor = None,
+        *args,
+        **kwargs,
+    ) -> TransformersEmbedderOutput:
+        """
+        Forward method of the PyTorch module.
+
+        Args:
+            input_ids (:obj:`torch.Tensor`, optional):
+                Input ids for the transformer model.
+            attention_mask (:obj:`torch.Tensor`, optional):
+                Attention mask for the transformer model.
+            token_type_ids (:obj:`torch.Tensor`, optional):
+                Token type ids for the transformer model.
+            offsets (:obj:`torch.Tensor`, optional):
+                Offsets of the sub-token, used to reconstruct the word embeddings.
+
+        Returns:
+             :obj:`TransformersEmbedderOutput`:
+                Word level embeddings plus the output of the transformer model.
+        """
+        # Some of the HuggingFace models don't have the
+        # token_type_ids parameter and fail even when it's given as None.
+        max_type_id = token_type_ids.max()
+        if max_type_id == 0:
+            token_type_ids = None
+        inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
+        if token_type_ids is not None:
+            inputs["token_type_ids"] = token_type_ids
+
+        # Shape: [batch_size, num_subtoken, embedding_size].
+        transformer_outputs = self.transformer_model(**inputs)
+        if self.pooling_strategy == "last":
+            word_embeddings = transformer_outputs.last_hidden_state
+        elif self.pooling_strategy == "concat":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = torch.cat(word_embeddings, dim=-1)
+        elif self.pooling_strategy == "sum":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = torch.stack(word_embeddings, dim=0).sum(dim=0)
+        elif self.pooling_strategy == "mean":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
+        else:
+            raise ValueError(
+                "`pooling_strategy` parameter not valid, choose between `last`, `concat`, "
+                f"`sum` and `mean`. Current value `{self.pooling_strategy}`"
+            )
+
+        if self.return_words and offsets is None:
+            raise ValueError(
+                "`return_words` is `True` but `offsets` was not passed to the model. "
+                "Cannot compute word embeddings. To solve:\n"
+                "- Set `return_words` to `False` or"
+                "- Pass `offsets` to the model during forward."
+            )
+        if self.return_words:
+            # Shape: [batch_size, num_token, embedding_size].
+            word_embeddings = self.merge_subword(word_embeddings, offsets)
+
+        word_embeddings = self.dropout_layer(word_embeddings)
+        word_embeddings = word_embeddings.permute(0, 2, 1)
+        word_embeddings = self.normalization_layer(word_embeddings)
+        word_embeddings = word_embeddings.permute(0, 2, 1)
+        if self.projection_layer:
+            word_embeddings = self.projection_layer(word_embeddings)
+        word_embeddings = self.activation_layer(word_embeddings)
+        word_embeddings = self.dropout_layer(word_embeddings)
+
+        if self.return_all:
+            return TransformersEmbedderOutput(
+                word_embeddings=word_embeddings,
+                last_hidden_state=transformer_outputs.last_hidden_state,
+                hidden_states=transformer_outputs.hidden_states,
+                pooler_output=transformer_outputs.pooler_output,
+                attentions=transformer_outputs.attentions,
+            )
+        return TransformersEmbedderOutput(word_embeddings=word_embeddings)
+
+    @property
+    def hidden_size(self) -> int:
+        """
+        Returns the hidden size of the transformer.
+
+        Returns:
+            :obj:`int`: Hidden size of ``self.transformer_model``.
+        """
+        if self.projection_size is None:
+            multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
+            return self.transformer_model.config.hidden_size * multiplier
+        else:
+            return self.projection_size
