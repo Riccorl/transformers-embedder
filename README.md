@@ -31,13 +31,14 @@ or from [Conda](https://anaconda.org/riccorl/transformers-embedder):
 conda install -c riccorl transformers-embedder
 ```
 
-It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface [🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
+It offers a PyTorch layer and a tokenizer that support almost every pretrained model from Huggingface 
+[🤗Transformers](https://huggingface.co/transformers/) library. Here is a quick example:
 
 ```python
 import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
-model = tre.TransformersEmbedder("bert-base-cased", return_words=True, output_layers="sum")
+model = tre.TransformersEmbedder("bert-base-cased", return_words=True, layer_pooling_strategy="mean")
 
 example = "This is a sample sentence"
 inputs = tokenizer(example, return_tensors=True)
@@ -66,7 +67,9 @@ torch.Size([1, 5, 768])
 
 ## Info
 
-One of the annoyance of using transformer-based models is that it is not trivial to compute word embeddings from the sub-token embeddings they output. With this API it's as easy as using 🤗Transformers to get word-level embeddings from theoretically every transformer model it supports.
+One of the annoyance of using transformer-based models is that it is not trivial to compute word embeddings 
+from the sub-token embeddings they output. With this API it's as easy as using 🤗Transformers to get 
+word-level embeddings from theoretically every transformer model it supports.
 
 ### Model
 
@@ -99,9 +102,10 @@ class TransformersEmbedder(torch.nn.Module):
 
 ### Tokenizer
 
-The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformersEmbedder` layer. You
-can pass raw sentences, pre-tokenized sentences and sentences in batch. It will preprocess them returning a dictionary
-with the inputs for the model. By passing `return_tensors=True` it will return the inputs as `torch.Tensor`.
+The `Tokenizer` class provides the `tokenize` method to preprocess the input for the `TransformersEmbedder` 
+layer. You can pass raw sentences, pre-tokenized sentences and sentences in batch. It will preprocess them 
+returning a dictionary with the inputs for the model. By passing `return_tensors=True` it will return the 
+inputs as `torch.Tensor`.
 
 By default, if you pass text (or batch) as strings, it uses the HuggingFace tokenizer to tokenize them.
 
@@ -171,7 +175,8 @@ tokenizer(text, text_pair)
 }
 ```
 
-- A batch of sentences or sentence pairs. Using `padding=True` and `return_tensors=True`, the tokenizer returns the text ready for the model
+- A batch of sentences or sentence pairs. Using `padding=True` and `return_tensors=True`, the tokenizer 
+returns the text ready for the model
 
 ```python
 batch = [
@@ -195,22 +200,16 @@ tokenizer(batch, batch_pair, padding=True, return_tensors=True)
 
 #### Custom fields
 
-It is possible to add custom fields to the model input and tell the `tokenizer` how to pad them using `add_padding_ops`.
-Start by simply tokenizing the input (without padding or tensor mapping)
+It is possible to add custom fields to the model input and tell the `tokenizer` how to pad them using 
+`add_padding_ops`. Start by initializing the tokenizer with the model name:
 
 ```python
 import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
-
-text = [
-    ["This", "is", "a", "sample", "sentence"],
-    ["This", "is", "another", "example", "sentence", "just", "make", "it", "longer"]
-]
-inputs = tokenizer(text)
 ```
 
-Then add the custom fileds to the result
+Then add the custom fields to it:
 
 ```python
 custom_fields = {
@@ -219,26 +218,30 @@ custom_fields = {
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]
   ]
 }
-
-inputs.update(custom_fields)
 ```
 
-Now we can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in input
+Now we can add the padding logic for our custom field `custom_filed_1`. `add_padding_ops` method takes in 
+input
 
-- `key`: name of the field in the tokenzer input
+- `key`: name of the field in the tokenizer input
 - `value`: value to use for padding
-- `length`: length to pad. It can be an `int`, or two string value, `subtoken` in which the element is padded to the batch max length relative to the sub-tokens length, and `word` where the element is padded to the batch max length relative to the original word length
+- `length`: length to pad. It can be an `int`, or two string value, `subword` in which the element is padded 
+to the batch max length relative to the sub-tokens length, and `word` where the element is padded to the batch
+max length relative to the original word length
 
 ```python
 tokenizer.add_padding_ops("custom_filed_1", 0, "word")
 ```
 
-Finally, pad the input and convert it to a tensor:
+Finally, we can tokenize the input with the custom field:
 
 ```python
-# manual processing
-inputs = tokenizer.pad_batch(inputs)
-inputs = tokenizer.to_tensor(inputs)
+text = [
+    "This is a sample sentence",
+    "This is another example sentence just make it longer, with a comma too!"
+]
+
+inputs = tokenizer(text, padding=True, return_tensors=True, additional_inputs=custom_fields)
 ```
 
 The inputs are ready for the model, including the custom filed.
@@ -281,22 +284,7 @@ The inputs are ready for the model, including the custom filed.
 }
 ```
 
-## To-Do
-
-Future developments
-
-- [X] Add an optional word tokenizer, maybe using SpaCy
-- [X] Add `add_special_tokens` wrapper
-- [X] Make `pad_batch` function more general
-- [X] Add logic (like how to pad, etc) for custom fields
-  - [X] Documentation
-- [X] Include all model outputs
-  - [X] Documentation
-- [ ] A TensorFlow version (improbable)
-
-[comment]: <> (- [ ] Include more &#40;maybe all&#41; tokenizer outputs)
-
 ## Acknowledgements
 
-Some of the code in the `TransformersEmbedder` class is taken from the [PyTorch Scatter](https://github.com/rusty1s/pytorch_scatter/)
+Some code in the `TransformersEmbedder` class is taken from the [PyTorch Scatter](https://github.com/rusty1s/pytorch_scatter/)
 library. The pretrained models and the core of the tokenizer is from [🤗 Transformers](https://huggingface.co/transformers/).
