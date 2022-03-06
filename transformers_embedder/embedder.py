@@ -105,9 +105,6 @@ class TransformersEmbedder(torch.nn.Module):
         """
         # Some HuggingFace models don't have the
         # token_type_ids parameter and fail even when it's given as None.
-        max_type_id = token_type_ids.max()
-        if max_type_id == 0:
-            token_type_ids = None
         inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
         if token_type_ids is not None:
             inputs["token_type_ids"] = token_type_ids
@@ -287,8 +284,8 @@ class Encoder(torch.nn.Module):
     ):
         super().__init__()
         self.normalization_layer = torch.nn.BatchNorm1d(transformer_hidden_size)
-        self.projection_size = projection_size
-        self.projection_layer = torch.nn.Linear(transformer_hidden_size, projection_size, bias=bias)
+        self.projection_size = projection_size or transformer_hidden_size
+        self.projection_layer = torch.nn.Linear(transformer_hidden_size, self.projection_size, bias=bias)
         self.dropout_layer = torch.nn.Dropout(dropout)
         self.activation_layer = torch.nn.SiLU()
 
@@ -399,8 +396,4 @@ class TransformersEncoder(TransformersEmbedder):
         Returns:
             :obj:`int`: Hidden size of ``self.transformer_model``.
         """
-        if self.projection_size is None:
-            multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
-            return self.transformer_model.config.hidden_size * multiplier
-        else:
-            return self.projection_size
+        return self.encoder.projection_size
