@@ -38,7 +38,9 @@ It offers a PyTorch layer and a tokenizer that support almost every pretrained m
 import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
-model = tre.TransformersEmbedder("bert-base-cased", return_words=True, layer_pooling_strategy="mean")
+model = tre.TransformersEmbedder(
+    "bert-base-cased", return_words=True, layer_pooling_strategy="mean"
+)
 
 example = "This is a sample sentence"
 inputs = tokenizer(example, return_tensors=True)
@@ -127,7 +129,7 @@ text = [
     ["This", "is", "a", "sample", "sentence", "1"],
     ["This", "is", "sample", "sentence", "2"],
 ]
-tokenizer(text, is_split_into_words=True) # here is_split_into_words is redundant
+tokenizer(text, is_split_into_words=True)
 ```
 
 #### Examples
@@ -226,8 +228,8 @@ input
 - `key`: name of the field in the tokenizer input
 - `value`: value to use for padding
 - `length`: length to pad. It can be an `int`, or two string value, `subword` in which the element is padded 
-to the batch max length relative to the sub-tokens length, and `word` where the element is padded to the batch
-max length relative to the original word length
+to match the length of the subwords, and `word` where the element is padded relative to the length of the
+batch after the merge of the subwords.
 
 ```python
 tokenizer.add_padding_ops("custom_filed_1", 0, "word")
