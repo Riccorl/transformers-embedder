@@ -1,7 +1,7 @@
 from transformers_embedder import utils
 
 if utils.is_torch_available():
-    from transformers_embedder.embedder import TransformersEmbedder
+    from transformers_embedder.embedder import TransformersEmbedder, TransformersEncoder
 
 from transformers import (
     BertTokenizer,
