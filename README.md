@@ -38,6 +38,7 @@ It offers a PyTorch layer and a tokenizer that support almost every pretrained m
 import transformers_embedder as tre
 
 tokenizer = tre.Tokenizer("bert-base-cased")
+
 model = tre.TransformersEmbedder(
     "bert-base-cased", return_words=True, layer_pooling_strategy="mean"
 )
