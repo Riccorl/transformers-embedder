@@ -293,6 +293,16 @@ class Encoder(torch.nn.Module):
         self.activation_layer = torch.nn.SiLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass of the encoder.
+
+        Args:
+            x (:obj:`torch.Tensor`):
+                The input tensor.
+
+        Returns:
+            :obj:`torch.Tensor`: The encoded tensor.
+        """
         x = self.dropout_layer(x)
         x = x.permute(0, 2, 1)
         x = self.normalization_layer(x)
