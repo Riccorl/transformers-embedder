@@ -32,12 +32,14 @@ class Tokenizer:
     def __init__(self, model: Union[str, tr.PreTrainedTokenizer], *args, **kwargs):
         if isinstance(model, str):
             # init HuggingFace tokenizer
-            self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model)
+            self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model, *args, **kwargs)
             # get config
-            self.config = tr.AutoConfig.from_pretrained(model)
+            self.config = tr.AutoConfig.from_pretrained(model, *args, **kwargs)
         else:
             self.huggingface_tokenizer = model
-            self.config = tr.AutoConfig.from_pretrained(self.huggingface_tokenizer.name_or_path)
+            self.config = tr.AutoConfig.from_pretrained(
+                self.huggingface_tokenizer.name_or_path, *args, **kwargs
+            )
         # padding stuff
         # default, batch length is model max length
         self.subword_max_batch_len = self.huggingface_tokenizer.model_max_length
