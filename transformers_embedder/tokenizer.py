@@ -74,12 +74,12 @@ class Tokenizer:
                 Text or batch of text to be encoded.
             text_pair (:obj:`str`, :obj:`List[str]`, :obj:`List[List[str]]`, :obj:`List[List[Word]]`, :obj:`List[Word]`):
                 Text or batch of text to be encoded.
-            padding (:obj:`bool`, optional, defaults to :obj:`True`):
+            padding (:obj:`bool`, optional, defaults to :obj:`False`):
                 If :obj:`True`, applies padding to the batch based on the maximum length of the batch.
-            max_length (:obj:`int`, optional, defaults to :obj:`0`):
+            max_length (:obj:`int`, optional, defaults to :obj:`None`):
                 If specified, truncates the input sequence to that value. Otherwise,
                 uses the model max length.
-            return_tensors (:obj:`bool`, optional, defaults to :obj:`True`):
+            return_tensors (:obj:`bool`, optional, defaults to :obj:`None`):
                 If :obj:`True`, the outputs is converted to :obj:`torch.Tensor`
             is_split_into_words (:obj:`bool`, optional, defaults to :obj:`False`):
                 If :obj:`True` and the input is a string, the input is split on spaces.
