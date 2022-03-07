@@ -56,11 +56,15 @@ class TransformersEmbedder(torch.nn.Module):
         output_layers: Sequence[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
+        *args,
+        **kwargs,
     ) -> None:
         super().__init__()
         if isinstance(model, str):
-            config = tr.AutoConfig.from_pretrained(model, output_hidden_states=True, output_attentions=True)
-            self.transformer_model = tr.AutoModel.from_pretrained(model, config=config)
+            config = tr.AutoConfig.from_pretrained(
+                model, output_hidden_states=True, output_attentions=True, *args, **kwargs
+            )
+            self.transformer_model = tr.AutoModel.from_pretrained(model, config=config, *args, **kwargs)
         else:
             self.transformer_model = model
         self.return_words = return_words
