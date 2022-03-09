@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import UserDict
 from functools import partial
 from typing import List, Dict, Union, Any, Optional, Tuple, Set
+import numpy as np
 
 import transformers as tr
 from transformers import BatchEncoding
@@ -104,6 +105,8 @@ class Tokenizer:
             max_length=max_length,
             is_split_into_words=is_split_into_words,
             return_tensors=return_tensors,
+            return_special_tokens_mask=True,
+            return_length=True,
             *args,
             **kwargs,
         )
@@ -111,6 +114,16 @@ class Tokenizer:
         offsets, sentence_lengths = self.build_offsets(
             model_inputs, return_tensors=return_tensors, there_is_text_pair=text_pair is not None
         )
+
+        if not kwargs.get("return_length", False):
+            # remove the length property, if not required by the user
+            #del model_inputs["length"]
+            ...
+
+        if not kwargs.get("return_special_tokens_mask", False):
+            # remove the special_tokens_mask property, if not required by the user
+            #del model_inputs["length"]
+            ...
 
         # convert to ModelInputs
         model_inputs = ModelInputs(**model_inputs)
@@ -135,7 +148,7 @@ class Tokenizer:
 
         return model_inputs
 
-    def build_offsets(
+    def build_offsets_old(
         self,
         model_inputs: BatchEncoding,
         return_tensors: bool = True,
@@ -205,6 +218,78 @@ class Tokenizer:
         # if return_tensor is True, we need to convert the offsets to tensors
         if return_tensors:
             offsets = torch.as_tensor(offsets)
+        return offsets, sentence_lengths
+
+    def build_offsets(
+        self,
+        model_inputs: BatchEncoding,
+        return_tensors: bool = True,
+        there_is_text_pair: bool = False,
+    ) -> Tuple:
+        """
+        Build the offset tensor for the batch of inputs.
+
+        Args:
+            model_inputs (:obj:`BatchEncoding`):
+                The inputs to the transformer model.
+            return_tensors (:obj:`bool`, optional, defaults to :obj:`True`):
+                If :obj:`True`, the outputs is converted to :obj:`torch.Tensor`
+            there_is_text_pair (:obj:`bool`, optional, defaults to :obj:`False`):
+                If :obj:`True` `text_pair` is not None.
+
+        Returns:
+            :obj:`List[List[int]]` or :obj:`torch.Tensor`: The offsets of the sub-tokens.
+        """
+        # Flatten-out indices across batches
+        _special_tokens_mask = np.concatenate(model_inputs.special_tokens_mask)
+
+        # Batch-view of word_ids where None tokens are replaced by 0s
+        attnt_mask = np.concatenate(model_inputs.attention_mask)
+        word_ids = np.concatenate([model_inputs.word_ids(i) for i in range(len(model_inputs.input_ids))])
+        word_ids[_special_tokens_mask.astype(bool)] = 0
+
+        # Get the indexes of the last bpe of each first sentence in a pair
+        idxs = np.argwhere(np.diff(_special_tokens_mask) == 1)[::2].squeeze()
+        lengths = [0] + model_inputs.length
+
+        if self.has_starting_token:
+            mask = np.empty_like(word_ids, dtype=bool)
+            #mask[[0] + model_inputs.length[:-1]] = True
+            mask[lengths[:-1]] = True
+            mask[idxs + 1] = True
+
+            # shift all non special tokens
+            word_ids[~mask] += 1
+
+        # restore the original sentence-level arrays, ignoring the last empty array
+        offsets = np.split(word_ids.astype(int), np.cumsum(model_inputs.length))[:-1]
+        sentence_lengths = list()
+
+        for idx, end_idx in enumerate(idxs):
+            prev_length = lengths[:-1][idx]
+            sent_length = end_idx - prev_length
+            
+            offset = offsets[idx]
+            special_tokens_mask = np.asarray(model_inputs.special_tokens_mask[idx])
+            off = offset[sent_length]
+            att_mask = np.argwhere(model_inputs.attention_mask[idx]).squeeze()
+
+            # shift by off+1 the second part of the sequence
+            offset[sent_length + 1 :] += off + 1
+
+            # TODO: the check may be removed (i.e. sentences with length >= 2)
+            if special_tokens_mask[att_mask[-1]] and len(offset) >= 2:
+                offset[att_mask[-1]] = offset[att_mask[-2]] + 1
+
+            # compute sentence's lengths as the last offset index + 1
+            sent_length = offset[att_mask[-1]] + 1
+            sentence_lengths.append(sent_length)
+
+            # offset for padding tokens
+            offset[att_mask[-1]+1:] = sent_length
+
+            offsets[idx] = torch.from_numpy(offset) if return_tensors else offset.tolist()
+
         return offsets, sentence_lengths
 
     def pad_batch(
