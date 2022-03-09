@@ -117,12 +117,12 @@ class Tokenizer:
 
         if not kwargs.get("return_length", False):
             # remove the length property, if not required by the user
-            #del model_inputs["length"]
+            # del model_inputs["length"]
             ...
 
         if not kwargs.get("return_special_tokens_mask", False):
             # remove the special_tokens_mask property, if not required by the user
-            #del model_inputs["length"]
+            # del model_inputs["length"]
             ...
 
         # convert to ModelInputs
@@ -254,7 +254,7 @@ class Tokenizer:
 
         if self.has_starting_token:
             mask = np.empty_like(word_ids, dtype=bool)
-            #mask[[0] + model_inputs.length[:-1]] = True
+            # mask[[0] + model_inputs.length[:-1]] = True
             mask[lengths[:-1]] = True
             mask[idxs + 1] = True
 
@@ -268,7 +268,7 @@ class Tokenizer:
         for idx, end_idx in enumerate(idxs):
             prev_length = lengths[:-1][idx]
             sent_length = end_idx - prev_length
-            
+
             offset = offsets[idx]
             special_tokens_mask = np.asarray(model_inputs.special_tokens_mask[idx])
             off = offset[sent_length]
@@ -286,7 +286,7 @@ class Tokenizer:
             sentence_lengths.append(sent_length)
 
             # offset for padding tokens
-            offset[att_mask[-1]+1:] = sent_length
+            offset[att_mask[-1] + 1 :] = sent_length
 
             offsets[idx] = torch.from_numpy(offset) if return_tensors else offset.tolist()
 
