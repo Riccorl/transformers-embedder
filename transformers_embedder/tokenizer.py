@@ -244,12 +244,15 @@ class Tokenizer:
         _special_tokens_mask = np.concatenate(model_inputs.special_tokens_mask)
 
         # Batch-view of word_ids where None tokens are replaced by 0s
-        attnt_mask = np.concatenate(model_inputs.attention_mask)
         word_ids = np.concatenate([model_inputs.word_ids(i) for i in range(len(model_inputs.input_ids))])
         word_ids[_special_tokens_mask.astype(bool)] = 0
 
         # Get the indexes of the last bpe of each first sentence in a pair
-        idxs = np.argwhere(np.diff(_special_tokens_mask) == 1)[::2].squeeze(-1)
+        if there_is_text_pair:
+            idxs = np.argwhere(np.diff(_special_tokens_mask) == 1)[::2].squeeze(-1)
+        else:
+            idxs = np.argwhere(np.diff(_special_tokens_mask) == 1).squeeze(-1)
+
         lengths = [0] + model_inputs.length
 
         if self.has_starting_token:
