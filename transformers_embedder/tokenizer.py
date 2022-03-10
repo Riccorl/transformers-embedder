@@ -249,7 +249,7 @@ class Tokenizer:
         word_ids[_special_tokens_mask.astype(bool)] = 0
 
         # Get the indexes of the last bpe of each first sentence in a pair
-        idxs = np.argwhere(np.diff(_special_tokens_mask) == 1)[::2].squeeze()
+        idxs = np.argwhere(np.diff(_special_tokens_mask) == 1)[::2].squeeze(-1)
         lengths = [0] + model_inputs.length
 
         if self.has_starting_token:
