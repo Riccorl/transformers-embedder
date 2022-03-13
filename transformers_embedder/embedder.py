@@ -168,6 +168,8 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`torch.Tensor`
         """
+        # replace padding indices with the maximum value inside the batch
+        indices[indices == -1] = torch.max(indices)
         out = self.scatter_sum(embeddings, indices)
         ones = torch.ones(indices.size(), dtype=embeddings.dtype, device=embeddings.device)
         count = self.scatter_sum(ones, indices)

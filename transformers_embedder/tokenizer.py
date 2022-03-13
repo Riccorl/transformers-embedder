@@ -158,8 +158,6 @@ class Tokenizer:
         # output data structure
         offsets = []
         sentence_lengths = []
-        # this is used as padding value for the offsets
-        max_batch_offset = 0
         # model_inputs should be the output of the HuggingFace tokenizer
         # it contains the word offsets to reconstruct the original tokens from the
         # sub-tokens
@@ -175,33 +173,32 @@ class Tokenizer:
                 word_offsets = word_ids
             # here we retrieve the max offset for the sample, which will be used as SEP offset
             # and also as padding value for the offsets
-            sep_offset = max([w for w in word_offsets if w is not None]) + 1
+            sep_offset_value = max([w for w in word_offsets if w is not None]) + 1
             # replace first None occurrence with sep_offset
             sep_index = word_offsets.index(None)
-            word_offsets[sep_index] = sep_offset
+            word_offsets[sep_index] = sep_offset_value
             # if there is a text pair, we need to adjust the offsets for the second text
             if there_is_text_pair:
                 # some models have two SEP tokens in between the two texts
                 if self.has_double_sep:
                     sep_index += 1
-                    sep_offset += 1
-                    word_offsets[sep_index] = sep_offset
+                    sep_offset_value += 1
+                    word_offsets[sep_index] = sep_offset_value
                 # keep the first offsets as is, adjust the second ones
                 word_offsets = word_offsets[: sep_index + 1] + [
-                    w + sep_offset if w is not None else w for w in word_offsets[sep_index + 1 :]
+                    w + sep_offset_value if w is not None else w for w in word_offsets[sep_index + 1 :]
                 ]
                 # update again the sep_offset
-                sep_offset = max([w for w in word_offsets if w is not None]) + 1
-                # replace first None occurrence with sep_offset
-                # now it should be the last one
+                sep_offset_value = max([w for w in word_offsets if w is not None]) + 1
+                # replace first None occurrence with sep_offset, it should be the last SEP
                 sep_index = word_offsets.index(None)
-                word_offsets[sep_index] = sep_offset
+                word_offsets[sep_index] = sep_offset_value
             # keep track of the maximum offset for padding
-            max_batch_offset = max(max_batch_offset, sep_offset)
             offsets.append(word_offsets)
-            sentence_lengths.append(sep_offset + 1)
-        # replace remaining None occurrences with max_batch_offset
-        offsets = [[o if o is not None else max_batch_offset for o in offset] for offset in offsets]
+            sentence_lengths.append(sep_offset_value + 1)
+        # replace remaining None occurrences with -1
+        # the remaining None occurrences are the padding values
+        offsets = [[o if o is not None else -1 for o in offset] for offset in offsets]
         # if return_tensor is True, we need to convert the offsets to tensors
         if return_tensors:
             offsets = torch.as_tensor(offsets)
@@ -238,7 +235,7 @@ class Tokenizer:
     def pad_sequence(
         self,
         sequence: Union[List, torch.Tensor],
-        value: Optional[Any] = None,
+        value: int,
         length: Union[int, str] = "subword",
         pad_to_left: bool = False,
     ) -> Union[List, torch.Tensor]:
@@ -248,7 +245,7 @@ class Tokenizer:
         Args:
             sequence (:obj:`List`, :obj:`torch.Tensor`):
                 Element to pad, it can be either a :obj:`List` or a :obj:`torch.Tensor`.
-            value (:obj:`Any`, optional):
+            value (:obj:`int`):
                 Value to use as padding.
             length (:obj:`int`, :obj:`str`, optional, defaults to :obj:`subword`):
                 Length after pad.
@@ -267,11 +264,6 @@ class Tokenizer:
                 raise ValueError(
                     f"`length` must be an `int`, `subword` or `word`. Current value is `{length}`"
                 )
-        if value is None:
-            # this is a trick used to pad the offset.
-            # here we want the offset pad to be the max offset index in the batch
-            # that is the maximum word length in the batch
-            value = self.word_max_batch_len - 1
         padding = [value] * abs(length - len(sequence))
         if isinstance(sequence, torch.Tensor):
             if len(sequence.shape) > 1:
