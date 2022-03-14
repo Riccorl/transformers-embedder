@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 extras = {}
-extras["torch"] = ["torch>=1.5,<1.11"]
+extras["torch"] = ["torch>=1.5,<1.12"]
 extras["all"] = extras["torch"]
 
 install_requires = ["transformers>=4.3,<4.18"]
