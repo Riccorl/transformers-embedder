@@ -117,6 +117,11 @@ class Tokenizer:
         # add the offsets to the model inputs
         model_inputs.update({"offsets": offsets, "sentence_lengths": sentence_lengths})
 
+        # we also update the maximum batch length,
+        # both for subword and word level
+        self.subword_max_batch_len = max(len(x) for x in model_inputs.input_ids)
+        self.word_max_batch_len = max(x for x in model_inputs.sentence_lengths)
+
         # check if we need to convert other stuff to tensors
         if additional_inputs:
             model_inputs.update(additional_inputs)
@@ -550,7 +555,7 @@ class ModelInputs(UserDict):
         try:
             return self.data[item]
         except KeyError:
-            raise AttributeError
+            raise AttributeError(f"`ModelInputs` has no attribute `{item}`")
 
     def __getitem__(self, item: str) -> Any:
         return self.data[item]
