@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import UserDict
 from functools import partial
-from typing import List, Dict, Union, Any, Optional, Tuple, Set
+from typing import List, Dict, Union, Any, Optional, Tuple, Set, Sequence, Mapping
 
 import transformers as tr
 from transformers import BatchEncoding
@@ -63,6 +63,7 @@ class Tokenizer:
         return_tensors: Optional[Union[bool, str]] = None,
         is_split_into_words: bool = False,
         additional_inputs: Optional[Dict[str, Any]] = None,
+        compute_bpe_info: bool = False,
         *args,
         **kwargs,
     ) -> ModelInputs:
@@ -116,6 +117,14 @@ class Tokenizer:
         model_inputs = ModelInputs(**model_inputs)
         # add the offsets to the model inputs
         model_inputs.update({"offsets": offsets, "sentence_lengths": sentence_lengths})
+
+        if compute_bpe_info:
+            # build the data used to pool the subwords when in sparse mode
+            bpe_info: Mapping[str, Any] = self.build_bpe_info(
+                offsets=offsets, bpe_mask=model_inputs["attention_mask"], words_per_sentence=sentence_lengths
+            )
+            # add the bpe info to the model inputs
+            model_inputs["bpe_info"] = ModelInputs(**bpe_info)
 
         # we also update the maximum batch length,
         # both for subword and word level
@@ -208,6 +217,78 @@ class Tokenizer:
         if return_tensors:
             offsets = torch.as_tensor(offsets)
         return offsets, sentence_lengths
+
+    def build_bpe_info(
+        self,
+        offsets: torch.Tensor | Sequence[Sequence[int]],
+        bpe_mask: torch.Tensor | Sequence[Sequence[int]],
+        words_per_sentence: Sequence[int],
+    ) -> Mapping[str, Any]:
+        """Build tensors used as info for BPE pooling, starting from the BPE offsets.
+
+        Args:
+            offsets:
+                The offsets to compute lengths from.
+            bpe_mask:
+                The attention mask at BPE level.
+            words_per_sentence:
+                The sentence lengths, word-wise.
+
+        Returns:
+            :obj:`Mapping[str, Any]`: Tensors used to construct the sparse one which pools the
+            transformer encoding word-wise.
+        """
+        offsets: torch.Tensor = torch.as_tensor(offsets)
+        bpe_mask: torch.Tensor = torch.as_tensor(bpe_mask)
+
+        sentence_lengths: torch.Tensor = bpe_mask.sum(dim=1)
+
+        # We want to build triplets as coordinates (document, word, bpe)
+        # We start by creating the document index for each triplet
+        document_indices = torch.arange(offsets.size(0)).repeat_interleave(sentence_lengths)
+        # then the word indices
+        word_indices = offsets[offsets != -1]
+        # lastly the bpe indices
+        max_range: torch.Tensor = torch.arange(bpe_mask.shape[1])
+        bpe_indices: torch.LongTensor = torch.cat([max_range[:i] for i in bpe_mask.sum(dim=1)], dim=0).long()
+
+        unique_words, word_lengths = torch.unique_consecutive(offsets, return_counts=True)
+        unpadded_word_lengths = word_lengths[unique_words != -1]
+
+        # and their weight to be used as multiplication factors
+        bpe_weights: torch.FloatTensor = (
+            (1 / unpadded_word_lengths).repeat_interleave(unpadded_word_lengths).float()
+        )
+
+        sparse_indices = torch.stack([document_indices, word_indices, bpe_indices], dim=0)
+
+        bpe_shape = torch.Size(
+            (
+                bpe_mask.size(0),  # batch_size
+                max(words_per_sentence),  # max number of words per sentence
+                bpe_mask.size(1),  # max bpe_number in batch wrt the sentence
+            )
+        )
+
+        # TODO: ugly stuff for the inefficient pooling method, to be removed along with the `sentence_lengths` key
+        s_lengths = []
+        tmp = []
+        for word_index, word_length in zip(unique_words, word_lengths.tolist()):
+            if word_index == -1 or word_index == 0:
+                if len(tmp) > 0:
+                    s_lengths.append(tmp)
+                    tmp = []
+            if word_index >= 0:
+                tmp.append(word_length)
+        if len(tmp) > 0:
+            s_lengths.append(tmp)
+
+        return dict(
+            sparse_indices=sparse_indices,
+            sparse_values=bpe_weights,
+            sparse_size=bpe_shape,
+            sentence_lengths=s_lengths,
+        )
 
     def pad_batch(
         self, batch: Union[ModelInputs, Dict[str, list]], max_length: Optional[int] = None
