@@ -591,9 +591,7 @@ class ModelInputs(UserDict):
             after modification.
         """
         if isinstance(device, (str, torch.device, int)):
-            self.data = {
-                k: v.to(device=device) if isinstance(v, torch.Tensor) else v for k, v in self.data.items()
-            }
+            self.data = {k: v.to(device=device) if hasattr(v, "to") else v for k, v in self.data.items()}
         else:
             logger.warning(f"Attempting to cast to another type, {str(device)}. This is not supported.")
         return self
