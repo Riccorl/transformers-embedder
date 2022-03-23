@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Union, Tuple, Sequence
+from typing import Optional, Union, Tuple, Sequence, Any, Mapping
 
 import transformers as tr
+from torch.nn.utils.rnn import pad_sequence
 
 from transformers_embedder import utils
 
@@ -53,6 +54,7 @@ class TransformersEmbedder(torch.nn.Module):
         model: Union[str, tr.PreTrainedModel],
         return_words: bool = True,
         layer_pooling_strategy: str = "last",
+        subword_pooling_strategy: str = "scatter",
         output_layers: Sequence[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
@@ -69,6 +71,7 @@ class TransformersEmbedder(torch.nn.Module):
             self.transformer_model = model
         self.return_words = return_words
         self.pooling_strategy = layer_pooling_strategy
+        self.merge_strategy = subword_pooling_strategy
         if max(map(abs, output_layers)) >= self.transformer_model.config.num_hidden_layers:
             raise ValueError(
                 f"`output_layers` parameter not valid, choose between 0 and "
@@ -87,6 +90,7 @@ class TransformersEmbedder(torch.nn.Module):
         attention_mask: Optional[torch.Tensor] = None,
         token_type_ids: Optional[torch.Tensor] = None,
         offsets: Optional[torch.Tensor] = None,
+        bpe_info: Optional[Mapping[str, Any]] = None,
         *args,
         **kwargs,
     ) -> TransformersEmbedderOutput:
@@ -141,7 +145,17 @@ class TransformersEmbedder(torch.nn.Module):
             )
         if self.return_words:
             # Shape: [batch_size, num_words, embedding_size].
-            word_embeddings = self.merge_subword(word_embeddings, offsets)
+            if self.merge_strategy == "scatter":
+                word_embeddings = self.merge_subword(word_embeddings, indices=offsets)
+            elif self.merge_strategy == "sparse":
+                word_embeddings = self.merge_sparse(word_embeddings, bpe_info)
+            elif self.merge_strategy == "inefficient":
+                word_embeddings = self.merge_inefficient(word_embeddings, bpe_info)
+            else:
+                raise ValueError(
+                    "`merge_strategy` parameter not valid, choose between `scatter`, `sparse`, `inefficient`."
+                    f"Current value `{self.merge_strategy}`"
+                )
         if self.return_all:
             return TransformersEmbedderOutput(
                 word_embeddings=word_embeddings,
@@ -168,6 +182,8 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`torch.Tensor`
         """
+        # replace padding indices with the maximum value inside the batch
+        indices[indices == -1] = torch.max(indices)
         out = self.scatter_sum(embeddings, indices)
         ones = torch.ones(indices.size(), dtype=embeddings.dtype, device=embeddings.device)
         count = self.scatter_sum(ones, indices)
@@ -175,6 +191,29 @@ class TransformersEmbedder(torch.nn.Module):
         count = self.broadcast(count, out)
         out.true_divide_(count)
         return out
+
+    def merge_sparse(self, embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
+        # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
+        bpe_weights = torch.sparse_coo_tensor(
+            indices=bpe_info["sparse_indices"],
+            values=bpe_info["sparse_values"],
+            size=bpe_info["sparse_size"],
+        )
+
+        # (sentence, word, bpe) x (sentence, bpe, transformer_dim) -> (sentence, word, transformer_dim)
+        return torch.bmm(bpe_weights, embeddings)
+
+    def merge_inefficient(self, embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]):
+        out = []
+        for i_sentence in range(embeddings.shape[0]):
+            i = 0
+            sentence_emb = []
+            for word_length in bpe_info["sentence_lengths"][i_sentence]:
+                sentence_emb.append(embeddings[i_sentence, i : i + word_length, :].mean(dim=0))
+                i += word_length
+            out.append(torch.stack(sentence_emb))
+
+        return pad_sequence(out, batch_first=True)
 
     def scatter_sum(self, src: torch.Tensor, index: torch.Tensor) -> torch.Tensor:
         """

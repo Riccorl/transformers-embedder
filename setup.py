@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 extras = {}
-extras["torch"] = ["torch>=1.5,<1.11"]
+extras["torch"] = ["torch>=1.5,<1.12"]
 extras["all"] = extras["torch"]
 
 install_requires = ["transformers>=4.3,<4.18"]
 
 setuptools.setup(
     name="transformers_embedder",  # Replace with your own username
-    version="2.0.0",
+    version="2.0.2",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",
