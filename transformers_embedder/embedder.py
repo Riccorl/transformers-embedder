@@ -34,13 +34,16 @@ class TransformersEmbedder(torch.nn.Module):
     Args:
         model (:obj:`str`, :obj:`tr.PreTrainedModel`):
             Transformer model to use (https://huggingface.co/models).
-        return_words (:obj:`bool`, optional, defaults to :obj:`True`):
-            If ``True`` it returns the word-level embeddings by computing the mean of the
-            sub-words embeddings.
         layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
             layers (``sum``), the average of the selected hidden layers (``mean``).
+        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`scatter`):
+            What pooling strategy to use for the sub-word embeddings. Methods available are ``scatter``,
+            ``sparse`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add_``
+            that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile
+            with ONNX. When ``subword_pooling_strategy`` is ``none``, the sub-word embeddings are not
+            pooled.
         output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
             Which hidden layers to get from the transformer model.
         fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
@@ -52,7 +55,6 @@ class TransformersEmbedder(torch.nn.Module):
     def __init__(
         self,
         model: Union[str, tr.PreTrainedModel],
-        return_words: bool = True,
         layer_pooling_strategy: str = "last",
         subword_pooling_strategy: str = "scatter",
         output_layers: Sequence[int] = (-4, -3, -2, -1),
@@ -69,9 +71,8 @@ class TransformersEmbedder(torch.nn.Module):
             self.transformer_model = tr.AutoModel.from_pretrained(model, config=config, *args, **kwargs)
         else:
             self.transformer_model = model
-        self.return_words = return_words
-        self.pooling_strategy = layer_pooling_strategy
-        self.merge_strategy = subword_pooling_strategy
+        self.layer_pooling_strategy = layer_pooling_strategy
+        self.subword_pooling_strategy = subword_pooling_strategy
         if max(map(abs, output_layers)) >= self.transformer_model.config.num_hidden_layers:
             raise ValueError(
                 f"`output_layers` parameter not valid, choose between 0 and "
@@ -89,9 +90,8 @@ class TransformersEmbedder(torch.nn.Module):
         input_ids: torch.Tensor,
         attention_mask: Optional[torch.Tensor] = None,
         token_type_ids: Optional[torch.Tensor] = None,
-        offsets: Optional[torch.Tensor] = None,
-        bpe_info: Optional[Mapping[str, Any]] = None,
-        *args,
+        scatter_offsets: Optional[torch.Tensor] = None,
+        sparse_offsets: Optional[Mapping[str, Any]] = None,
         **kwargs,
     ) -> TransformersEmbedderOutput:
         """
@@ -104,8 +104,10 @@ class TransformersEmbedder(torch.nn.Module):
                 Attention mask for the transformer model.
             token_type_ids (:obj:`torch.Tensor`, optional):
                 Token type ids for the transformer model.
-            offsets (:obj:`torch.Tensor`, optional):
-                Offsets of the sub-word, used to reconstruct the word embeddings.
+            scatter_offsets (:obj:`torch.Tensor`, optional):
+                Offsets of the sub-word, used to reconstruct the word embeddings using the ``scatter`` method.
+            sparse_offsets (:obj:`Mapping[str, Any]`, optional):
+                Offsets of the sub-word, used to reconstruct the word embeddings using the ``sparse`` method.
 
         Returns:
              :obj:`TransformersEmbedderOutput`:
@@ -119,43 +121,43 @@ class TransformersEmbedder(torch.nn.Module):
 
         # Shape: [batch_size, num_sub-words, embedding_size].
         transformer_outputs = self.transformer_model(**inputs)
-        if self.pooling_strategy == "last":
+        if self.layer_pooling_strategy == "last":
             word_embeddings = transformer_outputs.last_hidden_state
-        elif self.pooling_strategy == "concat":
+        elif self.layer_pooling_strategy == "concat":
             word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.cat(word_embeddings, dim=-1)
-        elif self.pooling_strategy == "sum":
+        elif self.layer_pooling_strategy == "sum":
             word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.stack(word_embeddings, dim=0).sum(dim=0)
-        elif self.pooling_strategy == "mean":
+        elif self.layer_pooling_strategy == "mean":
             word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
         else:
             raise ValueError(
                 "`pooling_strategy` parameter not valid, choose between `last`, `concat`, "
-                f"`sum` and `mean`. Current value `{self.pooling_strategy}`"
+                f"`sum` and `mean`. Current value `{self.layer_pooling_strategy}`"
             )
 
-        if self.return_words and offsets is None:
+        if self.subword_pooling_strategy != "none" and scatter_offsets is None and sparse_offsets is None:
             raise ValueError(
-                "`return_words` is `True` but `offsets` was not passed to the model. "
-                "Cannot compute word embeddings. To solve:\n"
-                "- Set `return_words` to `False` or"
-                "- Pass `offsets` to the model during forward."
+                "`subword_pooling_strategy` is not `none` but neither `scatter_offsets` not `sparse_offsets` "
+                "were passed to the model. Cannot compute word embeddings. To solve:\n"
+                "- Set `subword_pooling_strategy` to `none` or"
+                "- Pass `scatter_offsets` to the model during forward or"
+                "- Pass `sparse_offsets` to the model during forward."
             )
-        if self.return_words:
+        if self.subword_pooling_strategy != "none":
             # Shape: [batch_size, num_words, embedding_size].
-            if self.merge_strategy == "scatter":
-                word_embeddings = self.merge_subword(word_embeddings, indices=offsets)
-            elif self.merge_strategy == "sparse":
-                word_embeddings = self.merge_sparse(word_embeddings, bpe_info)
-            elif self.merge_strategy == "inefficient":
-                word_embeddings = self.merge_inefficient(word_embeddings, bpe_info)
+            if self.subword_pooling_strategy == "scatter":
+                word_embeddings = self.merge_scatter(word_embeddings, indices=scatter_offsets)
+            elif self.subword_pooling_strategy == "sparse":
+                word_embeddings = self.merge_sparse(word_embeddings, sparse_offsets)
             else:
                 raise ValueError(
-                    "`merge_strategy` parameter not valid, choose between `scatter`, `sparse`, `inefficient`."
-                    f"Current value `{self.merge_strategy}`"
+                    "`subword_pooling_strategy` parameter not valid, choose between `scatter` and `sparse`."
+                    f"Current value is `{self.subword_pooling_strategy}`."
                 )
+
         if self.return_all:
             return TransformersEmbedderOutput(
                 word_embeddings=word_embeddings,
@@ -166,7 +168,7 @@ class TransformersEmbedder(torch.nn.Module):
             )
         return TransformersEmbedderOutput(word_embeddings=word_embeddings)
 
-    def merge_subword(self, embeddings: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+    def merge_scatter(self, embeddings: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
         """
         Minimal version of ``scatter_mean``, from `pytorch_scatter
         <https://github.com/rusty1s/pytorch_scatter/>`_
@@ -182,59 +184,37 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`torch.Tensor`
         """
+
+        def broadcast(src: torch.Tensor, other: torch.Tensor):
+            for _ in range(src.dim(), other.dim()):
+                src = src.unsqueeze(-1)
+            src = src.expand_as(other)
+            return src
+
+        def scatter_sum(src: torch.Tensor, index: torch.Tensor) -> torch.Tensor:
+            index = broadcast(index, src)
+            size = list(src.size())
+            size[1] = index.max() + 1
+            out = torch.zeros(size, dtype=src.dtype, device=src.device)
+            return out.scatter_add_(1, index, src)
+
         # replace padding indices with the maximum value inside the batch
         indices[indices == -1] = torch.max(indices)
-        out = self.scatter_sum(embeddings, indices)
+        out = scatter_sum(embeddings, indices)
         ones = torch.ones(indices.size(), dtype=embeddings.dtype, device=embeddings.device)
-        count = self.scatter_sum(ones, indices)
+        count = scatter_sum(ones, indices)
         count.clamp_(1)
-        count = self.broadcast(count, out)
+        count = broadcast(count, out)
         out.true_divide_(count)
         return out
 
     def merge_sparse(self, embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
         # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
         bpe_weights = torch.sparse_coo_tensor(
-            indices=bpe_info["sparse_indices"],
-            values=bpe_info["sparse_values"],
-            size=bpe_info["sparse_size"],
+            indices=bpe_info["sparse_indices"], values=bpe_info["sparse_values"], size=bpe_info["sparse_size"]
         )
-
         # (sentence, word, bpe) x (sentence, bpe, transformer_dim) -> (sentence, word, transformer_dim)
         return torch.bmm(bpe_weights, embeddings)
-
-    def merge_inefficient(self, embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]):
-        out = []
-        for i_sentence in range(embeddings.shape[0]):
-            i = 0
-            sentence_emb = []
-            for word_length in bpe_info["sentence_lengths"][i_sentence]:
-                sentence_emb.append(embeddings[i_sentence, i : i + word_length, :].mean(dim=0))
-                i += word_length
-            out.append(torch.stack(sentence_emb))
-
-        return pad_sequence(out, batch_first=True)
-
-    def scatter_sum(self, src: torch.Tensor, index: torch.Tensor) -> torch.Tensor:
-        """
-        Minimal version of ``scatter_sum``, from `pytorch_scatter
-        <https://github.com/rusty1s/pytorch_scatter/>`_
-        library, that is compatible for ONNX but works only for our case.
-
-        Args:
-            src (:obj:`torch.Tensor`):
-                The source tensor.
-            index (:obj:`torch.Tensor`):
-                The indices of elements to scatter.
-
-        Returns:
-            :obj:`torch.Tensor`
-        """
-        index = self.broadcast(index, src)
-        size = list(src.size())
-        size[1] = index.max() + 1
-        out = torch.zeros(size, dtype=src.dtype, device=src.device)
-        return out.scatter_add_(1, index, src)
 
     def resize_token_embeddings(self, new_num_tokens: Optional[int] = None) -> torch.nn.Embedding:
         """
@@ -259,27 +239,6 @@ class TransformersEmbedder(torch.nn.Module):
         """
         self.transformer_model.save_pretrained(save_directory)
 
-    @staticmethod
-    def broadcast(src: torch.Tensor, other: torch.Tensor):
-        """
-        Minimal version of ``broadcast``, from `pytorch_scatter
-        <https://github.com/rusty1s/pytorch_scatter/>`_
-        library, that is compatible with ONNX but works only for our case.
-
-        Args:
-            src (:obj:`torch.Tensor`):
-                The source tensor.
-            other (:obj:`torch.Tensor`):
-                The tensor from which we want to broadcast.
-
-        Returns:
-            :obj:`torch.Tensor`
-        """
-        for _ in range(src.dim(), other.dim()):
-            src = src.unsqueeze(-1)
-        src = src.expand_as(other)
-        return src
-
     @property
     def hidden_size(self) -> int:
         """
@@ -288,7 +247,7 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`int`: Hidden size of ``self.transformer_model``.
         """
-        multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
+        multiplier = len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
         return self.transformer_model.config.hidden_size * multiplier
 
     @property
@@ -299,7 +258,7 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`int`: Hidden size of ``self.transformer_model``.
         """
-        multiplier = len(self.output_layers) if self.pooling_strategy == "concat" else 1
+        multiplier = len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
         return self.transformer_model.config.hidden_size * multiplier
 
 
@@ -326,7 +285,6 @@ class Encoder(torch.nn.Module):
         bias: bool = True,
     ):
         super().__init__()
-        self.normalization_layer = torch.nn.BatchNorm1d(transformer_hidden_size)
         self.projection_size = projection_size or transformer_hidden_size
         self.projection_layer = torch.nn.Linear(transformer_hidden_size, self.projection_size, bias=bias)
         self.dropout_layer = torch.nn.Dropout(dropout)
@@ -343,14 +301,7 @@ class Encoder(torch.nn.Module):
         Returns:
             :obj:`torch.Tensor`: The encoded tensor.
         """
-        x = self.dropout_layer(x)
-        x = x.permute(0, 2, 1)
-        x = self.normalization_layer(x)
-        x = x.permute(0, 2, 1)
-        x = self.projection_layer(x)
-        x = self.activation_layer(x)
-        x = self.dropout_layer(x)
-        return x
+        return self.activation_layer(self.projection_layer(self.dropout_layer(x)))
 
 
 class TransformersEncoder(TransformersEmbedder):
@@ -362,13 +313,15 @@ class TransformersEncoder(TransformersEmbedder):
     Args:
         model (:obj:`str`, :obj:`tr.PreTrainedModel`):
             Transformer model to use (https://huggingface.co/models).
-        return_words (:obj:`bool`, optional, defaults to :obj:`True`):
-            If ``True`` it returns the word-level embeddings by computing the mean of the
-            sub-words embeddings.
         layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
             layers (``sum``), the average of the selected hidden layers (``mean``).
+        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`scatter`):
+            What pooling strategy to use for the sub-word embeddings. Methods available are ``scatter``,
+            ``sparse`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add``
+            that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile
+            with ONNX.
         output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
             Which hidden layers to get from the transformer model.
         fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
@@ -386,16 +339,27 @@ class TransformersEncoder(TransformersEmbedder):
     def __init__(
         self,
         model: Union[str, tr.PreTrainedModel],
-        return_words: bool = True,
         layer_pooling_strategy: str = "last",
+        subword_pooling_strategy: str = "scatter",
         output_layers: Sequence[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
         projection_size: Optional[int] = None,
         dropout: float = 0.1,
         bias: bool = True,
+        *args,
+        **kwargs,
     ) -> None:
-        super().__init__(model, return_words, layer_pooling_strategy, output_layers, fine_tune, return_all)
+        super().__init__(
+            model,
+            layer_pooling_strategy,
+            subword_pooling_strategy,
+            output_layers,
+            fine_tune,
+            return_all,
+            *args,
+            **kwargs,
+        )
         self.encoder = Encoder(self.transformer_hidden_size, projection_size, dropout, bias)
 
     def forward(
@@ -403,8 +367,8 @@ class TransformersEncoder(TransformersEmbedder):
         input_ids: torch.Tensor,
         attention_mask: Optional[torch.Tensor] = None,
         token_type_ids: Optional[torch.Tensor] = None,
-        offsets: Optional[torch.Tensor] = None,
-        *args,
+        scatter_offsets: Optional[torch.Tensor] = None,
+        sparse_offsets: Optional[Mapping[str, Any]] = None,
         **kwargs,
     ) -> TransformersEmbedderOutput:
         """
@@ -417,16 +381,22 @@ class TransformersEncoder(TransformersEmbedder):
                 Attention mask for the transformer model.
             token_type_ids (:obj:`torch.Tensor`, optional):
                 Token type ids for the transformer model.
-            offsets (:obj:`torch.Tensor`, optional):
+            scatter_offsets (:obj:`torch.Tensor`, optional):
                 Offsets of the sub-word, used to reconstruct the word embeddings.
 
         Returns:
              :obj:`TransformersEmbedderOutput`:
                 Word level embeddings plus the output of the transformer model.
         """
-        transformer_output = super().forward(
-            input_ids, attention_mask, token_type_ids, offsets, *args, **kwargs
-        )
+        transformers_kwargs = {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "token_type_ids": token_type_ids,
+            "scatter_offsets": scatter_offsets,
+            "sparse_offsets": sparse_offsets,
+            **kwargs,
+        }
+        transformer_output = super().forward(**transformers_kwargs)
         encoder_output = self.encoder(transformer_output.word_embeddings)
         transformer_output.word_embeddings = encoder_output
         return transformer_output

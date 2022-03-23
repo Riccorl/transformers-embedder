@@ -63,7 +63,6 @@ class Tokenizer:
         return_tensors: Optional[Union[bool, str]] = None,
         is_split_into_words: bool = False,
         additional_inputs: Optional[Dict[str, Any]] = None,
-        compute_bpe_info: bool = False,
         *args,
         **kwargs,
     ) -> ModelInputs:
@@ -109,22 +108,22 @@ class Tokenizer:
             **kwargs,
         )
         # build the offsets used to pool the subwords
-        offsets, sentence_lengths = self.build_offsets(
+        scatter_offsets, sentence_lengths = self.build_scatter_offsets(
             model_inputs, return_tensors=return_tensors, there_is_text_pair=text_pair is not None
         )
 
         # convert to ModelInputs
         model_inputs = ModelInputs(**model_inputs)
         # add the offsets to the model inputs
-        model_inputs.update({"offsets": offsets, "sentence_lengths": sentence_lengths})
+        model_inputs.update({"scatter_offsets": scatter_offsets, "sentence_lengths": sentence_lengths})
 
-        if compute_bpe_info:
-            # build the data used to pool the subwords when in sparse mode
-            bpe_info: Mapping[str, Any] = self.build_bpe_info(
-                offsets=offsets, bpe_mask=model_inputs["attention_mask"], words_per_sentence=sentence_lengths
-            )
-            # add the bpe info to the model inputs
-            model_inputs["bpe_info"] = ModelInputs(**bpe_info)
+        # if compute_bpe_info:
+        # build the data used to pool the subwords when in sparse mode
+        bpe_info: Mapping[str, Any] = self.build_sparse_offsets(
+            offsets=scatter_offsets, bpe_mask=model_inputs.attention_mask, words_per_sentence=sentence_lengths
+        )
+        # add the bpe info to the model inputs
+        model_inputs["sparse_offsets"] = ModelInputs(**bpe_info)
 
         # we also update the maximum batch length,
         # both for subword and word level
@@ -139,7 +138,7 @@ class Tokenizer:
                 missing_keys = set(additional_inputs.keys()) - set(self.padding_ops.keys())
                 if missing_keys:
                     raise ValueError(
-                        f"There are no padding strategy for the following keys: {missing_keys}. "
+                        f"There are no padding strategies for the following keys: {missing_keys}. "
                         "Please add one with `tokenizer.add_padding_ops()`."
                     )
                 self.pad_batch(model_inputs)
@@ -149,7 +148,7 @@ class Tokenizer:
 
         return model_inputs
 
-    def build_offsets(
+    def build_scatter_offsets(
         self,
         model_inputs: BatchEncoding,
         return_tensors: bool = True,
@@ -218,7 +217,7 @@ class Tokenizer:
             offsets = torch.as_tensor(offsets)
         return offsets, sentence_lengths
 
-    def build_bpe_info(
+    def build_sparse_offsets(
         self,
         offsets: torch.Tensor | Sequence[Sequence[int]],
         bpe_mask: torch.Tensor | Sequence[Sequence[int]],
@@ -227,19 +226,21 @@ class Tokenizer:
         """Build tensors used as info for BPE pooling, starting from the BPE offsets.
 
         Args:
-            offsets:
+            offsets (:obj:`torch.Tensor` or :obj:`List[List[int]]`):
                 The offsets to compute lengths from.
-            bpe_mask:
+            bpe_mask (:obj:`torch.Tensor` or :obj:`List[List[int]]`):
                 The attention mask at BPE level.
-            words_per_sentence:
+            words_per_sentence (:obj:`List[int]`):
                 The sentence lengths, word-wise.
 
         Returns:
             :obj:`Mapping[str, Any]`: Tensors used to construct the sparse one which pools the
             transformer encoding word-wise.
         """
-        offsets: torch.Tensor = torch.as_tensor(offsets)
-        bpe_mask: torch.Tensor = torch.as_tensor(bpe_mask)
+        if not isinstance(offsets, torch.Tensor):
+            offsets: torch.Tensor = torch.as_tensor(offsets)
+        if not isinstance(bpe_mask, torch.Tensor):
+            bpe_mask: torch.Tensor = torch.as_tensor(bpe_mask)
 
         sentence_lengths: torch.Tensor = bpe_mask.sum(dim=1)
 
@@ -270,24 +271,10 @@ class Tokenizer:
             )
         )
 
-        # TODO: ugly stuff for the inefficient pooling method, to be removed along with the `sentence_lengths` key
-        s_lengths = []
-        tmp = []
-        for word_index, word_length in zip(unique_words, word_lengths.tolist()):
-            if word_index == -1 or word_index == 0:
-                if len(tmp) > 0:
-                    s_lengths.append(tmp)
-                    tmp = []
-            if word_index >= 0:
-                tmp.append(word_length)
-        if len(tmp) > 0:
-            s_lengths.append(tmp)
-
         return dict(
             sparse_indices=sparse_indices,
             sparse_values=bpe_weights,
             sparse_size=bpe_shape,
-            sentence_lengths=s_lengths,
         )
 
     def pad_batch(
@@ -316,6 +303,7 @@ class Tokenizer:
         for key in batch:
             if key in self.padding_ops:
                 batch[key] = [self.padding_ops[key](b) for b in batch[key]]
+
         return ModelInputs(batch)
 
     def pad_sequence(
