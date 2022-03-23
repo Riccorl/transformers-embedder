@@ -10,7 +10,7 @@ extras["all"] = extras["torch"]
 install_requires = ["transformers>=4.3,<4.18"]
 
 setuptools.setup(
-    name="transformers_embedder",  # Replace with your own username
+    name="transformers_embedder",
     version="2.1.0b1",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",

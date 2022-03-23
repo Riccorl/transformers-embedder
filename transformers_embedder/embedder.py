@@ -141,20 +141,35 @@ class TransformersEmbedder(torch.nn.Module):
         if self.subword_pooling_strategy != "none" and scatter_offsets is None and sparse_offsets is None:
             raise ValueError(
                 "`subword_pooling_strategy` is not `none` but neither `scatter_offsets` not `sparse_offsets` "
-                "were passed to the model. Cannot compute word embeddings. To solve:\n"
-                "- Set `subword_pooling_strategy` to `none` or"
-                "- Pass `scatter_offsets` to the model during forward or"
+                "were passed to the model. Cannot compute word embeddings.\nTo solve:\n"
+                "- Set `subword_pooling_strategy` to `none` or\n"
+                "- Pass `scatter_offsets` to the model during forward or\n"
                 "- Pass `sparse_offsets` to the model during forward."
             )
         if self.subword_pooling_strategy != "none":
             # Shape: [batch_size, num_words, embedding_size].
             if self.subword_pooling_strategy == "scatter":
+                if scatter_offsets is None:
+                    raise ValueError(
+                        "`subword_pooling_strategy` is `scatter` but `scatter_offsets` "
+                        "were not passed to the model. Cannot compute word embeddings.\nTo solve:\n"
+                        "- Set `subword_pooling_strategy` to `none` or\n"
+                        "- Pass `scatter_offsets` to the model during forward."
+                    )
                 word_embeddings = self.merge_scatter(word_embeddings, indices=scatter_offsets)
             elif self.subword_pooling_strategy == "sparse":
+                if sparse_offsets is None:
+                    raise ValueError(
+                        "`subword_pooling_strategy` is `sparse` but `sparse_offsets` "
+                        "were not passed to the model. Cannot compute word embeddings.\nTo solve:\n"
+                        "- Set `subword_pooling_strategy` to `none` or\n"
+                        "- Pass `sparse_offsets` to the model during forward."
+                    )
                 word_embeddings = self.merge_sparse(word_embeddings, sparse_offsets)
             else:
                 raise ValueError(
-                    "`subword_pooling_strategy` parameter not valid, choose between `scatter` and `sparse`."
+                    "`subword_pooling_strategy` parameter not valid, choose between `scatter`, `sparse`"
+                    " and `none`."
                     f"Current value is `{self.subword_pooling_strategy}`."
                 )
 
