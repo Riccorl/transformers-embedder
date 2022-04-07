@@ -151,7 +151,7 @@ class TransformersEmbedder(torch.nn.Module):
         else:
             raise ValueError(
                 "`layer_pooling_strategy` parameter not valid, choose between `last`, `concat`, "
-                f"`sum` and `mean`. Current value `{self.layer_pooling_strategy}`"
+                f"`sum`, `mean` and `scalar_mix`. Current value `{self.layer_pooling_strategy}`"
             )
 
         if self.subword_pooling_strategy != "none" and scatter_offsets is None and sparse_offsets is None:
