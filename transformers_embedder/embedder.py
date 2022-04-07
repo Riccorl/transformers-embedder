@@ -37,7 +37,8 @@ class TransformersEmbedder(torch.nn.Module):
         layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
-            layers (``sum``), the average of the selected hidden layers (``mean``).
+            layers (``sum``), the average of the selected hidden layers (``mean``), or a scalar mixture of
+            the selected hidden layers (``scalar_mix``).
         subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`sparse`):
             What pooling strategy to use for the sub-word embeddings. Methods available are ``sparse``,
             ``scatter`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add_``
