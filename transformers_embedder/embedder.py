@@ -5,6 +5,7 @@ from typing import Optional, Union, Tuple, Sequence, Any, Mapping
 import transformers as tr
 
 from transformers_embedder import utils
+from transformers_embedder.modules.scalar_mix import ScalarMix
 
 if utils.is_torch_available():
     import torch
@@ -70,8 +71,16 @@ class TransformersEmbedder(torch.nn.Module):
             self.transformer_model = tr.AutoModel.from_pretrained(model, config=config, *args, **kwargs)
         else:
             self.transformer_model = model
+
+        # pooling strategy parameters
         self.layer_pooling_strategy = layer_pooling_strategy
         self.subword_pooling_strategy = subword_pooling_strategy
+
+        self._scalar_mix: Optional[ScalarMix] = None
+        if layer_pooling_strategy == "scalar_mix":
+            self._scalar_mix = ScalarMix(len(output_layers))
+
+        # check output_layers is well defined
         if max(map(abs, output_layers)) >= self.transformer_model.config.num_hidden_layers:
             raise ValueError(
                 f"`output_layers` parameter not valid, choose between 0 and "
@@ -79,7 +88,11 @@ class TransformersEmbedder(torch.nn.Module):
                 f"Current value is `{output_layers}`"
             )
         self.output_layers = output_layers
+
+        # check if return all transformer outputs
         self.return_all = return_all
+
+        # if fine_tune is False, freeze all the transformer's parameters
         if not fine_tune:
             for param in self.transformer_model.parameters():
                 param.requires_grad = False
@@ -131,6 +144,9 @@ class TransformersEmbedder(torch.nn.Module):
         elif self.layer_pooling_strategy == "mean":
             word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
             word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
+        elif self.layer_pooling_strategy == "scalar_mix":
+            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = self._scalar_mix(word_embeddings)
         else:
             raise ValueError(
                 "`layer_pooling_strategy` parameter not valid, choose between `last`, `concat`, "
@@ -247,6 +263,18 @@ class TransformersEmbedder(torch.nn.Module):
 
     @staticmethod
     def merge_sparse(embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
+        """
+        Merges the subword embeddings into a single tensor, using sparse indices.
+
+        Args:
+            embeddings (:obj:`torch.Tensor`):
+                The embeddings tensor.
+            bpe_info (:obj:`Mapping[str, Any]`, `optional`):
+                The BPE info.
+
+        Returns:
+            :obj:`torch.Tensor`: The merged embeddings.
+        """
         # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
         bpe_weights = torch.sparse_coo_tensor(
             indices=bpe_info["sparse_indices"], values=bpe_info["sparse_values"], size=bpe_info["sparse_size"]

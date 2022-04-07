@@ -40,7 +40,7 @@ import transformers_embedder as tre
 tokenizer = tre.Tokenizer("bert-base-cased")
 
 model = tre.TransformersEmbedder(
-    "bert-base-cased", subword_pooling_strategy="scatter", layer_pooling_strategy="mean"
+    "bert-base-cased", subword_pooling_strategy="sparse", layer_pooling_strategy="mean"
 )
 
 example = "This is a sample sentence"
@@ -91,6 +91,8 @@ There are also multiple type of outputs you can get using `layer_pooling_strateg
 - `concat`: returns the concatenation of the selected `output_layers` of the transformer model
 - `sum`: returns the sum of the selected `output_layers` of the transformer model
 - `mean`: returns the average of the selected `output_layers` of the transformer model
+- `scalar_mix`: returns the output of a parameterised scalar mixture layer of the selected `output_layers` 
+   of the transformer model
 
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
 
