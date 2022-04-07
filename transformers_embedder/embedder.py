@@ -229,7 +229,7 @@ class TransformersEmbedder(torch.nn.Module):
             indices=bpe_info["sparse_indices"], values=bpe_info["sparse_values"], size=bpe_info["sparse_size"]
         )
         # (sentence, word, bpe) x (sentence, bpe, transformer_dim) -> (sentence, word, transformer_dim)
-        merged = torch.bmm(bpe_weights, embeddings)
+        merged = torch.bmm(bpe_weights.to_dense(), embeddings)
         return merged
 
     def resize_token_embeddings(self, new_num_tokens: Optional[int] = None) -> torch.nn.Embedding:
