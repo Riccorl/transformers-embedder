@@ -215,13 +215,13 @@ class TransformersEmbedder(torch.nn.Module):
 
         # replace padding indices with the maximum value inside the batch
         indices[indices == -1] = torch.max(indices)
-        out = scatter_sum(embeddings, indices)
+        merged = scatter_sum(embeddings, indices)
         ones = torch.ones(indices.size(), dtype=embeddings.dtype, device=embeddings.device)
         count = scatter_sum(ones, indices)
         count.clamp_(1)
-        count = broadcast(count, out)
-        out.true_divide_(count)
-        return out
+        count = broadcast(count, merged)
+        merged.true_divide_(count)
+        return merged
 
     def merge_sparse(self, embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
         # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
@@ -229,7 +229,8 @@ class TransformersEmbedder(torch.nn.Module):
             indices=bpe_info["sparse_indices"], values=bpe_info["sparse_values"], size=bpe_info["sparse_size"]
         )
         # (sentence, word, bpe) x (sentence, bpe, transformer_dim) -> (sentence, word, transformer_dim)
-        return torch.bmm(bpe_weights, embeddings)
+        merged = torch.bmm(bpe_weights, embeddings)
+        return merged
 
     def resize_token_embeddings(self, new_num_tokens: Optional[int] = None) -> torch.nn.Embedding:
         """
