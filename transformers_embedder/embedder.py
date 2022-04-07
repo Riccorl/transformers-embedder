@@ -37,9 +37,9 @@ class TransformersEmbedder(torch.nn.Module):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
             layers (``sum``), the average of the selected hidden layers (``mean``).
-        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`scatter`):
-            What pooling strategy to use for the sub-word embeddings. Methods available are ``scatter``,
-            ``sparse`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add_``
+        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`sparse`):
+            What pooling strategy to use for the sub-word embeddings. Methods available are ``sparse``,
+            ``scatter`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add_``
             that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile
             with ONNX. When ``subword_pooling_strategy`` is ``none``, the sub-word embeddings are not
             pooled.
@@ -133,7 +133,7 @@ class TransformersEmbedder(torch.nn.Module):
             word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
         else:
             raise ValueError(
-                "`pooling_strategy` parameter not valid, choose between `last`, `concat`, "
+                "`layer_pooling_strategy` parameter not valid, choose between `last`, `concat`, "
                 f"`sum` and `mean`. Current value `{self.layer_pooling_strategy}`"
             )
 
@@ -145,32 +145,30 @@ class TransformersEmbedder(torch.nn.Module):
                 "- Pass `scatter_offsets` to the model during forward or\n"
                 "- Pass `sparse_offsets` to the model during forward."
             )
-        if self.subword_pooling_strategy != "none":
-            # Shape: [batch_size, num_words, embedding_size].
-            if self.subword_pooling_strategy == "scatter":
-                if scatter_offsets is None:
-                    raise ValueError(
-                        "`subword_pooling_strategy` is `scatter` but `scatter_offsets` "
-                        "were not passed to the model. Cannot compute word embeddings.\nTo solve:\n"
-                        "- Set `subword_pooling_strategy` to `none` or\n"
-                        "- Pass `scatter_offsets` to the model during forward."
-                    )
-                word_embeddings = self.merge_scatter(word_embeddings, indices=scatter_offsets)
-            elif self.subword_pooling_strategy == "sparse":
-                if sparse_offsets is None:
-                    raise ValueError(
-                        "`subword_pooling_strategy` is `sparse` but `sparse_offsets` "
-                        "were not passed to the model. Cannot compute word embeddings.\nTo solve:\n"
-                        "- Set `subword_pooling_strategy` to `none` or\n"
-                        "- Pass `sparse_offsets` to the model during forward."
-                    )
-                word_embeddings = self.merge_sparse(word_embeddings, sparse_offsets)
-            else:
+
+        if self.subword_pooling_strategy not in ["none", "scatter", "sparse"]:
+            raise ValueError(
+                "`subword_pooling_strategy` parameter not valid, choose between `scatter`, `sparse`"
+                f" and `none`. Current value is `{self.subword_pooling_strategy}`."
+            )
+        if self.subword_pooling_strategy == "scatter":
+            if scatter_offsets is None:
                 raise ValueError(
-                    "`subword_pooling_strategy` parameter not valid, choose between `scatter`, `sparse`"
-                    " and `none`."
-                    f"Current value is `{self.subword_pooling_strategy}`."
+                    "`subword_pooling_strategy` is `scatter` but `scatter_offsets` "
+                    "were not passed to the model. Cannot compute word embeddings.\nTo solve:\n"
+                    "- Set `subword_pooling_strategy` to `none` or\n"
+                    "- Pass `scatter_offsets` to the model during forward."
                 )
+            word_embeddings = self.merge_scatter(word_embeddings, indices=scatter_offsets)
+        if self.subword_pooling_strategy == "sparse":
+            if sparse_offsets is None:
+                raise ValueError(
+                    "`subword_pooling_strategy` is `sparse` but `sparse_offsets` "
+                    "were not passed to the model. Cannot compute word embeddings.\nTo solve:\n"
+                    "- Set `subword_pooling_strategy` to `none` or\n"
+                    "- Pass `sparse_offsets` to the model during forward."
+                )
+            word_embeddings = self.merge_sparse(word_embeddings, sparse_offsets)
 
         if self.return_all:
             return TransformersEmbedderOutput(

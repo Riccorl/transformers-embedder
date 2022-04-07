@@ -4,7 +4,7 @@
 
 [![Open in Visual Studio Code](https://img.shields.io/badge/preview%20in-vscode.dev-blue)](https://github.dev/Riccorl/transformers-embedder)
 [![PyTorch](https://img.shields.io/badge/PyTorch-orange?logo=pytorch)](https://pytorch.org/)
-[![Transformers](https://img.shields.io/badge/4.17-🤗%20Transformers-6670ff)](https://huggingface.co/transformers/)
+[![Transformers](https://img.shields.io/badge/4.18-🤗%20Transformers-6670ff)](https://huggingface.co/transformers/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 
 [![Upload to PyPi](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish-pypi.yml/badge.svg)](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish-pypi.yml)
@@ -40,7 +40,7 @@ import transformers_embedder as tre
 tokenizer = tre.Tokenizer("bert-base-cased")
 
 model = tre.TransformersEmbedder(
-    "bert-base-cased", return_words=True, layer_pooling_strategy="mean"
+    "bert-base-cased", subword_pooling_strategy="scatter", layer_pooling_strategy="mean"
 )
 
 example = "This is a sample sentence"
@@ -76,12 +76,16 @@ word-level embeddings from theoretically every transformer model it supports.
 
 ### Model
 
-The `TransformersEmbedder` offer 2 ways to retrieve the embeddings:
+The `TransformersEmbedder` class offers 3 ways to get the embeddings:
 
-- `return_words=True`: computes the mean of the embeddings of the sub-tokens of each word
-- `return_words=False`: returns the raw output of the transformer model without sub-token pooling
+- `subword_pooling_strategy="sparse"`: computes the mean of the embeddings of the sub-tokens of each word 
+  (i.e. the embeddings of the sub-tokens are pooled together) using a sparse matrix multiplication. This 
+  strategy is the default one.
+- `subword_pooling_strategy="scatter"`: computes the mean of the embeddings of the sub-tokens of each word
+  using a scatter-gather operation. It is not deterministic, but it works with ONNX export.
+- `subword_pooling_strategy="none"`: returns the raw output of the transformer model without sub-token pooling.
 
-There are also multiple type of outputs you can get using `pooling_strategy` parameter:
+There are also multiple type of outputs you can get using `layer_pooling_strategy` parameter:
 
 - `last`: returns the last hidden state of the transformer model
 - `concat`: returns the concatenation of the selected `output_layers` of the transformer model
@@ -95,8 +99,8 @@ class TransformersEmbedder(torch.nn.Module):
     def __init__(
         self,
         model: Union[str, tr.PreTrainedModel],
-        return_words: bool = True,
-        pooling_strategy: str = "last",
+        subword_pooling_strategy: str = "sparse",
+        layer_pooling_strategy: str = "last",
         output_layers: Tuple[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = True,
