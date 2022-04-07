@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Optional, Union, Tuple, Sequence, Any, Mapping
 
 import transformers as tr
-from torch.nn.utils.rnn import pad_sequence
 
 from transformers_embedder import utils
 
@@ -183,7 +182,8 @@ class TransformersEmbedder(torch.nn.Module):
             )
         return TransformersEmbedderOutput(word_embeddings=word_embeddings)
 
-    def merge_scatter(self, embeddings: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+    @staticmethod
+    def merge_scatter(embeddings: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
         """
         Minimal version of ``scatter_mean``, from `pytorch_scatter
         <https://github.com/rusty1s/pytorch_scatter/>`_
@@ -201,12 +201,36 @@ class TransformersEmbedder(torch.nn.Module):
         """
 
         def broadcast(src: torch.Tensor, other: torch.Tensor):
+            """
+            Broadcast ``src`` to match the shape of ``other``.
+
+            Args:
+                src (:obj:`torch.Tensor`):
+                    The tensor to broadcast.
+                other (:obj:`torch.Tensor`):
+                    The tensor to match the shape of.
+
+            Returns:
+                :obj:`torch.Tensor`: The broadcasted tensor.
+            """
             for _ in range(src.dim(), other.dim()):
                 src = src.unsqueeze(-1)
             src = src.expand_as(other)
             return src
 
         def scatter_sum(src: torch.Tensor, index: torch.Tensor) -> torch.Tensor:
+            """
+            Sums the elements in ``src`` that have the same indices as in ``index``.
+
+            Args:
+                src (:obj:`torch.Tensor`):
+                    The tensor to sum.
+                index (:obj:`torch.Tensor`):
+                    The indices to sum.
+
+            Returns:
+                :obj:`torch.Tensor`: The summed tensor.
+            """
             index = broadcast(index, src)
             size = list(src.size())
             size[1] = index.max() + 1
@@ -223,7 +247,8 @@ class TransformersEmbedder(torch.nn.Module):
         merged.true_divide_(count)
         return merged
 
-    def merge_sparse(self, embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
+    @staticmethod
+    def merge_sparse(embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
         # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
         bpe_weights = torch.sparse_coo_tensor(
             indices=bpe_info["sparse_indices"], values=bpe_info["sparse_values"], size=bpe_info["sparse_size"]

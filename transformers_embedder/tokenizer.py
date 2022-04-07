@@ -217,8 +217,8 @@ class Tokenizer:
             offsets = torch.as_tensor(offsets)
         return offsets, sentence_lengths
 
+    @staticmethod
     def build_sparse_offsets(
-        self,
         offsets: torch.Tensor | Sequence[Sequence[int]],
         bpe_mask: torch.Tensor | Sequence[Sequence[int]],
         words_per_sentence: Sequence[int],
