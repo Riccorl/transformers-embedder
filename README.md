@@ -96,6 +96,14 @@ The `TransformersEmbedder` class offers 3 ways to get the embeddings:
   using a scatter-gather operation. It is not deterministic, but it works with ONNX export.
 - `subword_pooling_strategy="none"`: returns the raw output of the transformer model without sub-token pooling.
 
+Here a little feature table:
+
+|             | Sub-token Pooling  | Deterministic      | ONNX               |
+|-------------|--------------------|--------------------|--------------------|
+| **Sparse**  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| **Scatter** | :white_check_mark: | :x:                | :x:                |
+| **None**    | :x:                | :white_check_mark: | :white_check_mark: |
+
 There are also multiple type of outputs you can get using `layer_pooling_strategy` parameter:
 
 - `layer_pooling_strategy="last"`: returns the last hidden state of the transformer model
