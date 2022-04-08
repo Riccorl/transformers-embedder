@@ -98,11 +98,11 @@ The `TransformersEmbedder` class offers 3 ways to get the embeddings:
 
 Here a little feature table:
 
-|             | Sub-token Pooling  | Deterministic      | ONNX               |
-|-------------|--------------------|--------------------|--------------------|
+|             | Sub-token Pooling  |   Deterministic    |        ONNX        |
+|-------------|:------------------:|:------------------:|:------------------:|
 | **Sparse**  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| **Scatter** | :white_check_mark: | :x:                | :x:                |
-| **None**    | :x:                | :white_check_mark: | :white_check_mark: |
+| **Scatter** | :white_check_mark: |        :x:         |        :x:         |
+| **None**    |        :x:         | :white_check_mark: | :white_check_mark: |
 
 There are also multiple type of outputs you can get using `layer_pooling_strategy` parameter:
 
