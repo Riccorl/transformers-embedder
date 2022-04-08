@@ -27,9 +27,19 @@ class Tokenizer:
     Args:
         model (:obj:`str`, :obj:`transformers.PreTrainedTokenizer`):
             Language model name (or a transformer :obj:`PreTrainedTokenizer`.
+        return_sparse_offsets (:obj:`bool`, optional, defaults to :obj:`True`):
+                If :obj:`True`, the sparse offsets of the tokens in the input text are returned. To reduce
+                memory usage, set this to :obj:`False` if you don't need them, e.g. you set the
+                `subword_pooling_strategy` to `scatter` in the `TransformersEmbedder` model.
     """
 
-    def __init__(self, model: Union[str, tr.PreTrainedTokenizer], *args, **kwargs):
+    def __init__(
+        self,
+        model: Union[str, tr.PreTrainedTokenizer],
+        return_sparse_offsets: bool = True,
+        *args,
+        **kwargs,
+    ):
         if isinstance(model, str):
             # init HuggingFace tokenizer
             self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(
@@ -42,6 +52,9 @@ class Tokenizer:
             self.config = tr.AutoConfig.from_pretrained(
                 self.huggingface_tokenizer.name_or_path, *args, **kwargs
             )
+
+        self.return_sparse_offsets = return_sparse_offsets
+
         # padding stuff
         # default, batch length is model max length
         self.subword_max_batch_len = self.huggingface_tokenizer.model_max_length
@@ -141,15 +154,15 @@ class Tokenizer:
             {"scatter_offsets": scatter_offsets, "sentence_lengths": sentence_lengths}
         )
 
-        # if compute_bpe_info:
-        # build the data used to pool the subwords when in sparse mode
-        bpe_info: Mapping[str, Any] = self.build_sparse_offsets(
-            offsets=scatter_offsets,
-            bpe_mask=model_inputs.attention_mask,
-            words_per_sentence=sentence_lengths,
-        )
-        # add the bpe info to the model inputs
-        model_inputs["sparse_offsets"] = ModelInputs(**bpe_info)
+        if self.return_sparse_offsets:
+            # build the data used to pool the subwords when in sparse mode
+            bpe_info: Mapping[str, Any] = self.build_sparse_offsets(
+                offsets=scatter_offsets,
+                bpe_mask=model_inputs.attention_mask,
+                words_per_sentence=sentence_lengths,
+            )
+            # add the bpe info to the model inputs
+            model_inputs["sparse_offsets"] = ModelInputs(**bpe_info)
 
         # we also update the maximum batch length,
         # both for subword and word level
@@ -433,7 +446,7 @@ class Tokenizer:
             self.to_tensor_inputs.add(key)
         self.padding_ops[key] = partial(self.pad_sequence, value=value, length=length)
 
-    def add_to_tensor_inputs(self, names: Union[str, set]) -> Set[str]:
+    def add_to_tensor_inputs(self, names: Union[str, Sequence[str]]) -> Set[str]:
         """
         Add these keys to the ones that will be converted in Tensors.
 
@@ -446,6 +459,8 @@ class Tokenizer:
         """
         if isinstance(names, str):
             names = {names}
+        if not isinstance(names, set):
+            names = set(names)
         self.to_tensor_inputs |= names
         return self.to_tensor_inputs
 
