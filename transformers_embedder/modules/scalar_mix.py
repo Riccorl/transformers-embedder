@@ -36,13 +36,18 @@ class ScalarMix(torch.nn.Module):
 
         self.scalar_parameters = ParameterList(
             [
-                Parameter(torch.FloatTensor([initial_scalar_parameters[i]]), requires_grad=trainable)
+                Parameter(
+                    torch.FloatTensor([initial_scalar_parameters[i]]),
+                    requires_grad=trainable,
+                )
                 for i in range(mixture_size)
             ]
         )
         self.gamma = Parameter(torch.FloatTensor([1.0]), requires_grad=trainable)
 
-    def forward(self, tensors: List[torch.Tensor], mask: torch.BoolTensor = None) -> torch.Tensor:
+    def forward(
+        self, tensors: List[torch.Tensor], mask: torch.BoolTensor = None
+    ) -> torch.Tensor:
         """
         Compute a weighted average of the `tensors`.  The input tensors caa be any shape
         with at least two dimensions, but must all be the same shape.
@@ -61,7 +66,10 @@ class ScalarMix(torch.nn.Module):
         def _do_layer_norm(tensor, broadcast_mask, num_elements_not_masked):
             tensor_masked = tensor * broadcast_mask
             mean = torch.sum(tensor_masked) / num_elements_not_masked
-            variance = torch.sum(((tensor_masked - mean) * broadcast_mask) ** 2) / num_elements_not_masked
+            variance = (
+                torch.sum(((tensor_masked - mean) * broadcast_mask) ** 2)
+                / num_elements_not_masked
+            )
             return (tensor - mean) / torch.sqrt(variance + 1e-4)
 
         normed_weights = torch.nn.functional.softmax(
@@ -83,5 +91,8 @@ class ScalarMix(torch.nn.Module):
 
             pieces = []
             for weight, tensor in zip(normed_weights, tensors):
-                pieces.append(weight * _do_layer_norm(tensor, broadcast_mask, num_elements_not_masked))
+                pieces.append(
+                    weight
+                    * _do_layer_norm(tensor, broadcast_mask, num_elements_not_masked)
+                )
             return self.gamma * sum(pieces)

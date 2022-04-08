@@ -32,7 +32,9 @@ class Tokenizer:
     def __init__(self, model: Union[str, tr.PreTrainedTokenizer], *args, **kwargs):
         if isinstance(model, str):
             # init HuggingFace tokenizer
-            self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(model, *args, **kwargs)
+            self.huggingface_tokenizer = tr.AutoTokenizer.from_pretrained(
+                model, *args, **kwargs
+            )
             # get config
             self.config = tr.AutoConfig.from_pretrained(model, *args, **kwargs)
         else:
@@ -104,7 +106,10 @@ class Tokenizer:
         is_batched = bool(
             isinstance(text, (list, tuple))
             and text
-            and ((isinstance(text[0], (list, tuple)) and is_split_into_words) or isinstance(text[0], str))
+            and (
+                (isinstance(text[0], (list, tuple)) and is_split_into_words)
+                or isinstance(text[0], str)
+            )
         )
         if not is_batched:
             text = [text]
@@ -124,18 +129,24 @@ class Tokenizer:
         )
         # build the offsets used to pool the subwords
         scatter_offsets, sentence_lengths = self.build_scatter_offsets(
-            model_inputs, return_tensors=return_tensors, there_is_text_pair=text_pair is not None
+            model_inputs,
+            return_tensors=return_tensors,
+            there_is_text_pair=text_pair is not None,
         )
 
         # convert to ModelInputs
         model_inputs = ModelInputs(**model_inputs)
         # add the offsets to the model inputs
-        model_inputs.update({"scatter_offsets": scatter_offsets, "sentence_lengths": sentence_lengths})
+        model_inputs.update(
+            {"scatter_offsets": scatter_offsets, "sentence_lengths": sentence_lengths}
+        )
 
         # if compute_bpe_info:
         # build the data used to pool the subwords when in sparse mode
         bpe_info: Mapping[str, Any] = self.build_sparse_offsets(
-            offsets=scatter_offsets, bpe_mask=model_inputs.attention_mask, words_per_sentence=sentence_lengths
+            offsets=scatter_offsets,
+            bpe_mask=model_inputs.attention_mask,
+            words_per_sentence=sentence_lengths,
         )
         # add the bpe info to the model inputs
         model_inputs["sparse_offsets"] = ModelInputs(**bpe_info)
@@ -150,7 +161,9 @@ class Tokenizer:
             model_inputs.update(additional_inputs)
             # check if there is a padding strategy
             if padding:
-                missing_keys = set(additional_inputs.keys()) - set(self.padding_ops.keys())
+                missing_keys = set(additional_inputs.keys()) - set(
+                    self.padding_ops.keys()
+                )
                 if missing_keys:
                     raise ValueError(
                         f"There are no padding strategies for the following keys: {missing_keys}. "
@@ -195,7 +208,9 @@ class Tokenizer:
             # with our subword pooling strategy
             # if the first token is a special token, we need to take it into account
             if self.has_starting_token:
-                word_offsets = [0] + [w + 1 if w is not None else w for w in word_ids[1:]]
+                word_offsets = [0] + [
+                    w + 1 if w is not None else w for w in word_ids[1:]
+                ]
             # otherwise, we can just use word_ids as is
             else:
                 word_offsets = word_ids
@@ -214,7 +229,8 @@ class Tokenizer:
                     word_offsets[sep_index] = sep_offset_value
                 # keep the first offsets as is, adjust the second ones
                 word_offsets = word_offsets[: sep_index + 1] + [
-                    w + sep_offset_value if w is not None else w for w in word_offsets[sep_index + 1 :]
+                    w + sep_offset_value if w is not None else w
+                    for w in word_offsets[sep_index + 1 :]
                 ]
                 # update again the sep_offset
                 sep_offset_value = max([w for w in word_offsets if w is not None]) + 1
@@ -261,14 +277,20 @@ class Tokenizer:
 
         # We want to build triplets as coordinates (document, word, bpe)
         # We start by creating the document index for each triplet
-        document_indices = torch.arange(offsets.size(0)).repeat_interleave(sentence_lengths)
+        document_indices = torch.arange(offsets.size(0)).repeat_interleave(
+            sentence_lengths
+        )
         # then the word indices
         word_indices = offsets[offsets != -1]
         # lastly the bpe indices
         max_range: torch.Tensor = torch.arange(bpe_mask.shape[1])
-        bpe_indices: torch.LongTensor = torch.cat([max_range[:i] for i in bpe_mask.sum(dim=1)], dim=0).long()
+        bpe_indices: torch.LongTensor = torch.cat(
+            [max_range[:i] for i in bpe_mask.sum(dim=1)], dim=0
+        ).long()
 
-        unique_words, word_lengths = torch.unique_consecutive(offsets, return_counts=True)
+        unique_words, word_lengths = torch.unique_consecutive(
+            offsets, return_counts=True
+        )
         unpadded_word_lengths = word_lengths[unique_words != -1]
 
         # and their weight to be used as multiplication factors
@@ -276,7 +298,9 @@ class Tokenizer:
             (1 / unpadded_word_lengths).repeat_interleave(unpadded_word_lengths).float()
         )
 
-        sparse_indices = torch.stack([document_indices, word_indices, bpe_indices], dim=0)
+        sparse_indices = torch.stack(
+            [document_indices, word_indices, bpe_indices], dim=0
+        )
 
         bpe_shape = torch.Size(
             (
@@ -293,7 +317,9 @@ class Tokenizer:
         )
 
     def pad_batch(
-        self, batch: Union[ModelInputs, Dict[str, list]], max_length: Optional[int] = None
+        self,
+        batch: Union[ModelInputs, Dict[str, list]],
+        max_length: Optional[int] = None,
     ) -> ModelInputs:
         """
         Pad the batch to its maximum length or to the specified :obj:`max_length`.
@@ -356,7 +382,9 @@ class Tokenizer:
         padding = [value] * abs(length - len(sequence))
         if isinstance(sequence, torch.Tensor):
             if len(sequence.shape) > 1:
-                raise ValueError(f"Sequence tensor must be 1D. Current shape is `{len(sequence.shape)}`")
+                raise ValueError(
+                    f"Sequence tensor must be 1D. Current shape is `{len(sequence.shape)}`"
+                )
             padding = torch.as_tensor(padding)
         if pad_to_left:
             if isinstance(sequence, torch.Tensor):
@@ -366,7 +394,9 @@ class Tokenizer:
             return torch.cat((sequence, padding), -1)
         return sequence + padding
 
-    def add_special_tokens(self, special_tokens_dict: Dict[str, Union[str, tr.AddedToken]]) -> int:
+    def add_special_tokens(
+        self, special_tokens_dict: Dict[str, Union[str, tr.AddedToken]]
+    ) -> int:
         """
         Add a dictionary of special tokens (eos, pad, cls, etc.) to the encoder.
         If special tokens are NOT in the vocabulary, they are added to it (indexed starting from the last
@@ -434,7 +464,9 @@ class Tokenizer:
         """
         # convert to tensor
         batch = {
-            k: torch.as_tensor(v) if k in self.to_tensor_inputs and not isinstance(v, torch.Tensor) else v
+            k: torch.as_tensor(v)
+            if k in self.to_tensor_inputs and not isinstance(v, torch.Tensor)
+            else v
             for k, v in batch.items()
         }
         return ModelInputs(batch)
@@ -509,7 +541,10 @@ class Tokenizer:
                             isinstance(text_to_check[0], str)
                             or (
                                 isinstance(text_to_check[0], (list, tuple))
-                                and (len(text_to_check[0]) == 0 or isinstance(text_to_check[0][0], str))
+                                and (
+                                    len(text_to_check[0]) == 0
+                                    or isinstance(text_to_check[0][0], str)
+                                )
                             )
                         )
                     )
@@ -537,9 +572,9 @@ class Tokenizer:
         Returns:
             :obj:`int`: the number of special tokens.
         """
-        if isinstance(self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP) and isinstance(
-            self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN
-        ):
+        if isinstance(
+            self.huggingface_tokenizer, MODELS_WITH_DOUBLE_SEP
+        ) and isinstance(self.huggingface_tokenizer, MODELS_WITH_STARTING_TOKEN):
             return 4
         if isinstance(
             self.huggingface_tokenizer,
@@ -675,7 +710,12 @@ class ModelInputs(UserDict):
             after modification.
         """
         if isinstance(device, (str, torch.device, int)):
-            self.data = {k: v.to(device=device) if hasattr(v, "to") else v for k, v in self.data.items()}
+            self.data = {
+                k: v.to(device=device) if hasattr(v, "to") else v
+                for k, v in self.data.items()
+            }
         else:
-            logger.warning(f"Attempting to cast to another type, {str(device)}. This is not supported.")
+            logger.warning(
+                f"Attempting to cast to another type, {str(device)}. This is not supported."
+            )
         return self

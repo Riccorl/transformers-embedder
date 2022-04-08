@@ -6,6 +6,7 @@ import transformers as tr
 
 from transformers_embedder import utils
 from transformers_embedder.modules.scalar_mix import ScalarMix
+from transformers_embedder.modules.encoder import Encoder
 
 if utils.is_torch_available():
     import torch
@@ -67,9 +68,15 @@ class TransformersEmbedder(torch.nn.Module):
         super().__init__()
         if isinstance(model, str):
             config = tr.AutoConfig.from_pretrained(
-                model, output_hidden_states=True, output_attentions=True, *args, **kwargs
+                model,
+                output_hidden_states=True,
+                output_attentions=True,
+                *args,
+                **kwargs,
             )
-            self.transformer_model = tr.AutoModel.from_pretrained(model, config=config, *args, **kwargs)
+            self.transformer_model = tr.AutoModel.from_pretrained(
+                model, config=config, *args, **kwargs
+            )
         else:
             self.transformer_model = model
 
@@ -82,7 +89,10 @@ class TransformersEmbedder(torch.nn.Module):
             self._scalar_mix = ScalarMix(len(output_layers))
 
         # check output_layers is well defined
-        if max(map(abs, output_layers)) >= self.transformer_model.config.num_hidden_layers:
+        if (
+            max(map(abs, output_layers))
+            >= self.transformer_model.config.num_hidden_layers
+        ):
             raise ValueError(
                 f"`output_layers` parameter not valid, choose between 0 and "
                 f"{self.transformer_model.config.num_hidden_layers - 1}. "
@@ -118,9 +128,11 @@ class TransformersEmbedder(torch.nn.Module):
             token_type_ids (:obj:`torch.Tensor`, optional):
                 Token type ids for the transformer model.
             scatter_offsets (:obj:`torch.Tensor`, optional):
-                Offsets of the sub-word, used to reconstruct the word embeddings using the ``scatter`` method.
+                Offsets of the sub-word, used to reconstruct the word embeddings using
+                the ``scatter`` method.
             sparse_offsets (:obj:`Mapping[str, Any]`, optional):
-                Offsets of the sub-word, used to reconstruct the word embeddings using the ``sparse`` method.
+                Offsets of the sub-word, used to reconstruct the word embeddings using
+                the ``sparse`` method.
 
         Returns:
              :obj:`TransformersEmbedderOutput`:
@@ -137,16 +149,26 @@ class TransformersEmbedder(torch.nn.Module):
         if self.layer_pooling_strategy == "last":
             word_embeddings = transformer_outputs.last_hidden_state
         elif self.layer_pooling_strategy == "concat":
-            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = [
+                transformer_outputs.hidden_states[layer] for layer in self.output_layers
+            ]
             word_embeddings = torch.cat(word_embeddings, dim=-1)
         elif self.layer_pooling_strategy == "sum":
-            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = [
+                transformer_outputs.hidden_states[layer] for layer in self.output_layers
+            ]
             word_embeddings = torch.stack(word_embeddings, dim=0).sum(dim=0)
         elif self.layer_pooling_strategy == "mean":
-            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
-            word_embeddings = torch.stack(word_embeddings, dim=0).mean(dim=0, dtype=torch.float)
+            word_embeddings = [
+                transformer_outputs.hidden_states[layer] for layer in self.output_layers
+            ]
+            word_embeddings = torch.stack(word_embeddings, dim=0).mean(
+                dim=0, dtype=torch.float
+            )
         elif self.layer_pooling_strategy == "scalar_mix":
-            word_embeddings = [transformer_outputs.hidden_states[layer] for layer in self.output_layers]
+            word_embeddings = [
+                transformer_outputs.hidden_states[layer] for layer in self.output_layers
+            ]
             word_embeddings = self._scalar_mix(word_embeddings)
         else:
             raise ValueError(
@@ -154,7 +176,11 @@ class TransformersEmbedder(torch.nn.Module):
                 f"`sum`, `mean` and `scalar_mix`. Current value `{self.layer_pooling_strategy}`"
             )
 
-        if self.subword_pooling_strategy != "none" and scatter_offsets is None and sparse_offsets is None:
+        if (
+            self.subword_pooling_strategy != "none"
+            and scatter_offsets is None
+            and sparse_offsets is None
+        ):
             raise ValueError(
                 "`subword_pooling_strategy` is not `none` but neither `scatter_offsets` not `sparse_offsets` "
                 "were passed to the model. Cannot compute word embeddings.\nTo solve:\n"
@@ -176,7 +202,9 @@ class TransformersEmbedder(torch.nn.Module):
                     "- Set `subword_pooling_strategy` to `none` or\n"
                     "- Pass `scatter_offsets` to the model during forward."
                 )
-            word_embeddings = self.merge_scatter(word_embeddings, indices=scatter_offsets)
+            word_embeddings = self.merge_scatter(
+                word_embeddings, indices=scatter_offsets
+            )
         if self.subword_pooling_strategy == "sparse":
             if sparse_offsets is None:
                 raise ValueError(
@@ -202,8 +230,8 @@ class TransformersEmbedder(torch.nn.Module):
         """
         Minimal version of ``scatter_mean``, from `pytorch_scatter
         <https://github.com/rusty1s/pytorch_scatter/>`_
-        library, that is compatible for ONNX but works only for our case. It is used to compute word level
-        embeddings from the transformer output.
+        library, that is compatible for ONNX but works only for our case.
+        It is used to compute word level embeddings from the transformer output.
 
         Args:
             embeddings (:obj:`torch.Tensor`):
@@ -255,7 +283,9 @@ class TransformersEmbedder(torch.nn.Module):
         # replace padding indices with the maximum value inside the batch
         indices[indices == -1] = torch.max(indices)
         merged = scatter_sum(embeddings, indices)
-        ones = torch.ones(indices.size(), dtype=embeddings.dtype, device=embeddings.device)
+        ones = torch.ones(
+            indices.size(), dtype=embeddings.dtype, device=embeddings.device
+        )
         count = scatter_sum(ones, indices)
         count.clamp_(1)
         count = broadcast(count, merged)
@@ -263,7 +293,9 @@ class TransformersEmbedder(torch.nn.Module):
         return merged
 
     @staticmethod
-    def merge_sparse(embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]) -> torch.Tensor:
+    def merge_sparse(
+        embeddings: torch.Tensor, bpe_info: Optional[Mapping[str, Any]]
+    ) -> torch.Tensor:
         """
         Merges the subword embeddings into a single tensor, using sparse indices.
 
@@ -278,13 +310,17 @@ class TransformersEmbedder(torch.nn.Module):
         """
         # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
         bpe_weights = torch.sparse_coo_tensor(
-            indices=bpe_info["sparse_indices"], values=bpe_info["sparse_values"], size=bpe_info["sparse_size"]
+            indices=bpe_info["sparse_indices"],
+            values=bpe_info["sparse_values"],
+            size=bpe_info["sparse_size"],
         )
         # (sentence, word, bpe) x (sentence, bpe, transformer_dim) -> (sentence, word, transformer_dim)
         merged = torch.bmm(bpe_weights.to_dense(), embeddings)
         return merged
 
-    def resize_token_embeddings(self, new_num_tokens: Optional[int] = None) -> torch.nn.Embedding:
+    def resize_token_embeddings(
+        self, new_num_tokens: Optional[int] = None
+    ) -> torch.nn.Embedding:
         """
         Resizes input token embeddings' matrix of the model if :obj:`new_num_tokens != config.vocab_size`.
 
@@ -315,7 +351,9 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`int`: Hidden size of ``self.transformer_model``.
         """
-        multiplier = len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
+        multiplier = (
+            len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
+        )
         return self.transformer_model.config.hidden_size * multiplier
 
     @property
@@ -326,50 +364,10 @@ class TransformersEmbedder(torch.nn.Module):
         Returns:
             :obj:`int`: Hidden size of ``self.transformer_model``.
         """
-        multiplier = len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
+        multiplier = (
+            len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
+        )
         return self.transformer_model.config.hidden_size * multiplier
-
-
-class Encoder(torch.nn.Module):
-    """
-    An encoder module for the :obj:`TransformersEmbedder` class.
-
-    Args:
-        transformer_hidden_size (:obj:`int`):
-            The hidden size of the inner transformer.
-        projection_size (:obj:`int`, `optional`, defaults to :obj:`None`):
-            The size of the projection layer.
-        dropout (:obj:`float`, `optional`, defaults to :obj:`0.1`):
-            The dropout value.
-        bias (:obj:`bool`, `optional`, defaults to :obj:`True`):
-            Whether to use a bias.
-    """
-
-    def __init__(
-        self,
-        transformer_hidden_size: int,
-        projection_size: Optional[int] = None,
-        dropout: float = 0.1,
-        bias: bool = True,
-    ):
-        super().__init__()
-        self.projection_size = projection_size or transformer_hidden_size
-        self.projection_layer = torch.nn.Linear(transformer_hidden_size, self.projection_size, bias=bias)
-        self.dropout_layer = torch.nn.Dropout(dropout)
-        self.activation_layer = torch.nn.SiLU()
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass of the encoder.
-
-        Args:
-            x (:obj:`torch.Tensor`):
-                The input tensor.
-
-        Returns:
-            :obj:`torch.Tensor`: The encoded tensor.
-        """
-        return self.activation_layer(self.projection_layer(self.dropout_layer(x)))
 
 
 class TransformersEncoder(TransformersEmbedder):
@@ -398,6 +396,8 @@ class TransformersEncoder(TransformersEmbedder):
             If ``True``, returns all the outputs from the HuggingFace model.
         projection_size (:obj:`int`, optional, defaults to :obj:`None`):
             If not ``None``, the output of the transformer is projected to this size.
+        activation_layer (:obj:`torch.nn.Module`, optional, defaults to :obj:`None`):
+            Activation layer to use. If ``None``, no activation layer is used.
         dropout (:obj:`float`, optional, defaults to :obj:`0.1`):
             The dropout probability.
         bias (:obj:`bool`, optional, defaults to :obj:`True`):
@@ -408,11 +408,12 @@ class TransformersEncoder(TransformersEmbedder):
         self,
         model: Union[str, tr.PreTrainedModel],
         layer_pooling_strategy: str = "last",
-        subword_pooling_strategy: str = "scatter",
+        subword_pooling_strategy: str = "sparse",
         output_layers: Sequence[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
         projection_size: Optional[int] = None,
+        activation_layer: Optional[torch.nn.Module] = None,
         dropout: float = 0.1,
         bias: bool = True,
         *args,
@@ -428,7 +429,13 @@ class TransformersEncoder(TransformersEmbedder):
             *args,
             **kwargs,
         )
-        self.encoder = Encoder(self.transformer_hidden_size, projection_size, dropout, bias)
+        self.encoder = Encoder(
+            self.transformer_hidden_size,
+            projection_size,
+            activation_layer,
+            dropout,
+            bias,
+        )
 
     def forward(
         self,
