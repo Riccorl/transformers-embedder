@@ -124,7 +124,7 @@ class Tokenizer:
                 or isinstance(text[0], str)
             )
         )
-        if not is_batched:
+        if not is_batched:  # batch it
             text = [text]
             text_pair = [text_pair] if text_pair is not None else None
 
