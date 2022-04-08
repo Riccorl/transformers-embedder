@@ -98,11 +98,11 @@ The `TransformersEmbedder` class offers 3 ways to get the embeddings:
 
 There are also multiple type of outputs you can get using `layer_pooling_strategy` parameter:
 
-- `last`: returns the last hidden state of the transformer model
-- `concat`: returns the concatenation of the selected `output_layers` of the transformer model
-- `sum`: returns the sum of the selected `output_layers` of the transformer model
-- `mean`: returns the average of the selected `output_layers` of the transformer model
-- `scalar_mix`: returns the output of a parameterised scalar mixture layer of the selected `output_layers` 
+- `layer_pooling_strategy="last"`: returns the last hidden state of the transformer model
+- `layer_pooling_strategy="concat"`: returns the concatenation of the selected `output_layers` of the transformer model
+- `layer_pooling_strategy="sum"`: returns the sum of the selected `output_layers` of the transformer model
+- `layer_pooling_strategy="mean"`: returns the average of the selected `output_layers` of the transformer model
+- `layer_pooling_strategy="scalar_mix"`: returns the output of a parameterised scalar mixture layer of the selected `output_layers` 
    of the transformer model
 
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.

@@ -11,7 +11,7 @@ install_requires = ["transformers>=4.3,<4.19"]
 
 setuptools.setup(
     name="transformers_embedder",
-    version="2.1.0",
+    version="3.0.0",
     author="Riccardo Orlando",
     author_email="orlandoricc@gmail.com",
     description="Word level transformer based embeddings",
