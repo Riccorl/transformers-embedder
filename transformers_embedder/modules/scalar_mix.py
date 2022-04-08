@@ -30,8 +30,8 @@ class ScalarMix(torch.nn.Module):
             initial_scalar_parameters = [0.0] * mixture_size
         elif len(initial_scalar_parameters) != mixture_size:
             raise ValueError(
-                "Length of initial_scalar_parameters {} differs "
-                "from mixture_size {}".format(initial_scalar_parameters, mixture_size)
+                f"Length of `initial_scalar_parameters` {initial_scalar_parameters} differs "
+                f"from `mixture_size` {mixture_size}"
             )
 
         self.scalar_parameters = ParameterList(
@@ -44,9 +44,9 @@ class ScalarMix(torch.nn.Module):
 
     def forward(self, tensors: List[torch.Tensor], mask: torch.BoolTensor = None) -> torch.Tensor:
         """
-        Compute a weighted average of the `tensors`.  The input tensors an be any shape
+        Compute a weighted average of the `tensors`.  The input tensors caa be any shape
         with at least two dimensions, but must all be the same shape.
-        When `do_layer_norm=True`, the `mask` is required input.  If the `tensors` are
+        When `do_layer_norm=True`, the `mask` is a required input. If the `tensors` are
         dimensioned  `(dim_0, ..., dim_{n-1}, dim_n)`, then the `mask` is dimensioned
         `(dim_0, ..., dim_{n-1})`, as in the typical case with `tensors` of shape
         `(batch_size, timesteps, dim)` and `mask` of shape `(batch_size, timesteps)`.

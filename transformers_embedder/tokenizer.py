@@ -90,10 +90,25 @@ class Tokenizer:
             :obj:`ModelInputs`: The inputs to the transformer model.
         """
         # some checks before starting
+        if return_tensors == "tf":
+            raise ValueError(
+                "`return_tensors='tf'` is not supported. Please use `return_tensors='pt'` "
+                "or `return_tensors=True`."
+            )
         if return_tensors is True:
             return_tensors = "pt"
         if return_tensors is False:
             return_tensors = None
+
+        # check if input is batched or a single sample
+        is_batched = bool(
+            isinstance(text, (list, tuple))
+            and text
+            and ((isinstance(text[0], (list, tuple)) and is_split_into_words) or isinstance(text[0], str))
+        )
+        if not is_batched:
+            text = [text]
+            text_pair = [text_pair] if text_pair is not None else None
 
         # use huggingface tokenizer to encode the text
         model_inputs = self.huggingface_tokenizer(

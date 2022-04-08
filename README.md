@@ -49,10 +49,21 @@ inputs = tokenizer(example, return_tensors=True)
 
 ```text
 {
-   'input_ids': tensor([[ 101, 1188, 1110,  170, 6876, 5650,  102]]),
-   'attention_mask': tensor([[True, True, True, True, True, True, True]]),
+   'input_ids': tensor([[ 101, 1188, 1110, 170, 6876, 5650,  102]]),
+   'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1]]),
    'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0]])
-   'offsets': tensor([[0, 1, 2, 3, 4, 5, 6]]),
+   'scatter_offsets': tensor([[0, 1, 2, 3, 4, 5, 6]]),
+   'sparse_offsets': {
+        'sparse_indices': tensor(
+            [
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 2, 3, 4, 5, 6],
+                [0, 1, 2, 3, 4, 5, 6]
+            ]
+        ), 
+        'sparse_values': tensor([1., 1., 1., 1., 1., 1., 1.]), 
+        'sparse_size': torch.Size([1, 7, 7])
+    },
    'sentence_length': 7  # with special tokens included
 }
 ```
@@ -158,11 +169,23 @@ tokenizer(text)
 
 ```text
 {
-  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 102],
-  'offsets': [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)],
-  'attention_mask': [True, True, True, True, True, True, True],
-  'token_type_ids': [0, 0, 0, 0, 0, 0, 0],
-  'sentence_length': 7
+{
+    'input_ids': [[101, 1188, 1110, 170, 6876, 5650, 102]],
+    'token_type_ids': [[0, 0, 0, 0, 0, 0, 0]],
+    'attention_mask': [[1, 1, 1, 1, 1, 1, 1]],
+    'scatter_offsets': [[0, 1, 2, 3, 4, 5, 6]],
+    'sparse_offsets': {
+        'sparse_indices': tensor(
+            [
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 2, 3, 4, 5, 6],
+                [0, 1, 2, 3, 4, 5, 6]
+            ]
+        ),
+        'sparse_values': tensor([1., 1., 1., 1., 1., 1., 1.]),
+        'sparse_size': torch.Size([1, 7, 7])
+    },
+    'sentence_lengths': [7],
 }
 ```
 
@@ -176,11 +199,22 @@ tokenizer(text, text_pair)
 
 ```text
 {
-  'input_ids': [101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102],
-  'attention_mask': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
-  'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-  'offsets': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-  'sentence_length': 15
+    'input_ids': [[101, 1188, 1110, 170, 6876, 5650, 138, 102, 1188, 1110, 170, 6876, 5650, 139, 102]],
+    'token_type_ids': [[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1]],
+    'attention_mask': [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    'scatter_offsets': [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]],
+    'sparse_offsets': {
+        'sparse_indices': tensor(
+            [
+                [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0],
+                [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+                [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+            ]
+        ),
+        'sparse_values': tensor([1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]),
+        'sparse_size': torch.Size([1, 15, 15])
+    },
+    'sentence_lengths': [15],
 }
 ```
 
@@ -250,7 +284,7 @@ text = [
     "This is another example sentence just make it longer, with a comma too!"
 ]
 
-inputs = tokenizer(text, padding=True, return_tensors=True, additional_inputs=custom_fields)
+tokenizer(text, padding=True, return_tensors=True, additional_inputs=custom_fields)
 ```
 
 The inputs are ready for the model, including the custom filed.
@@ -259,37 +293,46 @@ The inputs are ready for the model, including the custom filed.
 >>> inputs
 
 {
-   "input_ids": tensor(
-       [
-           [101, 1188, 1110, 170, 6876, 5650, 102, 0, 0, 0, 0],
-           [101, 1188, 1110, 1330, 1859, 5650, 1198, 1294, 1122, 2039, 102],
-       ]
-   ),
-   "attention_mask": tensor(
-       [
-           [True, True, True, True, True, True, True, False, False, False, False],
-           [True, True, True, True, True, True, True, True, True, True, True],
-       ]
-   ),
-   "word_mask": tensor(
-       [
-           [True, True, True, True, True, True, True, False, False, False, False],
-           [True, True, True, True, True, True, True, True, True, True, True],
-       ]
-   ),
-   "token_type_ids": tensor(
-       [[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-   ),
-   "offsets": tensor(
-       [
-           [0, 1, 2, 3, 4, 5, 6, 7, 10, 10, 10],
-           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-       ]
-   ),
-   "sentence_length": tensor([7, 11]),
-   "custom_filed_1": tensor(
-       [[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
-   ),
+    'input_ids': tensor(
+        [
+            [ 101, 1188, 1110, 170, 6876, 5650, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [ 101, 1188, 1110, 1330, 1859, 5650, 1198, 1294, 1122, 2039, 117, 1114, 170, 3254, 1918, 1315, 106, 102]
+        ]
+    ),
+    'token_type_ids': tensor(
+        [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+    ), 
+    'attention_mask': tensor(
+        [
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ]
+    ),
+    'scatter_offsets': tensor(
+        [
+            [ 0, 1, 2, 3, 4, 5, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16]
+        ]
+    ),
+    'sparse_offsets': {
+        'sparse_indices': tensor(
+            [
+                [ 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1],
+                [ 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16],
+                [ 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+            ]
+        ),
+        'sparse_values': tensor(
+            [1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000,
+            1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000, 1.0000,
+            1.0000, 1.0000, 0.5000, 0.5000, 1.0000, 1.0000, 1.0000]
+        ), 
+        'sparse_size': torch.Size([2, 17, 18])
+    }
+    'sentence_lengths': [7, 17],
 }
 ```
 
