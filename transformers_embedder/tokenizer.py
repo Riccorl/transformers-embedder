@@ -28,9 +28,9 @@ class Tokenizer:
         model (:obj:`str`, :obj:`transformers.PreTrainedTokenizer`):
             Language model name (or a transformer :obj:`PreTrainedTokenizer`.
         return_sparse_offsets (:obj:`bool`, optional, defaults to :obj:`True`):
-                If :obj:`True`, the sparse offsets of the tokens in the input text are returned. To reduce
-                memory usage, set this to :obj:`False` if you don't need them, e.g. you set the
-                `subword_pooling_strategy` to `scatter` in the `TransformersEmbedder` model.
+            If :obj:`True`, the sparse offsets of the tokens in the input text are returned. To reduce
+            memory usage, set this to :obj:`False` if you don't need them, e.g. you set the
+            `subword_pooling_strategy` to `scatter` in the `TransformersEmbedder` model.
     """
 
     def __init__(
