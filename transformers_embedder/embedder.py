@@ -314,8 +314,11 @@ class TransformersEmbedder(torch.nn.Module):
             values=bpe_info["sparse_values"],
             size=bpe_info["sparse_size"],
         )
+        # if we are in half precision, we need to convert the sparse matrix back to dense
+        if bpe_weights.dtype == torch.half:
+            bpe_weights = bpe_weights.to_dense()
         # (sentence, word, bpe) x (sentence, bpe, transformer_dim) -> (sentence, word, transformer_dim)
-        merged = torch.bmm(bpe_weights.to_dense(), embeddings)
+        merged = torch.bmm(bpe_weights, embeddings)
         return merged
 
     def resize_token_embeddings(

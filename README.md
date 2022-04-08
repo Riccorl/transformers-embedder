@@ -93,7 +93,7 @@ The `TransformersEmbedder` class offers 3 ways to get the embeddings:
   (i.e. the embeddings of the sub-tokens are pooled together) using a sparse matrix multiplication. This 
   strategy is the default one.
 - `subword_pooling_strategy="scatter"`: computes the mean of the embeddings of the sub-tokens of each word
-  using a scatter-gather operation. It is not deterministic, but it works with ONNX export.
+  using a scatter-gather operation. It is not deterministic, but it works with [ONNX](https://onnx.ai/) export.
 - `subword_pooling_strategy="none"`: returns the raw output of the transformer model without sub-token pooling.
 
 There are also multiple type of outputs you can get using `layer_pooling_strategy` parameter:
