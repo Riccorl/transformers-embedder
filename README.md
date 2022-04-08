@@ -87,6 +87,8 @@ word-level embeddings from theoretically every transformer model it supports.
 
 ### Model
 
+#### Subword Pooling Strategy
+
 The `TransformersEmbedder` class offers 3 ways to get the embeddings:
 
 - `subword_pooling_strategy="sparse"`: computes the mean of the embeddings of the sub-tokens of each word 
@@ -98,20 +100,23 @@ The `TransformersEmbedder` class offers 3 ways to get the embeddings:
 
 Here a little feature table:
 
-|             | Sub-token Pooling  |   Deterministic    |        ONNX        |
+|             |      Pooling       |   Deterministic    |        ONNX        |
 |-------------|:------------------:|:------------------:|:------------------:|
 | **Sparse**  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | **Scatter** | :white_check_mark: |        :x:         |        :x:         |
 | **None**    |        :x:         | :white_check_mark: | :white_check_mark: |
 
+#### Layer Pooling Strategy
+
 There are also multiple type of outputs you can get using `layer_pooling_strategy` parameter:
 
 - `layer_pooling_strategy="last"`: returns the last hidden state of the transformer model
-- `layer_pooling_strategy="concat"`: returns the concatenation of the selected `output_layers` of the transformer model
+- `layer_pooling_strategy="concat"`: returns the concatenation of the selected `output_layers` of the  
+   transformer model
 - `layer_pooling_strategy="sum"`: returns the sum of the selected `output_layers` of the transformer model
 - `layer_pooling_strategy="mean"`: returns the average of the selected `output_layers` of the transformer model
-- `layer_pooling_strategy="scalar_mix"`: returns the output of a parameterised scalar mixture layer of the selected `output_layers` 
-   of the transformer model
+- `layer_pooling_strategy="scalar_mix"`: returns the output of a parameterised scalar mixture layer of the 
+   selected `output_layers` of the transformer model
 
 If you also want all the outputs from the HuggingFace model, you can set `return_all=True` to get them.
 
