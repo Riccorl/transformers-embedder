@@ -102,8 +102,8 @@ Here a little feature table:
 
 |             |      Pooling       |   Deterministic    |        ONNX        |
 |-------------|:------------------:|:------------------:|:------------------:|
-| **Sparse**  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| **Scatter** | :white_check_mark: |        :x:         |        :x:         |
+| **Sparse**  | :white_check_mark: | :white_check_mark: |        :x:         |
+| **Scatter** | :white_check_mark: |        :x:         | :white_check_mark: |
 | **None**    |        :x:         | :white_check_mark: | :white_check_mark: |
 
 #### Layer Pooling Strategy
