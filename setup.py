@@ -7,7 +7,7 @@ extras = {}
 extras["torch"] = ["torch>=1.5,<1.12"]
 extras["all"] = extras["torch"]
 
-install_requires = ["transformers>=4.3,<4.20"]
+install_requires = ["transformers>=4.3,<4.21"]
 
 setuptools.setup(
     name="transformers_embedder",
