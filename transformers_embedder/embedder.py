@@ -52,6 +52,10 @@ class TransformersEmbedder(torch.nn.Module):
             If ``True``, the transformer model is fine-tuned during training.
         return_all (:obj:`bool`, optional, defaults to :obj:`False`):
             If ``True``, returns all the outputs from the HuggingFace model.
+        from_pretrained (:obj:`bool`, optional, defaults to :obj:`True`):
+            If ``True``, the model is loaded from a pre-trained model, otherwise it is initialized with
+            random weights. Usefull when you want to load a model from a specific checkpoint, without
+            having to download the entire model.
     """
 
     def __init__(
@@ -62,6 +66,7 @@ class TransformersEmbedder(torch.nn.Module):
         output_layers: Sequence[int] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
+        from_pretrained: bool = True,
         *args,
         **kwargs,
     ) -> None:
@@ -74,9 +79,14 @@ class TransformersEmbedder(torch.nn.Module):
                 *args,
                 **kwargs,
             )
-            self.transformer_model = tr.AutoModel.from_pretrained(
-                model, config=config, *args, **kwargs
-            )
+            if from_pretrained:
+                self.transformer_model = tr.AutoModel.from_pretrained(
+                    model, config=config, *args, **kwargs
+                )
+            else:
+                self.transformer_model = tr.AutoModel.from_config(
+                    config, *args, **kwargs
+                )
         else:
             self.transformer_model = model
 

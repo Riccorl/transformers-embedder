@@ -3,6 +3,8 @@ stuff
 /test.ipynb
 /test.py
 
+# Fleet
+.fleet
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm+all,vscode,macos,linux,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm+all,vscode,macos,linux,windows
