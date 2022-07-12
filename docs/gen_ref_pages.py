@@ -2,13 +2,15 @@
 
 from pathlib import Path
 
+import os
+
 import mkdocs_gen_files
 
 nav = mkdocs_gen_files.Nav()
 
-ROOT_DIR = Path(__file__).parent.parent.absolute()
+ROOT_DIR = Path(__file__).parent.parent
 SRC_DIR = ROOT_DIR / "transformers_embedder"
-DOC_DIR = ROOT_DIR / "docs" / "references"
+DOC_DIR = ROOT_DIR / "references"
 
 for path in sorted(Path("transformers_embedder").glob("**/*.py")):
     module_path = path.with_suffix("")
