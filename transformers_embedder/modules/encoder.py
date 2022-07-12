@@ -5,18 +5,18 @@ import torch
 
 class Encoder(torch.nn.Module):
     """
-    An encoder module for the :obj:`TransformersEmbedder` class.
+    An encoder module for the `TransformersEmbedder` class.
 
     Args:
-        transformer_hidden_size (:obj:`int`):
+        transformer_hidden_size (`int`):
             The hidden size of the inner transformer.
-        projection_size (:obj:`int`, `optional`, defaults to :obj:`None`):
+        projection_size (`int`, `optional`, defaults to `None`):
             The size of the projection layer.
-        activation_layer (:obj:`torch.nn.Module`, optional, defaults to :obj:`None`):
+        activation_layer (`torch.nn.Module`, optional, defaults to `None`):
             Activation layer to use. If ``None``, no activation layer is used.
-        dropout (:obj:`float`, `optional`, defaults to :obj:`0.1`):
+        dropout (`float`, `optional`, defaults to `0.1`):
             The dropout value.
-        bias (:obj:`bool`, `optional`, defaults to :obj:`True`):
+        bias (`bool`, `optional`, defaults to `True`):
             Whether to use a bias.
     """
 
@@ -41,11 +41,11 @@ class Encoder(torch.nn.Module):
         Forward pass of the encoder.
 
         Args:
-            x (:obj:`torch.Tensor`):
+            x (`torch.Tensor`):
                 The input tensor.
 
         Returns:
-            :obj:`torch.Tensor`: The encoded tensor.
+            `torch.Tensor`: The encoded tensor.
         """
         x = self.projection_layer(self.dropout_layer(x))
         if self.activation_layer is not None:

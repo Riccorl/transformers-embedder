@@ -17,6 +17,6 @@ def get_logger(name: str) -> logging.Logger:
         name (`str`): The name of the logger.
 
     Returns:
-        :obj:`logging.Logger`: The logger of the given name.
+        `logging.Logger`: The logger of the given name.
     """
     return logging.getLogger(name)

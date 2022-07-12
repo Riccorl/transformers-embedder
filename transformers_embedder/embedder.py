@@ -33,26 +33,26 @@ class TransformersEmbedder(torch.nn.Module):
     Word level embeddings from various transformer architectures from Huggingface Transformers API.
 
     Args:
-        model (:obj:`str`, :obj:`tr.PreTrainedModel`):
+        model (`str`, `tr.PreTrainedModel`):
             Transformer model to use (https://huggingface.co/models).
-        layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
+        layer_pooling_strategy (`str`, optional, defaults to `last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
             layers (``sum``), the average of the selected hidden layers (``mean``), or a scalar mixture of
             the selected hidden layers (``scalar_mix``).
-        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`sparse`):
+        subword_pooling_strategy (`str`, optional, defaults to `sparse`):
             What pooling strategy to use for the sub-word embeddings. Methods available are ``sparse``,
             ``scatter`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add_``
             that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile
             with ONNX. When ``subword_pooling_strategy`` is ``none``, the sub-word embeddings are not
             pooled.
-        output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
+        output_layers (`tuple`, optional, defaults to `(-4, -3, -2, -1)`):
             Which hidden layers to get from the transformer model.
-        fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
+        fine_tune (`bool`, optional, defaults to `True`):
             If ``True``, the transformer model is fine-tuned during training.
-        return_all (:obj:`bool`, optional, defaults to :obj:`False`):
+        return_all (`bool`, optional, defaults to `False`):
             If ``True``, returns all the outputs from the HuggingFace model.
-        from_pretrained (:obj:`bool`, optional, defaults to :obj:`True`):
+        from_pretrained (`bool`, optional, defaults to `True`):
             If ``True``, the model is loaded from a pre-trained model, otherwise it is initialized with
             random weights. Usefull when you want to load a model from a specific checkpoint, without
             having to download the entire model.
@@ -131,21 +131,21 @@ class TransformersEmbedder(torch.nn.Module):
         Forward method of the PyTorch module.
 
         Args:
-            input_ids (:obj:`torch.Tensor`):
+            input_ids (`torch.Tensor`):
                 Input ids for the transformer model.
-            attention_mask (:obj:`torch.Tensor`, optional):
+            attention_mask (`torch.Tensor`, optional):
                 Attention mask for the transformer model.
-            token_type_ids (:obj:`torch.Tensor`, optional):
+            token_type_ids (`torch.Tensor`, optional):
                 Token type ids for the transformer model.
-            scatter_offsets (:obj:`torch.Tensor`, optional):
+            scatter_offsets (`torch.Tensor`, optional):
                 Offsets of the sub-word, used to reconstruct the word embeddings using
                 the ``scatter`` method.
-            sparse_offsets (:obj:`Mapping[str, Any]`, optional):
+            sparse_offsets (`Mapping[str, Any]`, optional):
                 Offsets of the sub-word, used to reconstruct the word embeddings using
                 the ``sparse`` method.
 
         Returns:
-            :obj:`TransformersEmbedderOutput`:
+            `TransformersEmbedderOutput`:
                 Word level embeddings plus the output of the transformer model.
         """
         # Some HuggingFace models don't have the
@@ -244,13 +244,13 @@ class TransformersEmbedder(torch.nn.Module):
         It is used to compute word level embeddings from the transformer output.
 
         Args:
-            embeddings (:obj:`torch.Tensor`):
+            embeddings (`torch.Tensor`):
                 The embeddings tensor.
-            indices (:obj:`torch.Tensor`):
+            indices (`torch.Tensor`):
                 The sub-word indices.
 
         Returns:
-            :obj:`torch.Tensor`
+            `torch.Tensor`
         """
 
         def broadcast(src: torch.Tensor, other: torch.Tensor):
@@ -258,13 +258,13 @@ class TransformersEmbedder(torch.nn.Module):
             Broadcast ``src`` to match the shape of ``other``.
 
             Args:
-                src (:obj:`torch.Tensor`):
+                src (`torch.Tensor`):
                     The tensor to broadcast.
-                other (:obj:`torch.Tensor`):
+                other (`torch.Tensor`):
                     The tensor to match the shape of.
 
             Returns:
-                :obj:`torch.Tensor`: The broadcasted tensor.
+                `torch.Tensor`: The broadcasted tensor.
             """
             for _ in range(src.dim(), other.dim()):
                 src = src.unsqueeze(-1)
@@ -276,13 +276,13 @@ class TransformersEmbedder(torch.nn.Module):
             Sums the elements in ``src`` that have the same indices as in ``index``.
 
             Args:
-                src (:obj:`torch.Tensor`):
+                src (`torch.Tensor`):
                     The tensor to sum.
-                index (:obj:`torch.Tensor`):
+                index (`torch.Tensor`):
                     The indices to sum.
 
             Returns:
-                :obj:`torch.Tensor`: The summed tensor.
+                `torch.Tensor`: The summed tensor.
             """
             index = broadcast(index, src)
             size = list(src.size())
@@ -310,13 +310,13 @@ class TransformersEmbedder(torch.nn.Module):
         Merges the subword embeddings into a single tensor, using sparse indices.
 
         Args:
-            embeddings (:obj:`torch.Tensor`):
+            embeddings (`torch.Tensor`):
                 The embeddings tensor.
-            bpe_info (:obj:`Mapping[str, Any]`, `optional`):
+            bpe_info (`Mapping[str, Any]`, `optional`):
                 The BPE info.
 
         Returns:
-            :obj:`torch.Tensor`: The merged embeddings.
+            `torch.Tensor`: The merged embeddings.
         """
         # it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible
         bpe_weights = torch.sparse_coo_tensor(
@@ -332,14 +332,14 @@ class TransformersEmbedder(torch.nn.Module):
         self, new_num_tokens: Optional[int] = None
     ) -> torch.nn.Embedding:
         """
-        Resizes input token embeddings' matrix of the model if :obj:`new_num_tokens != config.vocab_size`.
+        Resizes input token embeddings' matrix of the model if `new_num_tokens != config.vocab_size`.
 
         Args:
-            new_num_tokens (:obj:`int`):
+            new_num_tokens (`int`):
                 The number of new tokens in the embedding matrix.
 
         Returns:
-            :obj:`torch.nn.Embedding`: Pointer to the input tokens Embeddings Module of the model.
+            `torch.nn.Embedding`: Pointer to the input tokens Embeddings Module of the model.
         """
         return self.transformer_model.resize_token_embeddings(new_num_tokens)
 
@@ -348,7 +348,7 @@ class TransformersEmbedder(torch.nn.Module):
         Save a model and its configuration file to a directory.
 
         Args:
-            save_directory (:obj:`str`, :obj:`Path`):
+            save_directory (`str`, `Path`):
                 Directory to which to save.
         """
         self.transformer_model.save_pretrained(save_directory)
@@ -359,7 +359,7 @@ class TransformersEmbedder(torch.nn.Module):
         Returns the hidden size of TransformersEmbedder.
 
         Returns:
-            :obj:`int`: Hidden size of ``self.transformer_model``.
+            `int`: Hidden size of ``self.transformer_model``.
         """
         multiplier = (
             len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
@@ -372,7 +372,7 @@ class TransformersEmbedder(torch.nn.Module):
         Returns the hidden size of the inner transformer.
 
         Returns:
-            :obj:`int`: Hidden size of ``self.transformer_model``.
+            `int`: Hidden size of ``self.transformer_model``.
         """
         multiplier = (
             len(self.output_layers) if self.layer_pooling_strategy == "concat" else 1
@@ -387,30 +387,30 @@ class TransformersEncoder(TransformersEmbedder):
     Word level embeddings from various transformer architectures from Huggingface Transformers API.
 
     Args:
-        model (:obj:`str`, :obj:`tr.PreTrainedModel`):
+        model (`str`, `tr.PreTrainedModel`):
             Transformer model to use (https://huggingface.co/models).
-        layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):
+        layer_pooling_strategy (`str`, optional, defaults to `last`):
             What output to get from the transformer model. The last hidden state (``last``),
             the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden
             layers (``sum``), the average of the selected hidden layers (``mean``).
-        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`scatter`):
+        subword_pooling_strategy (`str`, optional, defaults to `scatter`):
             What pooling strategy to use for the sub-word embeddings. Methods available are ``scatter``,
             ``sparse`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add``
             that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile
             with ONNX.
-        output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):
+        output_layers (`tuple`, optional, defaults to `(-4, -3, -2, -1)`):
             Which hidden layers to get from the transformer model.
-        fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):
+        fine_tune (`bool`, optional, defaults to `True`):
             If ``True``, the transformer model is fine-tuned during training.
-        return_all (:obj:`bool`, optional, defaults to :obj:`False`):
+        return_all (`bool`, optional, defaults to `False`):
             If ``True``, returns all the outputs from the HuggingFace model.
-        projection_size (:obj:`int`, optional, defaults to :obj:`None`):
+        projection_size (`int`, optional, defaults to `None`):
             If not ``None``, the output of the transformer is projected to this size.
-        activation_layer (:obj:`torch.nn.Module`, optional, defaults to :obj:`None`):
+        activation_layer (`torch.nn.Module`, optional, defaults to `None`):
             Activation layer to use. If ``None``, no activation layer is used.
-        dropout (:obj:`float`, optional, defaults to :obj:`0.1`):
+        dropout (`float`, optional, defaults to `0.1`):
             The dropout probability.
-        bias (:obj:`bool`, optional, defaults to :obj:`True`):
+        bias (`bool`, optional, defaults to `True`):
             If ``True``, the transformer model has a bias.
     """
 
@@ -460,17 +460,17 @@ class TransformersEncoder(TransformersEmbedder):
         Forward method of the PyTorch module.
 
         Args:
-            input_ids (:obj:`torch.Tensor`):
+            input_ids (`torch.Tensor`):
                 Input ids for the transformer model.
-            attention_mask (:obj:`torch.Tensor`, optional):
+            attention_mask (`torch.Tensor`, optional):
                 Attention mask for the transformer model.
-            token_type_ids (:obj:`torch.Tensor`, optional):
+            token_type_ids (`torch.Tensor`, optional):
                 Token type ids for the transformer model.
-            scatter_offsets (:obj:`torch.Tensor`, optional):
+            scatter_offsets (`torch.Tensor`, optional):
                 Offsets of the sub-word, used to reconstruct the word embeddings.
 
         Returns:
-            :obj:`TransformersEmbedderOutput`:
+            `TransformersEmbedderOutput`:
                 Word level embeddings plus the output of the transformer model.
         """
         transformers_kwargs = {
@@ -492,6 +492,6 @@ class TransformersEncoder(TransformersEmbedder):
         Returns the hidden size of the transformer.
 
         Returns:
-            :obj:`int`: Hidden size of ``self.transformer_model``.
+            `int`: Hidden size of ``self.transformer_model``.
         """
         return self.encoder.projection_size
