@@ -1,2 +1,6 @@
 pre-commit
 datasets
+mkdocs-material
+mkdocstrings[python]
+mkdocs-literate-nav
+mkdocs-section-index

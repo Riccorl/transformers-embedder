@@ -145,7 +145,7 @@ class TransformersEmbedder(torch.nn.Module):
                 the ``sparse`` method.
 
         Returns:
-             :obj:`TransformersEmbedderOutput`:
+            :obj:`TransformersEmbedderOutput`:
                 Word level embeddings plus the output of the transformer model.
         """
         # Some HuggingFace models don't have the
@@ -470,7 +470,7 @@ class TransformersEncoder(TransformersEmbedder):
                 Offsets of the sub-word, used to reconstruct the word embeddings.
 
         Returns:
-             :obj:`TransformersEmbedderOutput`:
+            :obj:`TransformersEmbedderOutput`:
                 Word level embeddings plus the output of the transformer model.
         """
         transformers_kwargs = {
