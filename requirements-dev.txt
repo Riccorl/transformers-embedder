@@ -4,3 +4,4 @@ mkdocs-material
 mkdocstrings[python]
 mkdocs-literate-nav
 mkdocs-section-index
+mkdocs-gen-files
