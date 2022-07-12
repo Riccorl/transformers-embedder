@@ -1,0 +1,60 @@
+site_name: Transformers Embedder
+repo_url: https://github.com/riccorl/transformers-embedder
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: main.md
+  - section-index
+  - mkdocstrings:
+      custom_templates: templates
+      default_handler: python
+      watch:
+        - transformers_embedder
+
+theme:
+  name: material
+  features:
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: deep purple
+      accent: yellow
+      scheme: default
+      font:
+        text: Work Sans
+        code: Fira Mono
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      primary: deep purple
+      accent: yellow
+      scheme: slate
+      font:
+        text: Work Sans
+        code: Fira Mono
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - API References: references/
+
+extra:
+#  version:
+#    provider: mike
+
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RiccrdoRicOrl
+    - icon: fontawesome/brands/github
+      link: https://github.com/riccorl
