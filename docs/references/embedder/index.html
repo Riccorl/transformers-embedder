@@ -1,0 +1,3180 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="http://127.0.0.1:8000/Users/ric/Documents/Projects/transformers-embedder/docs/references/embedder/">
+      
+      <link rel="icon" href="../../../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Embedder - Transformers Embedder</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../../../../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="yellow">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#transformers_embedder.embedder" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../../../.." title="Transformers Embedder" class="md-header__button md-logo" aria-label="Transformers Embedder" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Transformers Embedder
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Embedder
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="yellow"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="yellow"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/riccorl/transformers-embedder" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../../../.." title="Transformers Embedder" class="md-nav__button md-logo" aria-label="Transformers Embedder" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Transformers Embedder
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/riccorl/transformers-embedder" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          API References
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API References" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          API References
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_1" type="checkbox" id="__nav_1_1" >
+      
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../../../../../../references/__init__/">transformers_embedder</a>
+          
+            <label for="__nav_1_1">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="transformers_embedder" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          transformers_embedder
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../../../references/embedder/" class="md-nav__link">
+        embedder
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_1_2" type="checkbox" id="__nav_1_1_2" >
+      
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../../../../../../references/__init__/">modules</a>
+          
+            <label for="__nav_1_1_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="modules" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          modules
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../../../references/encoder/" class="md-nav__link">
+        encoder
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../../../references/scalar_mix/" class="md-nav__link">
+        scalar_mix
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../../../references/tokenizer/" class="md-nav__link">
+        tokenizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../../../references/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder" class="md-nav__link">
+    transformers_embedder.embedder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder" class="md-nav__link">
+    TransformersEmbedder
+  </a>
+  
+    <nav class="md-nav" aria-label="TransformersEmbedder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.hidden_size" class="md-nav__link">
+    hidden_size()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.merge_scatter" class="md-nav__link">
+    merge_scatter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.merge_sparse" class="md-nav__link">
+    merge_sparse()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.resize_token_embeddings" class="md-nav__link">
+    resize_token_embeddings()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.save_pretrained" class="md-nav__link">
+    save_pretrained()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedder.transformer_hidden_size" class="md-nav__link">
+    transformer_hidden_size()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEmbedderOutput" class="md-nav__link">
+    TransformersEmbedderOutput
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEncoder" class="md-nav__link">
+    TransformersEncoder
+  </a>
+  
+    <nav class="md-nav" aria-label="TransformersEncoder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEncoder.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers_embedder.embedder.TransformersEncoder.hidden_size" class="md-nav__link">
+    hidden_size()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/riccorl/transformers-embedder/edit/master/docs/transformers_embedder/embedder.py" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+  <h1>Embedder</h1>
+
+<div class="doc doc-object doc-module">
+
+<a id="transformers_embedder.embedder"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="transformers_embedder.embedder.TransformersEmbedder" class="doc doc-heading">
+          <code>TransformersEmbedder</code>
+
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+        <p class="doc doc-class-bases">
+          Bases: <code>torch.<span title="torch.nn">nn</span>.<span title="torch.nn.Module">Module</span></code></p>
+
+
+      <p>Transformer Embedder class.</p>
+<p>Word level embeddings from various transformer architectures from Huggingface Transformers API.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>model</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, :obj:<code>tr.PreTrainedModel</code>):
+Transformer model to use (https://huggingface.co/models).</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>layer_pooling_strategy</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, optional, defaults to :obj:<code>last</code>):
+What output to get from the transformer model. The last hidden state (<code>last</code>),
+the concatenation of the selected hidden layers (<code>concat</code>), the sum of the selected hidden
+layers (<code>sum</code>), the average of the selected hidden layers (<code>mean</code>), or a scalar mixture of
+the selected hidden layers (<code>scalar_mix</code>).</p></td>
+          <td>
+                <code>&#39;last&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>subword_pooling_strategy</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, optional, defaults to :obj:<code>sparse</code>):
+What pooling strategy to use for the sub-word embeddings. Methods available are <code>sparse</code>,
+<code>scatter</code> and <code>none</code>. The <code>scatter</code> strategy is ONNX comptabile but uses <code>scatter_add_</code>
+that is not deterministic. The <code>sparse</code> strategy is deterministic but it is not comptabile
+with ONNX. When <code>subword_pooling_strategy</code> is <code>none</code>, the sub-word embeddings are not
+pooled.</p></td>
+          <td>
+                <code>&#39;scatter&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>output_layers</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>tuple</code>, optional, defaults to :obj:<code>(-4, -3, -2, -1)</code>):
+Which hidden layers to get from the transformer model.</p></td>
+          <td>
+                <code>(-4, -3, -2, -1)</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fine_tune</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>bool</code>, optional, defaults to :obj:<code>True</code>):
+If <code>True</code>, the transformer model is fine-tuned during training.</p></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_all</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>bool</code>, optional, defaults to :obj:<code>False</code>):
+If <code>True</code>, returns all the outputs from the HuggingFace model.</p></td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>from_pretrained</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>bool</code>, optional, defaults to :obj:<code>True</code>):
+If <code>True</code>, the model is loaded from a pre-trained model, otherwise it is initialized with
+random weights. Usefull when you want to load a model from a specific checkpoint, without
+having to download the entire model.</p></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          <details class="quote">
+            <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+            <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">TransformersEmbedder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transformer Embedder class.</span>
+
+<span class="sd">    Word level embeddings from various transformer architectures from Huggingface Transformers API.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (:obj:`str`, :obj:`tr.PreTrainedModel`):</span>
+<span class="sd">            Transformer model to use (https://huggingface.co/models).</span>
+<span class="sd">        layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):</span>
+<span class="sd">            What output to get from the transformer model. The last hidden state (``last``),</span>
+<span class="sd">            the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden</span>
+<span class="sd">            layers (``sum``), the average of the selected hidden layers (``mean``), or a scalar mixture of</span>
+<span class="sd">            the selected hidden layers (``scalar_mix``).</span>
+<span class="sd">        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`sparse`):</span>
+<span class="sd">            What pooling strategy to use for the sub-word embeddings. Methods available are ``sparse``,</span>
+<span class="sd">            ``scatter`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add_``</span>
+<span class="sd">            that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile</span>
+<span class="sd">            with ONNX. When ``subword_pooling_strategy`` is ``none``, the sub-word embeddings are not</span>
+<span class="sd">            pooled.</span>
+<span class="sd">        output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):</span>
+<span class="sd">            Which hidden layers to get from the transformer model.</span>
+<span class="sd">        fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):</span>
+<span class="sd">            If ``True``, the transformer model is fine-tuned during training.</span>
+<span class="sd">        return_all (:obj:`bool`, optional, defaults to :obj:`False`):</span>
+<span class="sd">            If ``True``, returns all the outputs from the HuggingFace model.</span>
+<span class="sd">        from_pretrained (:obj:`bool`, optional, defaults to :obj:`True`):</span>
+<span class="sd">            If ``True``, the model is loaded from a pre-trained model, otherwise it is initialized with</span>
+<span class="sd">            random weights. Usefull when you want to load a model from a specific checkpoint, without</span>
+<span class="sd">            having to download the entire model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tr</span><span class="o">.</span><span class="n">PreTrainedModel</span><span class="p">],</span>
+        <span class="n">layer_pooling_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;last&quot;</span><span class="p">,</span>
+        <span class="n">subword_pooling_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scatter&quot;</span><span class="p">,</span>
+        <span class="n">output_layers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">fine_tune</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">from_pretrained</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span>
+                <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">output_attentions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">from_pretrained</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">AutoModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+                    <span class="n">model</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">AutoModel</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span>
+                    <span class="n">config</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span> <span class="o">=</span> <span class="n">model</span>
+
+        <span class="c1"># pooling strategy parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">=</span> <span class="n">layer_pooling_strategy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">=</span> <span class="n">subword_pooling_strategy</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_mix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ScalarMix</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;scalar_mix&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_mix</span> <span class="o">=</span> <span class="n">ScalarMix</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">output_layers</span><span class="p">))</span>
+
+        <span class="c1"># check output_layers is well defined</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">abs</span><span class="p">,</span> <span class="n">output_layers</span><span class="p">))</span>
+            <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_hidden_layers</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`output_layers` parameter not valid, choose between 0 and &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_hidden_layers</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Current value is `</span><span class="si">{</span><span class="n">output_layers</span><span class="si">}</span><span class="s2">`&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span> <span class="o">=</span> <span class="n">output_layers</span>
+
+        <span class="c1"># check if return all transformer outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_all</span> <span class="o">=</span> <span class="n">return_all</span>
+
+        <span class="c1"># if fine_tune is False, freeze all the transformer&#39;s parameters</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fine_tune</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">attention_mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">token_type_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scatter_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sparse_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformersEmbedderOutput</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forward method of the PyTorch module.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_ids (:obj:`torch.Tensor`):</span>
+<span class="sd">                Input ids for the transformer model.</span>
+<span class="sd">            attention_mask (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">                Attention mask for the transformer model.</span>
+<span class="sd">            token_type_ids (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">                Token type ids for the transformer model.</span>
+<span class="sd">            scatter_offsets (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">                Offsets of the sub-word, used to reconstruct the word embeddings using</span>
+<span class="sd">                the ``scatter`` method.</span>
+<span class="sd">            sparse_offsets (:obj:`Mapping[str, Any]`, optional):</span>
+<span class="sd">                Offsets of the sub-word, used to reconstruct the word embeddings using</span>
+<span class="sd">                the ``sparse`` method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`TransformersEmbedderOutput`:</span>
+<span class="sd">                Word level embeddings plus the output of the transformer model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Some HuggingFace models don&#39;t have the</span>
+        <span class="c1"># token_type_ids parameter and fail even when it&#39;s given as None.</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">input_ids</span><span class="p">,</span> <span class="s2">&quot;attention_mask&quot;</span><span class="p">:</span> <span class="n">attention_mask</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">token_type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="s2">&quot;token_type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token_type_ids</span>
+
+        <span class="c1"># Shape: [batch_size, num_sub-words, embedding_size].</span>
+        <span class="n">transformer_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">last_hidden_state</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;concat&quot;</span><span class="p">:</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+            <span class="p">]</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+            <span class="p">]</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+            <span class="p">]</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;scalar_mix&quot;</span><span class="p">:</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+            <span class="p">]</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_mix</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`layer_pooling_strategy` parameter not valid, choose between `last`, `concat`, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`sum`, `mean` and `scalar_mix`. Current value `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span><span class="si">}</span><span class="s2">`&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+            <span class="ow">and</span> <span class="n">scatter_offsets</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">sparse_offsets</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`subword_pooling_strategy` is not `none` but neither `scatter_offsets` not `sparse_offsets` &quot;</span>
+                <span class="s2">&quot;were passed to the model. Cannot compute word embeddings.</span><span class="se">\n</span><span class="s2">To solve:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Set `subword_pooling_strategy` to `none` or</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Pass `scatter_offsets` to the model during forward or</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Pass `sparse_offsets` to the model during forward.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;scatter&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`subword_pooling_strategy` parameter not valid, choose between `scatter`, `sparse`&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; and `none`. Current value is `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span><span class="si">}</span><span class="s2">`.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;scatter&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scatter_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`subword_pooling_strategy` is `scatter` but `scatter_offsets` &quot;</span>
+                    <span class="s2">&quot;were not passed to the model. Cannot compute word embeddings.</span><span class="se">\n</span><span class="s2">To solve:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;- Set `subword_pooling_strategy` to `none` or</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;- Pass `scatter_offsets` to the model during forward.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_scatter</span><span class="p">(</span>
+                <span class="n">word_embeddings</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">scatter_offsets</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;sparse&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sparse_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`subword_pooling_strategy` is `sparse` but `sparse_offsets` &quot;</span>
+                    <span class="s2">&quot;were not passed to the model. Cannot compute word embeddings.</span><span class="se">\n</span><span class="s2">To solve:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;- Set `subword_pooling_strategy` to `none` or</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;- Pass `sparse_offsets` to the model during forward.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">word_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_sparse</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">sparse_offsets</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_all</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TransformersEmbedderOutput</span><span class="p">(</span>
+                <span class="n">word_embeddings</span><span class="o">=</span><span class="n">word_embeddings</span><span class="p">,</span>
+                <span class="n">last_hidden_state</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">last_hidden_state</span><span class="p">,</span>
+                <span class="n">hidden_states</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">,</span>
+                <span class="n">pooler_output</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">pooler_output</span><span class="p">,</span>
+                <span class="n">attentions</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">attentions</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">TransformersEmbedderOutput</span><span class="p">(</span><span class="n">word_embeddings</span><span class="o">=</span><span class="n">word_embeddings</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_scatter</span><span class="p">(</span><span class="n">embeddings</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Minimal version of ``scatter_mean``, from `pytorch_scatter</span>
+<span class="sd">        &lt;https://github.com/rusty1s/pytorch_scatter/&gt;`_</span>
+<span class="sd">        library, that is compatible for ONNX but works only for our case.</span>
+<span class="sd">        It is used to compute word level embeddings from the transformer output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            embeddings (:obj:`torch.Tensor`):</span>
+<span class="sd">                The embeddings tensor.</span>
+<span class="sd">            indices (:obj:`torch.Tensor`):</span>
+<span class="sd">                The sub-word indices.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`torch.Tensor`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Broadcast ``src`` to match the shape of ``other``.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                src (:obj:`torch.Tensor`):</span>
+<span class="sd">                    The tensor to broadcast.</span>
+<span class="sd">                other (:obj:`torch.Tensor`):</span>
+<span class="sd">                    The tensor to match the shape of.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                :obj:`torch.Tensor`: The broadcasted tensor.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">dim</span><span class="p">(),</span> <span class="n">other</span><span class="o">.</span><span class="n">dim</span><span class="p">()):</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">src</span>
+
+        <span class="k">def</span> <span class="nf">scatter_sum</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Sums the elements in ``src`` that have the same indices as in ``index``.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                src (:obj:`torch.Tensor`):</span>
+<span class="sd">                    The tensor to sum.</span>
+<span class="sd">                index (:obj:`torch.Tensor`):</span>
+<span class="sd">                    The indices to sum.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                :obj:`torch.Tensor`: The summed tensor.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+            <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">scatter_add_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+
+        <span class="c1"># replace padding indices with the maximum value inside the batch</span>
+        <span class="n">indices</span><span class="p">[</span><span class="n">indices</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="n">scatter_sum</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">embeddings</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">embeddings</span><span class="o">.</span><span class="n">device</span>
+        <span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">scatter_sum</span><span class="p">(</span><span class="n">ones</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="n">count</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">merged</span><span class="p">)</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">true_divide_</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_sparse</span><span class="p">(</span>
+        <span class="n">embeddings</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">bpe_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges the subword embeddings into a single tensor, using sparse indices.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            embeddings (:obj:`torch.Tensor`):</span>
+<span class="sd">                The embeddings tensor.</span>
+<span class="sd">            bpe_info (:obj:`Mapping[str, Any]`, `optional`):</span>
+<span class="sd">                The BPE info.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`torch.Tensor`: The merged embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible</span>
+        <span class="n">bpe_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">bpe_info</span><span class="p">[</span><span class="s2">&quot;sparse_indices&quot;</span><span class="p">],</span>
+            <span class="n">values</span><span class="o">=</span><span class="n">bpe_info</span><span class="p">[</span><span class="s2">&quot;sparse_values&quot;</span><span class="p">],</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">bpe_info</span><span class="p">[</span><span class="s2">&quot;sparse_size&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="c1"># (sentence, word, bpe) x (sentence, bpe, transformer_dim) -&gt; (sentence, word, transformer_dim)</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">bpe_weights</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(),</span> <span class="n">embeddings</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
+    <span class="k">def</span> <span class="nf">resize_token_embeddings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">new_num_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resizes input token embeddings&#39; matrix of the model if :obj:`new_num_tokens != config.vocab_size`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_num_tokens (:obj:`int`):</span>
+<span class="sd">                The number of new tokens in the embedding matrix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`torch.nn.Embedding`: Pointer to the input tokens Embeddings Module of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="n">new_num_tokens</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save a model and its configuration file to a directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            save_directory (:obj:`str`, :obj:`Path`):</span>
+<span class="sd">                Directory to which to save.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="n">save_directory</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hidden_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the hidden size of TransformersEmbedder.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`int`: Hidden size of ``self.transformer_model``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;concat&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="n">multiplier</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transformer_hidden_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the hidden size of the inner transformer.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`int`: Hidden size of ``self.transformer_model``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;concat&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="n">multiplier</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.forward" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scatter_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sparse_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Forward method of the PyTorch module.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>input_ids</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>):
+Input ids for the transformer model.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>attention_mask</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>, optional):
+Attention mask for the transformer model.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token_type_ids</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>, optional):
+Token type ids for the transformer model.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scatter_offsets</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>, optional):
+Offsets of the sub-word, used to reconstruct the word embeddings using
+the <code>scatter</code> method.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sparse_offsets</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>Mapping[str, Any]</code>, optional):
+Offsets of the sub-word, used to reconstruct the word embeddings using
+the <code>sparse</code> method.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="transformers_embedder.embedder.TransformersEmbedderOutput" href="../../../../../../../../../references/embedder/#transformers_embedder.embedder.TransformersEmbedderOutput">TransformersEmbedderOutput</a></code>
+          </td>
+          <td><p>obj:<code>TransformersEmbedderOutput</code>:
+Word level embeddings plus the output of the transformer model.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">input_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">attention_mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">token_type_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scatter_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sparse_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformersEmbedderOutput</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forward method of the PyTorch module.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_ids (:obj:`torch.Tensor`):</span>
+<span class="sd">            Input ids for the transformer model.</span>
+<span class="sd">        attention_mask (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">            Attention mask for the transformer model.</span>
+<span class="sd">        token_type_ids (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">            Token type ids for the transformer model.</span>
+<span class="sd">        scatter_offsets (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">            Offsets of the sub-word, used to reconstruct the word embeddings using</span>
+<span class="sd">            the ``scatter`` method.</span>
+<span class="sd">        sparse_offsets (:obj:`Mapping[str, Any]`, optional):</span>
+<span class="sd">            Offsets of the sub-word, used to reconstruct the word embeddings using</span>
+<span class="sd">            the ``sparse`` method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`TransformersEmbedderOutput`:</span>
+<span class="sd">            Word level embeddings plus the output of the transformer model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Some HuggingFace models don&#39;t have the</span>
+    <span class="c1"># token_type_ids parameter and fail even when it&#39;s given as None.</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">input_ids</span><span class="p">,</span> <span class="s2">&quot;attention_mask&quot;</span><span class="p">:</span> <span class="n">attention_mask</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">token_type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="s2">&quot;token_type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token_type_ids</span>
+
+    <span class="c1"># Shape: [batch_size, num_sub-words, embedding_size].</span>
+    <span class="n">transformer_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">last_hidden_state</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;concat&quot;</span><span class="p">:</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+        <span class="p">]</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+        <span class="p">]</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+        <span class="p">]</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;scalar_mix&quot;</span><span class="p">:</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span>
+        <span class="p">]</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_mix</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;`layer_pooling_strategy` parameter not valid, choose between `last`, `concat`, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;`sum`, `mean` and `scalar_mix`. Current value `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+        <span class="ow">and</span> <span class="n">scatter_offsets</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">sparse_offsets</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;`subword_pooling_strategy` is not `none` but neither `scatter_offsets` not `sparse_offsets` &quot;</span>
+            <span class="s2">&quot;were passed to the model. Cannot compute word embeddings.</span><span class="se">\n</span><span class="s2">To solve:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Set `subword_pooling_strategy` to `none` or</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Pass `scatter_offsets` to the model during forward or</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Pass `sparse_offsets` to the model during forward.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;scatter&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;`subword_pooling_strategy` parameter not valid, choose between `scatter`, `sparse`&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; and `none`. Current value is `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span><span class="si">}</span><span class="s2">`.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;scatter&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scatter_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`subword_pooling_strategy` is `scatter` but `scatter_offsets` &quot;</span>
+                <span class="s2">&quot;were not passed to the model. Cannot compute word embeddings.</span><span class="se">\n</span><span class="s2">To solve:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Set `subword_pooling_strategy` to `none` or</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Pass `scatter_offsets` to the model during forward.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_scatter</span><span class="p">(</span>
+            <span class="n">word_embeddings</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">scatter_offsets</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subword_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;sparse&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sparse_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`subword_pooling_strategy` is `sparse` but `sparse_offsets` &quot;</span>
+                <span class="s2">&quot;were not passed to the model. Cannot compute word embeddings.</span><span class="se">\n</span><span class="s2">To solve:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Set `subword_pooling_strategy` to `none` or</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;- Pass `sparse_offsets` to the model during forward.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">word_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_sparse</span><span class="p">(</span><span class="n">word_embeddings</span><span class="p">,</span> <span class="n">sparse_offsets</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_all</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TransformersEmbedderOutput</span><span class="p">(</span>
+            <span class="n">word_embeddings</span><span class="o">=</span><span class="n">word_embeddings</span><span class="p">,</span>
+            <span class="n">last_hidden_state</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">last_hidden_state</span><span class="p">,</span>
+            <span class="n">hidden_states</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">hidden_states</span><span class="p">,</span>
+            <span class="n">pooler_output</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">pooler_output</span><span class="p">,</span>
+            <span class="n">attentions</span><span class="o">=</span><span class="n">transformer_outputs</span><span class="o">.</span><span class="n">attentions</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">TransformersEmbedderOutput</span><span class="p">(</span><span class="n">word_embeddings</span><span class="o">=</span><span class="n">word_embeddings</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.hidden_size" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">hidden_size</span><span class="p">()</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Returns the hidden size of TransformersEmbedder.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>obj:<code>int</code>: Hidden size of <code>self.transformer_model</code>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@property</span>
+<span class="k">def</span> <span class="nf">hidden_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the hidden size of TransformersEmbedder.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`int`: Hidden size of ``self.transformer_model``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;concat&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="n">multiplier</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.merge_scatter" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">merge_scatter</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Minimal version of <code>scatter_mean</code>, from <code>pytorch_scatter
+&lt;https://github.com/rusty1s/pytorch_scatter/&gt;</code>_
+library, that is compatible for ONNX but works only for our case.
+It is used to compute word level embeddings from the transformer output.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>embeddings</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>):
+The embeddings tensor.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>indices</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>):
+The sub-word indices.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code></p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">merge_scatter</span><span class="p">(</span><span class="n">embeddings</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Minimal version of ``scatter_mean``, from `pytorch_scatter</span>
+<span class="sd">    &lt;https://github.com/rusty1s/pytorch_scatter/&gt;`_</span>
+<span class="sd">    library, that is compatible for ONNX but works only for our case.</span>
+<span class="sd">    It is used to compute word level embeddings from the transformer output.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        embeddings (:obj:`torch.Tensor`):</span>
+<span class="sd">            The embeddings tensor.</span>
+<span class="sd">        indices (:obj:`torch.Tensor`):</span>
+<span class="sd">            The sub-word indices.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`torch.Tensor`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Broadcast ``src`` to match the shape of ``other``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src (:obj:`torch.Tensor`):</span>
+<span class="sd">                The tensor to broadcast.</span>
+<span class="sd">            other (:obj:`torch.Tensor`):</span>
+<span class="sd">                The tensor to match the shape of.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`torch.Tensor`: The broadcasted tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">dim</span><span class="p">(),</span> <span class="n">other</span><span class="o">.</span><span class="n">dim</span><span class="p">()):</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">src</span>
+
+    <span class="k">def</span> <span class="nf">scatter_sum</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sums the elements in ``src`` that have the same indices as in ``index``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src (:obj:`torch.Tensor`):</span>
+<span class="sd">                The tensor to sum.</span>
+<span class="sd">            index (:obj:`torch.Tensor`):</span>
+<span class="sd">                The indices to sum.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`torch.Tensor`: The summed tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+        <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">scatter_add_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+
+    <span class="c1"># replace padding indices with the maximum value inside the batch</span>
+    <span class="n">indices</span><span class="p">[</span><span class="n">indices</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">scatter_sum</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+    <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+        <span class="n">indices</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">embeddings</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">embeddings</span><span class="o">.</span><span class="n">device</span>
+    <span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">scatter_sum</span><span class="p">(</span><span class="n">ones</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+    <span class="n">count</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">merged</span><span class="p">)</span>
+    <span class="n">merged</span><span class="o">.</span><span class="n">true_divide_</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">merged</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.merge_sparse" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">merge_sparse</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">bpe_info</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Merges the subword embeddings into a single tensor, using sparse indices.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>embeddings</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>):
+The embeddings tensor.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>bpe_info</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>Mapping[str, Any]</code>, <code>optional</code>):
+The BPE info.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>: The merged embeddings.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">merge_sparse</span><span class="p">(</span>
+    <span class="n">embeddings</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">bpe_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merges the subword embeddings into a single tensor, using sparse indices.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        embeddings (:obj:`torch.Tensor`):</span>
+<span class="sd">            The embeddings tensor.</span>
+<span class="sd">        bpe_info (:obj:`Mapping[str, Any]`, `optional`):</span>
+<span class="sd">            The BPE info.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`torch.Tensor`: The merged embeddings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># it is constructed here and not in the tokenizer/collate because pin_memory is not sparse-compatible</span>
+    <span class="n">bpe_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">bpe_info</span><span class="p">[</span><span class="s2">&quot;sparse_indices&quot;</span><span class="p">],</span>
+        <span class="n">values</span><span class="o">=</span><span class="n">bpe_info</span><span class="p">[</span><span class="s2">&quot;sparse_values&quot;</span><span class="p">],</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">bpe_info</span><span class="p">[</span><span class="s2">&quot;sparse_size&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="c1"># (sentence, word, bpe) x (sentence, bpe, transformer_dim) -&gt; (sentence, word, transformer_dim)</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">bpe_weights</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(),</span> <span class="n">embeddings</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">merged</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.resize_token_embeddings" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="n">new_num_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Resizes input token embeddings' matrix of the model if :obj:<code>new_num_tokens != config.vocab_size</code>.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>new_num_tokens</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>int</code>):
+The number of new tokens in the embedding matrix.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>torch.<span title="torch.nn">nn</span>.<span title="torch.nn.Embedding">Embedding</span></code>
+          </td>
+          <td><p>obj:<code>torch.nn.Embedding</code>: Pointer to the input tokens Embeddings Module of the model.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">resize_token_embeddings</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">new_num_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resizes input token embeddings&#39; matrix of the model if :obj:`new_num_tokens != config.vocab_size`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        new_num_tokens (:obj:`int`):</span>
+<span class="sd">            The number of new tokens in the embedding matrix.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`torch.nn.Embedding`: Pointer to the input tokens Embeddings Module of the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="n">new_num_tokens</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.save_pretrained" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">save_pretrained</span><span class="p">(</span><span class="n">save_directory</span><span class="p">)</span></code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Save a model and its configuration file to a directory.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>save_directory</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, :obj:<code>Path</code>):
+Directory to which to save.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save a model and its configuration file to a directory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        save_directory (:obj:`str`, :obj:`Path`):</span>
+<span class="sd">            Directory to which to save.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="n">save_directory</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEmbedder.transformer_hidden_size" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">transformer_hidden_size</span><span class="p">()</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Returns the hidden size of the inner transformer.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>obj:<code>int</code>: Hidden size of <code>self.transformer_model</code>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@property</span>
+<span class="k">def</span> <span class="nf">transformer_hidden_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the hidden size of the inner transformer.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`int`: Hidden size of ``self.transformer_model``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_layers</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_pooling_strategy</span> <span class="o">==</span> <span class="s2">&quot;concat&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="n">multiplier</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="transformers_embedder.embedder.TransformersEmbedderOutput" class="doc doc-heading">
+          <code>TransformersEmbedderOutput</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+        <p class="doc doc-class-bases">
+          Bases: <code><span title="transformers">tr</span>.<span title="transformers.file_utils">file_utils</span>.<span title="tr.file_utils.ModelOutput">ModelOutput</span></code></p>
+
+
+      <p>Class for model's outputs.</p>
+
+
+          <details class="quote">
+            <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+            <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TransformersEmbedderOutput</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">file_utils</span><span class="o">.</span><span class="n">ModelOutput</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for model&#39;s outputs.&quot;&quot;&quot;</span>
+
+    <span class="n">word_embeddings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">last_hidden_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pooler_output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">hidden_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">attentions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="transformers_embedder.embedder.TransformersEncoder" class="doc doc-heading">
+          <code>TransformersEncoder</code>
+
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+        <p class="doc doc-class-bases">
+          Bases: <code><a class="autorefs autorefs-internal" title="transformers_embedder.embedder.TransformersEmbedder" href="../../../../../../../../../references/embedder/#transformers_embedder.embedder.TransformersEmbedder">TransformersEmbedder</a></code></p>
+
+
+      <p>Transformer Embedder class.</p>
+<p>Word level embeddings from various transformer architectures from Huggingface Transformers API.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>model</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, :obj:<code>tr.PreTrainedModel</code>):
+Transformer model to use (https://huggingface.co/models).</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>layer_pooling_strategy</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, optional, defaults to :obj:<code>last</code>):
+What output to get from the transformer model. The last hidden state (<code>last</code>),
+the concatenation of the selected hidden layers (<code>concat</code>), the sum of the selected hidden
+layers (<code>sum</code>), the average of the selected hidden layers (<code>mean</code>).</p></td>
+          <td>
+                <code>&#39;last&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>subword_pooling_strategy</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>str</code>, optional, defaults to :obj:<code>scatter</code>):
+What pooling strategy to use for the sub-word embeddings. Methods available are <code>scatter</code>,
+<code>sparse</code> and <code>none</code>. The <code>scatter</code> strategy is ONNX comptabile but uses <code>scatter_add</code>
+that is not deterministic. The <code>sparse</code> strategy is deterministic but it is not comptabile
+with ONNX.</p></td>
+          <td>
+                <code>&#39;sparse&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>output_layers</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>tuple</code>, optional, defaults to :obj:<code>(-4, -3, -2, -1)</code>):
+Which hidden layers to get from the transformer model.</p></td>
+          <td>
+                <code>(-4, -3, -2, -1)</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>fine_tune</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>bool</code>, optional, defaults to :obj:<code>True</code>):
+If <code>True</code>, the transformer model is fine-tuned during training.</p></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_all</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>bool</code>, optional, defaults to :obj:<code>False</code>):
+If <code>True</code>, returns all the outputs from the HuggingFace model.</p></td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>projection_size</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>int</code>, optional, defaults to :obj:<code>None</code>):
+If not <code>None</code>, the output of the transformer is projected to this size.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>activation_layer</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.nn.Module</code>, optional, defaults to :obj:<code>None</code>):
+Activation layer to use. If <code>None</code>, no activation layer is used.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>dropout</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>float</code>, optional, defaults to :obj:<code>0.1</code>):
+The dropout probability.</p></td>
+          <td>
+                <code>0.1</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>bias</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>bool</code>, optional, defaults to :obj:<code>True</code>):
+If <code>True</code>, the transformer model has a bias.</p></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          <details class="quote">
+            <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+            <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">TransformersEncoder</span><span class="p">(</span><span class="n">TransformersEmbedder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transformer Embedder class.</span>
+
+<span class="sd">    Word level embeddings from various transformer architectures from Huggingface Transformers API.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (:obj:`str`, :obj:`tr.PreTrainedModel`):</span>
+<span class="sd">            Transformer model to use (https://huggingface.co/models).</span>
+<span class="sd">        layer_pooling_strategy (:obj:`str`, optional, defaults to :obj:`last`):</span>
+<span class="sd">            What output to get from the transformer model. The last hidden state (``last``),</span>
+<span class="sd">            the concatenation of the selected hidden layers (``concat``), the sum of the selected hidden</span>
+<span class="sd">            layers (``sum``), the average of the selected hidden layers (``mean``).</span>
+<span class="sd">        subword_pooling_strategy (:obj:`str`, optional, defaults to :obj:`scatter`):</span>
+<span class="sd">            What pooling strategy to use for the sub-word embeddings. Methods available are ``scatter``,</span>
+<span class="sd">            ``sparse`` and ``none``. The ``scatter`` strategy is ONNX comptabile but uses ``scatter_add``</span>
+<span class="sd">            that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile</span>
+<span class="sd">            with ONNX.</span>
+<span class="sd">        output_layers (:obj:`tuple`, optional, defaults to :obj:`(-4, -3, -2, -1)`):</span>
+<span class="sd">            Which hidden layers to get from the transformer model.</span>
+<span class="sd">        fine_tune (:obj:`bool`, optional, defaults to :obj:`True`):</span>
+<span class="sd">            If ``True``, the transformer model is fine-tuned during training.</span>
+<span class="sd">        return_all (:obj:`bool`, optional, defaults to :obj:`False`):</span>
+<span class="sd">            If ``True``, returns all the outputs from the HuggingFace model.</span>
+<span class="sd">        projection_size (:obj:`int`, optional, defaults to :obj:`None`):</span>
+<span class="sd">            If not ``None``, the output of the transformer is projected to this size.</span>
+<span class="sd">        activation_layer (:obj:`torch.nn.Module`, optional, defaults to :obj:`None`):</span>
+<span class="sd">            Activation layer to use. If ``None``, no activation layer is used.</span>
+<span class="sd">        dropout (:obj:`float`, optional, defaults to :obj:`0.1`):</span>
+<span class="sd">            The dropout probability.</span>
+<span class="sd">        bias (:obj:`bool`, optional, defaults to :obj:`True`):</span>
+<span class="sd">            If ``True``, the transformer model has a bias.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tr</span><span class="o">.</span><span class="n">PreTrainedModel</span><span class="p">],</span>
+        <span class="n">layer_pooling_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;last&quot;</span><span class="p">,</span>
+        <span class="n">subword_pooling_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sparse&quot;</span><span class="p">,</span>
+        <span class="n">output_layers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">fine_tune</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">projection_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">activation_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">,</span>
+            <span class="n">layer_pooling_strategy</span><span class="p">,</span>
+            <span class="n">subword_pooling_strategy</span><span class="p">,</span>
+            <span class="n">output_layers</span><span class="p">,</span>
+            <span class="n">fine_tune</span><span class="p">,</span>
+            <span class="n">return_all</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transformer_hidden_size</span><span class="p">,</span>
+            <span class="n">projection_size</span><span class="p">,</span>
+            <span class="n">activation_layer</span><span class="p">,</span>
+            <span class="n">dropout</span><span class="p">,</span>
+            <span class="n">bias</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">attention_mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">token_type_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scatter_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sparse_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformersEmbedderOutput</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forward method of the PyTorch module.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_ids (:obj:`torch.Tensor`):</span>
+<span class="sd">                Input ids for the transformer model.</span>
+<span class="sd">            attention_mask (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">                Attention mask for the transformer model.</span>
+<span class="sd">            token_type_ids (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">                Token type ids for the transformer model.</span>
+<span class="sd">            scatter_offsets (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">                Offsets of the sub-word, used to reconstruct the word embeddings.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`TransformersEmbedderOutput`:</span>
+<span class="sd">                Word level embeddings plus the output of the transformer model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">transformers_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">input_ids</span><span class="p">,</span>
+            <span class="s2">&quot;attention_mask&quot;</span><span class="p">:</span> <span class="n">attention_mask</span><span class="p">,</span>
+            <span class="s2">&quot;token_type_ids&quot;</span><span class="p">:</span> <span class="n">token_type_ids</span><span class="p">,</span>
+            <span class="s2">&quot;scatter_offsets&quot;</span><span class="p">:</span> <span class="n">scatter_offsets</span><span class="p">,</span>
+            <span class="s2">&quot;sparse_offsets&quot;</span><span class="p">:</span> <span class="n">sparse_offsets</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">transformer_output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">**</span><span class="n">transformers_kwargs</span><span class="p">)</span>
+        <span class="n">encoder_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">transformer_output</span><span class="o">.</span><span class="n">word_embeddings</span><span class="p">)</span>
+        <span class="n">transformer_output</span><span class="o">.</span><span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">encoder_output</span>
+        <span class="k">return</span> <span class="n">transformer_output</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hidden_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the hidden size of the transformer.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`int`: Hidden size of ``self.transformer_model``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">projection_size</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEncoder.forward" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scatter_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sparse_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Forward method of the PyTorch module.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>input_ids</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>):
+Input ids for the transformer model.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>attention_mask</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>, optional):
+Attention mask for the transformer model.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token_type_ids</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>, optional):
+Token type ids for the transformer model.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scatter_offsets</code></td>
+          <td>
+          </td>
+          <td><p>obj:<code>torch.Tensor</code>, optional):
+Offsets of the sub-word, used to reconstruct the word embeddings.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="transformers_embedder.embedder.TransformersEmbedderOutput" href="../../../../../../../../../references/embedder/#transformers_embedder.embedder.TransformersEmbedderOutput">TransformersEmbedderOutput</a></code>
+          </td>
+          <td><p>obj:<code>TransformersEmbedderOutput</code>:
+Word level embeddings plus the output of the transformer model.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">input_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">attention_mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">token_type_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scatter_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sparse_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformersEmbedderOutput</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forward method of the PyTorch module.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_ids (:obj:`torch.Tensor`):</span>
+<span class="sd">            Input ids for the transformer model.</span>
+<span class="sd">        attention_mask (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">            Attention mask for the transformer model.</span>
+<span class="sd">        token_type_ids (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">            Token type ids for the transformer model.</span>
+<span class="sd">        scatter_offsets (:obj:`torch.Tensor`, optional):</span>
+<span class="sd">            Offsets of the sub-word, used to reconstruct the word embeddings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`TransformersEmbedderOutput`:</span>
+<span class="sd">            Word level embeddings plus the output of the transformer model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transformers_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">input_ids</span><span class="p">,</span>
+        <span class="s2">&quot;attention_mask&quot;</span><span class="p">:</span> <span class="n">attention_mask</span><span class="p">,</span>
+        <span class="s2">&quot;token_type_ids&quot;</span><span class="p">:</span> <span class="n">token_type_ids</span><span class="p">,</span>
+        <span class="s2">&quot;scatter_offsets&quot;</span><span class="p">:</span> <span class="n">scatter_offsets</span><span class="p">,</span>
+        <span class="s2">&quot;sparse_offsets&quot;</span><span class="p">:</span> <span class="n">sparse_offsets</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">transformer_output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">**</span><span class="n">transformers_kwargs</span><span class="p">)</span>
+    <span class="n">encoder_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">transformer_output</span><span class="o">.</span><span class="n">word_embeddings</span><span class="p">)</span>
+    <span class="n">transformer_output</span><span class="o">.</span><span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">encoder_output</span>
+    <span class="k">return</span> <span class="n">transformer_output</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="transformers_embedder.embedder.TransformersEncoder.hidden_size" class="doc doc-heading">
+<code class="codehilite language-python"><span class="n">hidden_size</span><span class="p">()</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Returns the hidden size of the transformer.</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>obj:<code>int</code>: Hidden size of <code>self.transformer_model</code>.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>transformers_embedder/embedder.py</code></summary>
+          <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@property</span>
+<span class="k">def</span> <span class="nf">hidden_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the hidden size of the transformer.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`int`: Hidden size of ``self.transformer_model``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">projection_size</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/RiccrdoRicOrl" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/riccorl" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../../../../../../..", "features": ["search.suggest", "search.highlight"], "search": "../../../../../../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../../../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,7 @@
+* [transformers_embedder](__init__.md)
+    * [embedder](embedder.md)
+    * [modules](__init__.md)
+        * [encoder](encoder.md)
+        * [scalar_mix](scalar_mix.md)
+    * [tokenizer](tokenizer.md)
+    * [utils](utils.md)

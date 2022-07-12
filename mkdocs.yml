@@ -58,3 +58,8 @@ extra:
       link: https://twitter.com/RiccrdoRicOrl
     - icon: fontawesome/brands/github
       link: https://github.com/riccorl
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
