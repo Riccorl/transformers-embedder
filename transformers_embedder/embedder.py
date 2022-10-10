@@ -230,7 +230,9 @@ class TransformersEmbedder(torch.nn.Module):
                 word_embeddings=word_embeddings,
                 last_hidden_state=transformer_outputs.last_hidden_state,
                 hidden_states=transformer_outputs.hidden_states,
-                pooler_output=transformer_outputs.pooler_output,
+                pooler_output=transformer_outputs.pooler_output
+                if hasattr(transformer_outputs, "pooler_output")
+                else None,
                 attentions=transformer_outputs.attentions,
             )
         return TransformersEmbedderOutput(word_embeddings=word_embeddings)
