@@ -8,7 +8,7 @@ extras["torch"] = ["torch>=1.5,<1.13"]
 extras["all"] = extras["torch"]
 extras["docs"] = ["mkdocs-material"]
 
-install_requires = ["transformers>=4.14,<4.23"]
+install_requires = ["transformers>=4.14,<4.24"]
 
 setuptools.setup(
     name="transformers_embedder",
