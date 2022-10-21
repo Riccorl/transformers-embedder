@@ -46,8 +46,11 @@ class TransformersEmbedder(torch.nn.Module):
             that is not deterministic. The ``sparse`` strategy is deterministic but it is not comptabile
             with ONNX. When ``subword_pooling_strategy`` is ``none``, the sub-word embeddings are not
             pooled.
-        output_layers (`tuple`, optional, defaults to `(-4, -3, -2, -1)`):
-            Which hidden layers to get from the transformer model.
+        output_layers (`tuple`, `list`, `str`, optional, defaults to `(-4, -3, -2, -1)`):
+            Which hidden layers to get from the transformer model. If ``output_layers`` is ``all``,
+            all the hidden layers are returned. If ``output_layers`` is a tuple or a list, the hidden
+            layers are selected according to the indexes in the tuple or list. If ``output_layers`` is
+            a string, it must be ``all``.
         fine_tune (`bool`, optional, defaults to `True`):
             If ``True``, the transformer model is fine-tuned during training.
         return_all (`bool`, optional, defaults to `False`):
@@ -63,7 +66,7 @@ class TransformersEmbedder(torch.nn.Module):
         model: Union[str, tr.PreTrainedModel],
         layer_pooling_strategy: str = "last",
         subword_pooling_strategy: str = "scatter",
-        output_layers: Sequence[int] = (-4, -3, -2, -1),
+        output_layers: Union[Sequence[int], str] = (-4, -3, -2, -1),
         fine_tune: bool = True,
         return_all: bool = False,
         from_pretrained: bool = True,
@@ -94,9 +97,10 @@ class TransformersEmbedder(torch.nn.Module):
         self.layer_pooling_strategy = layer_pooling_strategy
         self.subword_pooling_strategy = subword_pooling_strategy
 
-        self._scalar_mix: Optional[ScalarMix] = None
-        if layer_pooling_strategy == "scalar_mix":
-            self._scalar_mix = ScalarMix(len(output_layers))
+        if output_layers == "all":
+            output_layers = tuple(
+                range(self.transformer_model.config.num_hidden_layers)
+            )
 
         # check output_layers is well defined
         if (
@@ -109,6 +113,10 @@ class TransformersEmbedder(torch.nn.Module):
                 f"Current value is `{output_layers}`"
             )
         self.output_layers = output_layers
+
+        self._scalar_mix: Optional[ScalarMix] = None
+        if layer_pooling_strategy == "scalar_mix":
+            self._scalar_mix = ScalarMix(len(output_layers))
 
         # check if return all transformer outputs
         self.return_all = return_all
