@@ -1,2 +1,2 @@
-torch>=1.7,<1.14
+torch>=1.7,<2.1
 transformers>=4.14,<4.25
