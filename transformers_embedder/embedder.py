@@ -75,7 +75,7 @@ class TransformersEmbedder(torch.nn.Module):
     ) -> None:
         super().__init__()
         if isinstance(model, str):
-            config = tr.AutoConfig.from_pretrained(
+            self.config = tr.AutoConfig.from_pretrained(
                 model,
                 output_hidden_states=True,
                 output_attentions=True,
@@ -84,11 +84,11 @@ class TransformersEmbedder(torch.nn.Module):
             )
             if from_pretrained:
                 self.transformer_model = tr.AutoModel.from_pretrained(
-                    model, config=config, *args, **kwargs
+                    model, config=self.config, *args, **kwargs
                 )
             else:
                 self.transformer_model = tr.AutoModel.from_config(
-                    config, *args, **kwargs
+                    self.config, *args, **kwargs
                 )
         else:
             self.transformer_model = model
