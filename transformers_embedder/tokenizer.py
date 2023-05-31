@@ -227,11 +227,14 @@ class Tokenizer:
             # otherwise, we can just use word_ids as is
             else:
                 word_offsets = word_ids
-            # here we retrieve the max offset for the sample, which will be used as SEP offset
-            # and also as padding value for the offsets
-            sep_offset_value = max([w for w in word_offsets if w is not None]) + 1
+
             # replace first None occurrence with sep_offset
             sep_index = word_offsets.index(None)
+
+            # here we retrieve the max offset for the sample, which will be used as SEP offset
+            # and also as padding value for the offsets
+            sep_offset_value = max([w for w in word_offsets[:sep_index] if w is not None]) + 1
+
             word_offsets[sep_index] = sep_offset_value
             # if there is a text pair, we need to adjust the offsets for the second text
             if there_is_text_pair:
