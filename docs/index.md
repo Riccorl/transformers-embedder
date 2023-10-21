@@ -1,14 +1,19 @@
+<div align="center">
+
 # Transformers Embedder
 
 [![Open in Visual Studio Code](https://img.shields.io/badge/preview%20in-vscode.dev-blue)](https://github.dev/Riccorl/transformers-embedder)
 [![PyTorch](https://img.shields.io/badge/PyTorch-orange?logo=pytorch)](https://pytorch.org/)
-[![Transformers](https://img.shields.io/badge/4.20-🤗%20Transformers-6670ff)](https://huggingface.co/transformers/)
+[![Transformers](https://img.shields.io/badge/4.34-🤗%20Transformers-6670ff)](https://huggingface.co/transformers/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 
 [![Upload to PyPi](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish-pypi.yml/badge.svg)](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish-pypi.yml)
 [![Upload to PyPi](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish-conda.yml/badge.svg)](https://github.com/Riccorl/transformers-embedder/actions/workflows/python-publish-conda.yml)
 [![PyPi Version](https://img.shields.io/github/v/release/Riccorl/transformers-embedder)](https://github.com/Riccorl/transformers-embedder/releases)
 [![Anaconda-Server Badge](https://anaconda.org/riccorl/transformers-embedder/badges/version.svg)](https://anaconda.org/riccorl/transformers-embedder)
+[![DeepSource](https://deepsource.io/gh/Riccorl/transformers-embedder.svg/?label=active+issues)](https://deepsource.io/gh/Riccorl/transformers-embedder/?ref=repository-badge)
+
+</div>
 
 A Word Level Transformer layer based on PyTorch and 🤗 Transformers.
 
